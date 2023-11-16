@@ -1,0 +1,42 @@
+/* eslint-disable immutable/no-let */
+/* eslint-disable immutable/no-mutation */
+/* eslint-disable immutable/no-this */
+import { LGraphNode, LiteGraph } from 'litegraph.js'
+
+export class MyAddNode extends LGraphNode {
+  constructor() {
+    super()
+    this.addInput('A', 'number')
+    this.addInput('B', 'number')
+    this.addOutput('A+B', 'number')
+    this.properties = { precision: 1, path: 'basic/sum' }
+    this.title = 'sum'
+  }
+
+  //name of the node
+  static title = 'sum'
+
+  //name of the function to call when executing
+  onExecute() {
+    //get inputs
+    let A = this.getInputData(0)
+    if (A === undefined) {
+      A = 0
+    }
+    let B = this.getInputData(1)
+    if (B === undefined) {
+      B = 0
+    }
+
+    //compute sum
+    const C = A + B
+
+    //send output to the output
+    this.setOutputData(0, C)
+  }
+
+  //register in the system
+  static register() {
+    LiteGraph.registerNodeType('basic/sum', MyAddNode)
+  }
+}

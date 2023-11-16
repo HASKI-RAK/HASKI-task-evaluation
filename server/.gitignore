@@ -1,0 +1,6 @@
+# python git ignore
+venv
+*.pyc
+node_modules/
+dist/
+.env

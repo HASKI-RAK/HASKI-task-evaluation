@@ -1,0 +1,43 @@
+{
+  "name": "ta-app",
+  "version": "1.0.0",
+  "description": "task assessment app acting as websocket and first contact",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "ts-node -r tsconfig-paths/register src/server.ts",
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/theUpsider/ta-app.git"
+  },
+  "keywords": [
+    "task",
+    "assessment",
+    "websockets",
+    "ws",
+    "backend"
+  ],
+  "author": "David Fischer",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/theUpsider/ta-app/issues"
+  },
+  "homepage": "https://github.com/theUpsider/ta-app#readme",
+  "devDependencies": {
+    "@types/node": "^20.8.10",
+    "@types/ws": "^8.5.8",
+    "ts-node": "^10.9.1",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.5.2",
+    "litegraph.js": "^0.7.14",
+    "pg-promise": "^11.5.4",
+    "prisma": "^5.5.2",
+    "tslog": "^4.9.2",
+    "ws": "^8.14.2"
+  }
+}
