@@ -1,15 +1,10 @@
+/* eslint-disable simple-import-sort/imports */
 /* eslint-disable no-var */
 /* eslint-disable immutable/no-let */
 /* eslint-disable immutable/no-mutation */
 /* eslint-disable immutable/no-this */
-import {
-  IWidget,
-  LGraphCanvas,
-  LGraphNode,
-  Vector2,
-  Vector4,
-  widgetTypes
-} from 'litegraph.js'
+import { IWidget, LGraphCanvas, LGraphNode, Vector2, widgetTypes } from 'litegraph.js'
+import { ExtendedLGraphNode } from './types/ExtendedLGraphNode'
 
 class TextWidget implements IWidget {
   name: string
@@ -71,7 +66,7 @@ class TextWidget implements IWidget {
   }
 }
 
-export class Textfield extends LGraphNode {
+export class Textfield extends ExtendedLGraphNode {
   constructor() {
     super()
     this.addOutput('text', 'string')
@@ -91,6 +86,7 @@ export class Textfield extends LGraphNode {
   }
 
   onMouseDown(event: MouseEvent, pos: Vector2, graphCanvas: LGraphCanvas): void {
+    this.renderReactComponent?.(this)
     // only when y greater than the title margin
     if (pos[1] < 10) {
       return
@@ -104,9 +100,5 @@ export class Textfield extends LGraphNode {
     //   },
     //   undefined
     // )
-  }
-
-  getBounding(): Vector4 {
-    return [0, 0, this.size[0], this.size[1]]
   }
 }

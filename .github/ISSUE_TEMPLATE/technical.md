@@ -4,7 +4,6 @@ about: Technical template for HASKI
 title: '[Technical]'
 labels: Technical
 assignees: ''
-
 ---
 
 **Technical**
@@ -18,7 +17,6 @@ Short description of the needed functionality
 <!--
 Short description why this technical was created and which problem it addresses
 -->
-
 
 **Acceptance criteria**
 

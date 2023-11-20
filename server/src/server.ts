@@ -7,7 +7,7 @@ import { parse } from 'url'
 import { WebSocket, WebSocketServer } from 'ws'
 
 import { SerializedGraph } from '@/events'
-import { LiteGraph } from '@/nodes'
+import { LiteGraph, ExtendedLGraphNode } from '@/nodes'
 import { registerCustomEvents, sendWs } from '@/utils/websocket'
 
 // Init
@@ -104,15 +104,18 @@ export async function sendGraphFromPath(ws: WebSocket, request: IncomingMessage)
   const { pathname } = parse(request.url ?? '', true)
   // TODO: get graph from path
   const lgraph = new LiteGraph.LGraph()
-  const loaded_graph = await prisma.graph.findFirst({
-    where: {
-      path: pathname ?? ''
-    }
-  })
+  const loaded_graph =
+    process.env.IN_MEMORY_DB === 'false'
+      ? await prisma.graph.findFirst({
+          where: {
+            path: pathname ?? ''
+          }
+        })
+      : undefined
 
   // This is persisted even trough network serialization
   // eslint-disable-next-line immutable/no-mutation
-  lgraph.onNodeAdded = function (node: LGraphNode) {
+  lgraph.onNodeAdded = function (node: ExtendedLGraphNode) {
     const onExecute = node.onExecute
     // eslint-disable-next-line immutable/no-mutation
     node.onExecute = async function () {

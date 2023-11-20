@@ -15,3 +15,4 @@ LiteGraph.registerNodeType('basic/textfield', Textfield)
 // LiteGraph.registerNodeType('basic/const', ConstNumber)
 
 export { LiteGraph, MyAddNode, Watch }
+export * from './types/ExtendedLGraphNode'
