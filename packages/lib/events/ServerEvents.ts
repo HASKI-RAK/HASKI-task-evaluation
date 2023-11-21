@@ -18,7 +18,16 @@ export type ServerEventPayload = {
   nodeExecuted: number // node id
 }
 
+export type ClientEventPayload = {
+  saveGraph: SerializedGraph
+}
+
 export type ServerEvent<K extends keyof ServerEventPayload, P = ServerEventPayload[K]> = {
+  eventName: K
+  payload: P
+}
+
+export type ClientEvent<K extends keyof ClientEventPayload, P = ClientEventPayload[K]> = {
   eventName: K
   payload: P
 }

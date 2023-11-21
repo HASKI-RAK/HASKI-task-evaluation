@@ -173,6 +173,12 @@ export const Editor = () => {
             <ReplayIcon />
           </IconButton>
           <IconButton
+            onClick={() =>
+              sendJsonMessage({
+                eventName: 'saveGraph',
+                payload: JSON.stringify(lgraph.serialize())
+              })
+            }
             aria-label="save"
             aria-controls="menu-appbar"
             aria-haspopup="true"
