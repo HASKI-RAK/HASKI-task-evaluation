@@ -105,8 +105,4 @@ export class Textfield extends LGraphNode {
     //   undefined
     // )
   }
-
-  getBounding(): Vector4 {
-    return [0, 0, this.size[0], this.size[1]]
-  }
 }

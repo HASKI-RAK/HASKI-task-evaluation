@@ -10,6 +10,8 @@ import { SerializedGraph } from '@/events'
 import { LiteGraph } from '@/nodes'
 import { registerCustomEvents, sendWs } from '@/utils/websocket'
 
+import { prismaGraphCreateOrUpdate } from './utils/prismaOperations'
+
 // Init
 export const log: Logger<ILogObj> = new Logger()
 const server = createServer()
@@ -33,21 +35,8 @@ wss1.on('connection', async function connection(ws: WebSocket, request) {
     log.debug('event: runGraph')
     lgraph.configure(JSON.parse(message.toString()))
     const { pathname } = parse(request.url ?? '', true)
-    prisma.graph
-      .update({
-        where: {
-          path: pathname ?? ''
-        },
-        data: {
-          graph: JSON.stringify(lgraph.serialize())
-        }
-      })
-      .then(() => {
-        log.debug('Saved graph')
-      })
-      .catch((e) => {
-        log.error(e)
-      })
+    prismaGraphCreateOrUpdate(pathname, lgraph)
+
     // ! RUN GRAPH ITERATION
     runLgraph(lgraph).then(() => {
       log.debug('Finished running graph')
@@ -89,6 +78,10 @@ server.on('upgrade', function upgrade(request, socket, head) {
   }
 })
 
+/**
+ * ! Entry point
+ * @async
+ */
 const main = async () => {
   log.info('Server listening on port: ', process.env.PORT ?? 5000)
   server.listen(process.env.PORT ?? 5000)
