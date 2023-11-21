@@ -29,6 +29,13 @@ wss1.on('connection', async function connection(ws: WebSocket, request) {
   log.debug('Registering custom events')
   registerCustomEvents(ws)
 
+  ws.on('saveGraph', function (message) {
+    log.debug('event: saveGraph')
+    lgraph.configure(JSON.parse(message.toString()))
+    const { pathname } = parse(request.url ?? '', true)
+    prismaGraphCreateOrUpdate(prisma, pathname, lgraph)
+  })
+
   // Here we can register custom events that re sent by the client
   ws.on('runGraph', function (message) {
     log.debug('event: runGraph')
