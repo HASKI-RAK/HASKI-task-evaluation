@@ -1,7 +1,9 @@
 import { LGraph } from 'litegraph.js'
-import { prisma, log } from '../server'
+import { log } from '../server'
+import { Prisma } from '@prisma/client'
 
-export function prismaGraphCreateOrUpdate(pathname: string | null, lgraph: LGraph) {
+
+export function prismaGraphCreateOrUpdate(prisma: any, pathname: string | null, lgraph: LGraph) {
   prisma.graph
     .findFirstOrThrow({
       where: {

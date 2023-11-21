@@ -6,3 +6,5 @@ dist-ssr
 node_modules/*
 dev-dist
 tsconfig.node.tsbuildinfo
+packages/frontend/.env
+.yarn/*

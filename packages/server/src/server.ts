@@ -1,4 +1,5 @@
 /* eslint-disable immutable/no-mutation */
+import { LiteGraph, SerializedGraph } from '@haski/lib'
 import { PrismaClient } from '@prisma/client'
 import { createServer, IncomingMessage } from 'http'
 import { LGraph, LGraphNode } from 'litegraph.js'
@@ -6,8 +7,6 @@ import { ILogObj, Logger } from 'tslog'
 import { parse } from 'url'
 import { WebSocket, WebSocketServer } from 'ws'
 
-import { SerializedGraph } from '@/events'
-import { LiteGraph } from '@/nodes'
 import { registerCustomEvents, sendWs } from '@/utils/websocket'
 
 import { prismaGraphCreateOrUpdate } from './utils/prismaOperations'
@@ -35,7 +34,7 @@ wss1.on('connection', async function connection(ws: WebSocket, request) {
     log.debug('event: runGraph')
     lgraph.configure(JSON.parse(message.toString()))
     const { pathname } = parse(request.url ?? '', true)
-    prismaGraphCreateOrUpdate(pathname, lgraph)
+    prismaGraphCreateOrUpdate(prisma, pathname, lgraph)
 
     // ! RUN GRAPH ITERATION
     runLgraph(lgraph).then(() => {

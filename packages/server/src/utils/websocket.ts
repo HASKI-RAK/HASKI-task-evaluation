@@ -1,6 +1,6 @@
 import { WebSocket } from 'ws'
 
-import { ServerEvent, ServerEventPayload } from '@/events'
+import { ServerEvent, ServerEventPayload } from '@haski/lib'
 
 /**
  * Send a message to the client on an established WebSocket connection

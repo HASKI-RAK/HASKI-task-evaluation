@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 const useTask = (id: string) => {
+  console.log('useTask', id)
   return {
     data: {
       title: 'Strategie Entwurfsmuster',
@@ -13,7 +14,7 @@ const useTask = (id: string) => {
 
 const TaskView = ({ onSubmit }: { onSubmit: (answer: string) => void }) => {
   const { id } = useParams<{ id: string }>()
-  const { data: task } = useTask(id)
+  const { data: task } = useTask(id ?? '1')
 
   const [error, setError] = useState<string | null>(null)
   const [answer, setAnswer] = useState<string>('')

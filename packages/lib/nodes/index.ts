@@ -1,4 +1,4 @@
-import { LiteGraph } from 'litegraph.js'
+import { LGraph, LiteGraph } from 'litegraph.js'
 
 import { MyAddNode } from './MyAddNode'
 import { Textfield } from './Textfield'
@@ -14,4 +14,4 @@ LiteGraph.registerNodeType('basic/textfield', Textfield)
 
 // LiteGraph.registerNodeType('basic/const', ConstNumber)
 
-export { LiteGraph, MyAddNode, Watch }
+export { LGraph, LiteGraph, MyAddNode, Watch }

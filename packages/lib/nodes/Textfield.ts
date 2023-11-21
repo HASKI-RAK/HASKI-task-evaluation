@@ -2,14 +2,7 @@
 /* eslint-disable immutable/no-let */
 /* eslint-disable immutable/no-mutation */
 /* eslint-disable immutable/no-this */
-import {
-  IWidget,
-  LGraphCanvas,
-  LGraphNode,
-  Vector2,
-  Vector4,
-  widgetTypes
-} from 'litegraph.js'
+import { IWidget, LGraphCanvas, LGraphNode, Vector2, widgetTypes } from 'litegraph.js'
 
 class TextWidget implements IWidget {
   name: string

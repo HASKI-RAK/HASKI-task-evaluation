@@ -1,22 +1,6 @@
 import { LGraph, LGraphCanvas } from 'litegraph.js'
 import { useEffect, useRef, useState } from 'react'
 
-import { LiteGraph } from '@/nodes'
-
-function createNodes(lgraph: LGraph) {
-  const node_const = LiteGraph.createNode('basic/const', 'const', { pos: [200, 200] })
-  lgraph.add(node_const)
-  node_const.setValue(4.5)
-
-  const node_watch = LiteGraph.createNode('basic/watch', 'watch', {
-    pos: [700, 200]
-  })
-  // node_watch.pos = [700, 200]
-  lgraph.add(node_watch)
-
-  node_const.connect(0, node_watch, 0)
-}
-
 type CanvasProps = {
   width: number
   height: number

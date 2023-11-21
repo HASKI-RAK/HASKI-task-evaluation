@@ -1,3 +1,4 @@
+import { LGraph, LiteGraph, ServerEvent, ServerEventPayload } from '@haski/lib'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
@@ -16,13 +17,12 @@ import {
   useTheme
 } from '@mui/material'
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import useWebSocket, { ReadyState } from 'react-use-websocket'
 
 import Canvas from '@/components/Canvas'
 import TaskView from '@/components/TaskView'
 import { getConfig } from '@/utils/config'
-import { LGraph } from 'litegraph.js'
 
 const drawerWidth = 500
 
@@ -83,7 +83,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 
 export const Editor = () => {
   const [open, setOpen] = useState(true)
-  const [lgraph, setLgraph] = useState<LGraph>(new LGraph())
+  const lgraph = useMemo(() => new LiteGraph.LGraph(), [])
   const [socketUrl, setSocketUrl] = useState(
     getConfig().API_WS ?? 'ws://localhost:5000/ws/editor/ke.haski.app/2/2'
   )
@@ -110,12 +110,16 @@ export const Editor = () => {
   }
 
   const handleNodeExecuting = (lgraph: LGraph, nodeId: number) => {
-    lgraph.getNodeById(nodeId).color = '#88FF00'
+    if (lgraph.getNodeById(nodeId) === null) return
+    // eslint-disable-next-line immutable/no-mutation
+    lgraph.getNodeById(nodeId)!.color = '#88FF00'
     lgraph.setDirtyCanvas(true, true)
   }
 
   const handleNodeExecuted = (lgraph: LGraph, nodeId: number) => {
-    lgraph.getNodeById(nodeId).color = '#FFFFFF00'
+    if (lgraph.getNodeById(nodeId) === null) return
+    // eslint-disable-next-line immutable/no-mutation
+    lgraph.getNodeById(nodeId)!.color = '#FFFFFF00'
     lgraph.setDirtyCanvas(true, true)
   }
 
@@ -248,8 +252,8 @@ export const Editor = () => {
     </Box>
   )
 }
-function handleWsRequest(
-  lgraph_json: any,
+function handleWsRequest<T extends keyof ServerEventPayload>(
+  lgraph_json: ServerEvent<T>,
   lgraph: LGraph,
   handleNodeExecuting: (lgraph: LGraph, nodeId: number) => void,
   handleNodeExecuted: (lgraph: LGraph, nodeId: number) => void
