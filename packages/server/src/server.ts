@@ -44,9 +44,6 @@ wss1.on('connection', async function connection(ws: WebSocket, request) {
   ws.on('runGraph', function (message) {
     log.debug('event: runGraph')
     lgraph.configure(JSON.parse(message.toString()))
-    const { pathname } = parse(request.url ?? '', true)
-    prismaGraphCreateOrUpdate(prisma, pathname, lgraph)
-
     // ! RUN GRAPH ITERATION
     runLgraph(lgraph).then(() => {
       log.debug('Finished running graph')
