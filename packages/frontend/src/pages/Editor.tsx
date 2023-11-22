@@ -1,82 +1,84 @@
+import { handleWsServerRequest, LGraph, LiteGraph } from '@haski/lib'
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
-import MailIcon from '@mui/icons-material/Mail'
-import MenuIcon from '@mui/icons-material/Menu'
-import InboxIcon from '@mui/icons-material/MoveToInbox'
 import {
   Box,
+  Button,
   Divider,
   Drawer,
   IconButton,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
   styled,
-  Toolbar,
   Typography,
   useTheme
 } from '@mui/material'
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar'
-import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import useWebSocket, { ReadyState } from 'react-use-websocket'
 
-const drawerWidth = 240
-// const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
-//   open?: boolean
-// }>(({ theme, open }) => ({
-//   flexGrow: 1,
-//   padding: theme.spacing(3),
-//   transition: theme.transitions.create('margin', {
-//     easing: theme.transitions.easing.sharp,
-//     duration: theme.transitions.duration.leavingScreen
-//   }),
-//   marginLeft: `-${drawerWidth}px`,
-//   ...(open && {
-//     transition: theme.transitions.create('margin', {
-//       easing: theme.transitions.easing.easeOut,
-//       duration: theme.transitions.duration.enteringScreen
-//     }),
-//     marginLeft: 0
-//   })
-// }))
+import Snackbar from '@/common/SnackBar'
+import { AppBar } from '@/components/AppBar'
+import Canvas from '@/components/Canvas'
+import TaskView from '@/components/TaskView'
+import { getConfig } from '@/utils/config'
 
-interface AppBarProps extends MuiAppBarProps {
+export const drawerWidth = 500
+
+const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
   open?: boolean
-}
-
-const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== 'open'
-})<AppBarProps>(({ theme, open }) => ({
-  transition: theme.transitions.create(['margin', 'width'], {
+}>(({ theme, open }) => ({
+  flexGrow: 1,
+  transition: theme.transitions.create('margin', {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen
   }),
+  marginRight: -drawerWidth,
   ...(open && {
-    width: `calc(100% - ${drawerWidth}px)`,
-    marginRight: `${drawerWidth}px`,
-    transition: theme.transitions.create(['margin', 'width'], {
+    transition: theme.transitions.create('margin', {
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen
-    })
-  })
+    }),
+    marginRight: 0
+  }),
+  /**
+   * This is necessary to enable the selection of content. In the DOM, the stacking order is determined
+   * by the order of appearance. Following this rule, elements appearing later in the markup will overlay
+   * those that appear earlier. Since the Drawer comes after the Main content, this adjustment ensures
+   * proper interaction with the underlying content.
+   */
+  position: 'relative'
 }))
+
 const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   padding: theme.spacing(0, 1),
   // necessary for content to be below app bar
   ...theme.mixins.toolbar,
-  justifyContent: 'flex-end'
+  justifyContent: 'flex-start'
 }))
 
 export const Editor = () => {
-  // get router params
-  const params = useParams()
+  const [open, setOpen] = useState(true)
+  const [snackbarMessage, setSnackbarMessage] = useState('')
+  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false)
+  const [feedback, setFeedback] = useState<string | undefined>()
+  const lgraph = useMemo(() => new LiteGraph.LGraph(), [])
+  const [socketUrl, setSocketUrl] = useState(
+    getConfig().API_WS ?? 'ws://localhost:5000/ws/editor/ke.haski.app/2/2'
+  )
+  const [size, setSize] = useState({
+    width: window.outerWidth,
+    height: window.outerHeight
+  })
   const theme = useTheme()
+  const { sendJsonMessage, lastMessage, readyState } = useWebSocket(socketUrl)
 
-  const [open, setOpen] = useState(false)
+  const checkSize = useCallback(() => {
+    setSize({
+      width: window.outerWidth,
+      height: window.outerWidth
+    })
+  }, [open])
 
   const handleDrawerOpen = () => {
     setOpen(true)
@@ -86,72 +88,165 @@ export const Editor = () => {
     setOpen(false)
   }
 
+  const handleSnackbarClose = (event: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return
+    }
+    setIsSnackbarOpen(false)
+  }
+
+  const handleNodeExecuting = (lgraph: LGraph, nodeId: number) => {
+    if (lgraph.getNodeById(nodeId) === null) return
+    // eslint-disable-next-line immutable/no-mutation
+    lgraph.getNodeById(nodeId)!.color = '#88FF00'
+    lgraph.setDirtyCanvas(true, true)
+  }
+
+  const handleNodeExecuted = (lgraph: LGraph, nodeId: number) => {
+    if (lgraph.getNodeById(nodeId) === null) return
+    // eslint-disable-next-line immutable/no-mutation
+    lgraph.getNodeById(nodeId)!.color = '#FFFFFF00'
+    lgraph.setDirtyCanvas(true, true)
+  }
+
+  const handleSaveGraph = () => {
+    sendJsonMessage({
+      eventName: 'saveGraph',
+      payload: JSON.stringify(lgraph.serialize())
+    })
+  }
+
   useEffect(() => {
-    console.log('params', JSON.stringify(params))
-  }, [params])
-  return (
-    <Box sx={{ display: 'flex' }}>
-      <AppBar position="fixed" open={open}>
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            edge="start"
-            sx={{ mr: 2, ...(open && { display: 'none' }) }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" noWrap component="div">
-            Persistent drawer
-          </Typography>
-        </Toolbar>
-      </AppBar>
-      <Drawer
-        sx={{
-          width: 0,
-          flexShrink: 0,
-          '& .MuiDrawer-paper': {
-            width: drawerWidth,
-            boxSizing: 'border-box'
+    if (lastMessage !== null) {
+      const lgraph_json = JSON.parse(lastMessage.data)
+      //* Handle events from server
+      if (
+        !handleWsServerRequest(lgraph_json, {
+          graphFinished: (payload) => {
+            lgraph.configure(payload)
+            lgraph.runStep()
+            lgraph.setDirtyCanvas(true, true)
+          },
+          nodeExecuting: (nodeId) => handleNodeExecuting(lgraph, nodeId),
+          nodeExecuted: (nodeId) => handleNodeExecuted(lgraph, nodeId),
+          graphSaved: () => {
+            setSnackbarMessage('Graph saved')
+            setIsSnackbarOpen(true)
+          },
+          feedback: (feedback) => {
+            console.log(feedback)
+            setFeedback(feedback)
           }
-        }}
-        variant="persistent"
-        anchor="right"
-        open={open}
-      >
-        <DrawerHeader>
-          <IconButton onClick={handleDrawerClose}>
-            {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-          </IconButton>
-        </DrawerHeader>
-        <Divider />
-        <List>
-          {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-        <Divider />
-        <List>
-          {['All mail', 'Trash', 'Spam'].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-      </Drawer>
-    </Box>
+        })
+      ) {
+        setSnackbarMessage('No handler for this event')
+        setIsSnackbarOpen(true)
+      }
+    }
+    setOpen(true)
+    window.addEventListener('resize', checkSize)
+    return () => {
+      window.removeEventListener('resize', checkSize)
+    }
+  }, [lastMessage])
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleSubmit = () => {
+    // TODO: Add type to json
+    sendJsonMessage({
+      eventName: 'runGraph',
+      payload: JSON.stringify(lgraph.serialize())
+    })
+  }
+
+  const handleClickChangeSocketUrl = useCallback(
+    () =>
+      setSocketUrl(
+        getConfig().API_WS ?? 'ws://localhost:5000/ws/editor/ke.haski.app/2/2'
+      ),
+    []
+  )
+
+  const connectionStatus = {
+    [ReadyState.CONNECTING]: 'Connecting...',
+    [ReadyState.OPEN]: 'Open',
+    [ReadyState.CLOSING]: 'Closing',
+    [ReadyState.CLOSED]: 'Connection closed',
+    [ReadyState.UNINSTANTIATED]: 'Uninstantiated'
+  }[readyState]
+  return (
+    <>
+      <Box sx={{ display: 'flex' }}>
+        <AppBar
+          open={open}
+          handleClickChangeSocketUrl={handleClickChangeSocketUrl}
+          handleSaveGraph={handleSaveGraph}
+          handleDrawerOpen={handleDrawerOpen}
+        />
+        <Main open={open}>
+          <Button
+            onClick={handleDrawerOpen}
+            variant="contained"
+            startIcon={
+              <ArrowBackIosNewIcon
+                sx={{
+                  transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
+                  transition: (theme) =>
+                    theme.transitions.create('transform', {
+                      duration: theme.transitions.duration.shortest
+                    })
+                }}
+              />
+            }
+            style={{ position: 'absolute', top: 0, right: 0 }}
+          >
+            {open ? 'Close' : 'Open'}
+          </Button>
+          <Canvas lgraph={lgraph} width={size.width} height={size.height} />
+        </Main>
+        {/* WS connection indicator status */}
+        <Typography
+          variant="body1"
+          sx={{
+            position: 'absolute',
+            bottom: 0,
+            padding: 1,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            color: 'white',
+            marginRight: drawerWidth
+          }}
+        >
+          {connectionStatus}
+        </Typography>
+        <Drawer
+          sx={{
+            width: drawerWidth,
+            flexShrink: 0,
+            '& .MuiDrawer-paper': {
+              width: drawerWidth
+            }
+          }}
+          variant="persistent"
+          anchor="right"
+          open={open}
+        >
+          <DrawerHeader>
+            <IconButton onClick={handleDrawerClose}>
+              {theme.direction === 'rtl' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+            </IconButton>
+            <Typography variant="h6" noWrap component="div">
+              Task preview
+            </Typography>
+          </DrawerHeader>
+          <Divider />
+          <TaskView onSubmit={() => handleSubmit()} feedback={feedback} />
+        </Drawer>
+      </Box>
+      <Snackbar
+        open={isSnackbarOpen}
+        handleClose={handleSnackbarClose}
+        message={snackbarMessage}
+      />
+    </>
   )
 }

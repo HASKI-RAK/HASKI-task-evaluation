@@ -4,7 +4,7 @@ import SaveIcon from '@mui/icons-material/Save'
 import { IconButton, styled, Toolbar, Typography } from '@mui/material'
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar'
 
-import { drawerWidth } from '@/pages/Editortest'
+import { drawerWidth } from '@/pages/Editor'
 
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean

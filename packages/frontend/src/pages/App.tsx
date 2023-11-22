@@ -14,7 +14,7 @@ import {
 } from 'react-router-dom'
 
 import ErrorBoundary from '@/components/ErrorBoundary'
-import { Editor } from '@/pages/Editortest'
+import { Editor } from '@/pages/Editor'
 
 const ColorModeContext = createContext({ toggleColorMode: () => {} })
 
