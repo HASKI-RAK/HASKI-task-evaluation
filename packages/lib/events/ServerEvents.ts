@@ -16,6 +16,7 @@ export type ServerEventPayload = {
   graphFinished: SerializedGraph // graph
   nodeExecuting: number // node id
   nodeExecuted: number // node id
+  graphSaved: SerializedGraph // graph
 }
 
 export type ClientEventPayload = {
