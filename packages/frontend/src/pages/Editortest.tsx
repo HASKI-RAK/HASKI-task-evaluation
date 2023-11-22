@@ -1,4 +1,4 @@
-import { LGraph, LiteGraph, ServerEvent, ServerEventPayload } from '@haski/lib'
+import { handleWsServerRequest, LGraph, LiteGraph } from '@haski/lib'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
@@ -85,6 +85,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 export const Editor = () => {
   const [open, setOpen] = useState(true)
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false)
+  const [feedback, setFeedback] = useState<string | undefined>()
   const lgraph = useMemo(() => new LiteGraph.LGraph(), [])
   const [socketUrl, setSocketUrl] = useState(
     getConfig().API_WS ?? 'ws://localhost:5000/ws/editor/ke.haski.app/2/2'
@@ -136,17 +137,20 @@ export const Editor = () => {
   useEffect(() => {
     if (lastMessage !== null) {
       const lgraph_json = JSON.parse(lastMessage.data)
-      handleWsRequest(
-        lgraph_json,
-        lgraph,
-        handleNodeExecuting,
-        handleNodeExecuted,
-        () => {
-          setIsSnackbarOpen(true)
-          console.log('isSnackbarOpen: ', isSnackbarOpen)
-          console.log('graphSaved')
+      handleWsServerRequest(lgraph_json, lgraph, {
+        graphFinished: (payload) => {
+          lgraph.configure(payload)
+          lgraph.runStep()
+          lgraph.setDirtyCanvas(true, true)
+        },
+        nodeExecuting: (nodeId) => handleNodeExecuting(lgraph, nodeId),
+        nodeExecuted: (nodeId) => handleNodeExecuted(lgraph, nodeId),
+        graphSaved: () => setIsSnackbarOpen(true),
+        feedback: (feedback) => {
+          console.log(feedback)
+          setFeedback(feedback)
         }
-      )
+      })
     }
     setOpen(true)
     window.addEventListener('resize', checkSize)
@@ -277,7 +281,7 @@ export const Editor = () => {
             </Typography>
           </DrawerHeader>
           <Divider />
-          <TaskView onSubmit={() => handleSubmit()} />
+          <TaskView onSubmit={() => handleSubmit()} feedback={feedback} />
         </Drawer>
       </Box>
       <Snackbar
@@ -287,28 +291,4 @@ export const Editor = () => {
       />
     </>
   )
-}
-function handleWsRequest<T extends keyof ServerEventPayload>(
-  lgraph_json: ServerEvent<T>,
-  lgraph: LGraph,
-  handleNodeExecuting: (lgraph: LGraph, nodeId: number) => void,
-  handleNodeExecuted: (lgraph: LGraph, nodeId: number) => void,
-  handleGraphSaved?: () => void
-) {
-  switch (lgraph_json.eventName) {
-    case 'graphFinished':
-      console.log('graphFinished')
-      console.log(lgraph_json)
-      lgraph.configure(lgraph_json.payload)
-      break
-    case 'nodeExecuting':
-      handleNodeExecuting(lgraph, lgraph_json.payload)
-      break
-    case 'nodeExecuted':
-      handleNodeExecuted(lgraph, lgraph_json.payload)
-      break
-    case 'graphSaved':
-      handleGraphSaved?.()
-      break
-  }
 }

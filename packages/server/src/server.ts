@@ -1,13 +1,17 @@
 /* eslint-disable immutable/no-mutation */
-import { LiteGraph, SerializedGraph } from '@haski/lib'
+import {
+  LGraphNode,
+  LiteGraph,
+  registerCustomEvents,
+  sendWs,
+  SerializedGraph
+} from '@haski/lib'
 import { PrismaClient } from '@prisma/client'
 import { createServer, IncomingMessage } from 'http'
-import { LGraph, LGraphNode } from 'litegraph.js'
+import { LGraph } from 'litegraph.js'
 import { ILogObj, Logger } from 'tslog'
 import { parse } from 'url'
 import { WebSocket, WebSocketServer } from 'ws'
-
-import { registerCustomEvents, sendWs } from '@/utils/websocket'
 
 import { prismaGraphCreateOrUpdate } from './utils/prismaOperations'
 
@@ -113,15 +117,18 @@ export async function sendGraphFromPath(ws: WebSocket, request: IncomingMessage)
   // This is persisted even trough network serialization
   // eslint-disable-next-line immutable/no-mutation
   lgraph.onNodeAdded = function (node: LGraphNode) {
+    node.setWebSocket?.(ws) // register websocket if node uses it
     const onExecute = node.onExecute
     // eslint-disable-next-line immutable/no-mutation
     node.onExecute = async function () {
       log.trace(`Executing node: ${node.title}`)
       // tell client that we are executing this node
       sendWs(ws, { eventName: 'nodeExecuting', payload: node.id })
-      //! await timer for 1 second
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+
+      //! Set node properties
+      await new Promise((resolve) => setTimeout(resolve, 200))
       onExecute?.call(node)
+
       log.trace(`Executed node: ${node.title}`)
       sendWs(ws, { eventName: 'nodeExecuted', payload: node.id })
     }
@@ -167,8 +174,8 @@ export async function sendGraphFromPath(ws: WebSocket, request: IncomingMessage)
  * @param lgraph - graph to run
  */
 export async function runLgraph(lgraph: LGraph, onlyOnExecute = false) {
-  const execorder = lgraph.computeExecutionOrder(onlyOnExecute, true)
+  const execorder = lgraph.computeExecutionOrder<LGraphNode[]>(onlyOnExecute, true)
   for (const node of execorder) {
-    await node.onExecute()
+    await node.onExecute?.()
   }
 }
