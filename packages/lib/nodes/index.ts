@@ -1,5 +1,6 @@
 import { FeedbackOutputNode } from './FeedbackOutputNode'
 import { LGraph, LGraphNode, LiteGraph } from './litegraph-extensions'
+import { LLMNode } from './LLMNode'
 import { MyAddNode } from './MyAddNode'
 import { Textfield } from './Textfield'
 import { Watch } from './Watch'
@@ -12,6 +13,7 @@ LiteGraph.registerNodeType(MyAddNode.getPath(), MyAddNode)
 LiteGraph.registerNodeType(Watch.getPath(), Watch)
 LiteGraph.registerNodeType(Textfield.getPath(), Textfield)
 LiteGraph.registerNodeType(FeedbackOutputNode.getPath(), FeedbackOutputNode)
+LiteGraph.registerNodeType(LLMNode.getPath(), LLMNode)
 
 // LiteGraph.registerNodeType('basic/const', ConstNumber)
 

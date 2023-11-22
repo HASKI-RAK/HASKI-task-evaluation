@@ -126,8 +126,8 @@ export async function sendGraphFromPath(ws: WebSocket, request: IncomingMessage)
       sendWs(ws, { eventName: 'nodeExecuting', payload: node.id })
 
       //! Set node properties
-      await new Promise((resolve) => setTimeout(resolve, 200))
-      onExecute?.call(node)
+      // await new Promise((resolve) => setTimeout(resolve, 200))
+      await onExecute?.call(node)
 
       log.trace(`Executed node: ${node.title}`)
       sendWs(ws, { eventName: 'nodeExecuted', payload: node.id })
