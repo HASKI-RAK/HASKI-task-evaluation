@@ -2,9 +2,6 @@ import { handleWsServerRequest, LGraph, LiteGraph } from '@haski/lib'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
-import MenuIcon from '@mui/icons-material/Menu'
-import ReplayIcon from '@mui/icons-material/Replay'
-import SaveIcon from '@mui/icons-material/Save'
 import {
   Box,
   Button,
@@ -12,20 +9,19 @@ import {
   Drawer,
   IconButton,
   styled,
-  Toolbar,
   Typography,
   useTheme
 } from '@mui/material'
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import useWebSocket, { ReadyState } from 'react-use-websocket'
 
 import Snackbar from '@/common/SnackBar'
+import { AppBar } from '@/components/AppBar'
 import Canvas from '@/components/Canvas'
 import TaskView from '@/components/TaskView'
 import { getConfig } from '@/utils/config'
 
-const drawerWidth = 500
+export const drawerWidth = 500
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
   open?: boolean
@@ -50,27 +46,6 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
    * proper interaction with the underlying content.
    */
   position: 'relative'
-}))
-
-interface AppBarProps extends MuiAppBarProps {
-  open?: boolean
-}
-
-const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== 'open'
-})<AppBarProps>(({ theme, open }) => ({
-  transition: theme.transitions.create(['margin', 'width'], {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen
-  }),
-  ...(open && {
-    width: `calc(100% - ${drawerWidth}px)`,
-    transition: theme.transitions.create(['margin', 'width'], {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen
-    }),
-    marginRight: drawerWidth
-  })
 }))
 
 const DrawerHeader = styled('div')(({ theme }) => ({
@@ -134,6 +109,13 @@ export const Editor = () => {
     lgraph.setDirtyCanvas(true, true)
   }
 
+  const handleSaveGraph = () => {
+    sendJsonMessage({
+      eventName: 'saveGraph',
+      payload: JSON.stringify(lgraph.serialize())
+    })
+  }
+
   useEffect(() => {
     if (lastMessage !== null) {
       const lgraph_json = JSON.parse(lastMessage.data)
@@ -194,45 +176,12 @@ export const Editor = () => {
   return (
     <>
       <Box sx={{ display: 'flex' }}>
-        <AppBar position="fixed" open={open}>
-          <Toolbar>
-            <Typography variant="h6" noWrap sx={{ flexGrow: 1 }} component="div">
-              Task Editor
-            </Typography>
-            <IconButton
-              aria-label="change socket url"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              color="inherit"
-              onClick={handleClickChangeSocketUrl}
-            >
-              <ReplayIcon />
-            </IconButton>
-            <IconButton
-              onClick={() =>
-                sendJsonMessage({
-                  eventName: 'saveGraph',
-                  payload: JSON.stringify(lgraph.serialize())
-                })
-              }
-              aria-label="save"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              color="inherit"
-            >
-              <SaveIcon />
-            </IconButton>
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              edge="end"
-              onClick={handleDrawerOpen}
-              sx={{ ...(open && { display: 'none' }) }}
-            >
-              <MenuIcon />
-            </IconButton>
-          </Toolbar>
-        </AppBar>
+        <AppBar
+          open={open}
+          handleClickChangeSocketUrl={handleClickChangeSocketUrl}
+          handleSaveGraph={handleSaveGraph}
+          handleDrawerOpen={handleDrawerOpen}
+        />
         <Main open={open}>
           <Button
             onClick={handleDrawerOpen}
