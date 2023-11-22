@@ -18,9 +18,7 @@ export abstract class LGraphNode extends LGN implements ILGraphNode, WebSocketNo
     throw new Error('onExecute() not implemented')
   }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  setWebSocket?(_ws: WebSocket): void {
-    throw new Error('setWebSocket() not implemented')
-  }
+  setWebSocket?(_ws: WebSocket): void {}
 }
 
 export default LGraphNode

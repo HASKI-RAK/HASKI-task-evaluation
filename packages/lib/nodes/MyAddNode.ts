@@ -1,7 +1,7 @@
 /* eslint-disable immutable/no-let */
 /* eslint-disable immutable/no-mutation */
 /* eslint-disable immutable/no-this */
-import { LGraphNode, LiteGraph } from 'litegraph.js'
+import { LGraphNode, LiteGraph } from './litegraph-extensions'
 
 export class MyAddNode extends LGraphNode {
   constructor() {
@@ -15,9 +15,13 @@ export class MyAddNode extends LGraphNode {
 
   //name of the node
   static title = 'sum'
+  static path = 'basic/sum'
+  static getPath(): string {
+    return MyAddNode.path
+  }
 
   //name of the function to call when executing
-  onExecute() {
+  async onExecute() {
     //get inputs
     let A = this.getInputData(0)
     if (A === undefined) {
@@ -37,6 +41,6 @@ export class MyAddNode extends LGraphNode {
 
   //register in the system
   static register() {
-    LiteGraph.registerNodeType('basic/sum', MyAddNode)
+    LiteGraph.registerNodeType(MyAddNode.path, MyAddNode)
   }
 }

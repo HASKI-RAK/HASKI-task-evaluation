@@ -1,8 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-var */
 /* eslint-disable immutable/no-let */
 /* eslint-disable immutable/no-mutation */
 /* eslint-disable immutable/no-this */
-import { IWidget, LGraphCanvas, LGraphNode, Vector2, widgetTypes } from 'litegraph.js'
+import { IWidget, LGraphCanvas, Vector2, widgetTypes } from 'litegraph.js'
+
+import { LGraphNode } from './litegraph-extensions'
 
 class TextWidget implements IWidget {
   name: string
@@ -68,18 +71,21 @@ export class Textfield extends LGraphNode {
   constructor() {
     super()
     this.addOutput('text', 'string')
-    this.properties = { precision: 1, path: 'basic/sum', value: 'Enter your text' }
+    this.properties = { precision: 1, value: 'Enter your text' }
     this.addCustomWidget<TextWidget>(new TextWidget())
 
     this.title = 'textfield'
     this.size = [200, 100]
   }
-
   //name of the node
   static title = 'textfield'
+  static path = 'basic/textfield'
+  static getPath(): string {
+    return Textfield.path
+  }
 
   //name of the function to call when executing
-  onExecute() {
+  async onExecute() {
     this.setOutputData(0, this.properties.value)
   }
 

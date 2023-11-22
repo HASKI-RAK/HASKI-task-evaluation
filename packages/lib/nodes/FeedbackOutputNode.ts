@@ -1,10 +1,9 @@
 /* eslint-disable immutable/no-let */
 /* eslint-disable immutable/no-mutation */
 /* eslint-disable immutable/no-this */
-import { LiteGraph } from 'litegraph.js'
 import { WebSocket } from 'ws'
 
-import { LGraphNode } from './litegraph-extensions/LGraphNode'
+import { LGraphNode, LiteGraph } from './litegraph-extensions'
 
 interface FeedbackOutputNodeProperties {
   precision: number
@@ -32,6 +31,7 @@ export class FeedbackOutputNode extends LGraphNode {
     return FeedbackOutputNode.path
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static stringyfy = function (o: string | number | Array<any> | null): string {
     if (o == null) {
       return 'null'
@@ -78,6 +78,6 @@ export class FeedbackOutputNode extends LGraphNode {
 
   //register in the system
   static register() {
-    LiteGraph.registerNodeType('output/feedback', FeedbackOutputNode)
+    LiteGraph.registerNodeType(FeedbackOutputNode.path, FeedbackOutputNode)
   }
 }

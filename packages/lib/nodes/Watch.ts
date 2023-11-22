@@ -2,7 +2,8 @@
 /* eslint-disable immutable/no-let */
 /* eslint-disable immutable/no-mutation */
 /* eslint-disable immutable/no-this */
-import { LGraphNode } from 'litegraph.js'
+
+import { LGraphNode } from './litegraph-extensions'
 
 export class Watch extends LGraphNode {
   constructor() {
@@ -16,9 +17,13 @@ export class Watch extends LGraphNode {
   //name of the node
   static title = 'watch'
   static desc = 'Shows the input value'
+  static path = 'basic/watch'
+  static getPath(): string {
+    return Watch.path
+  }
 
   //name of the function to call when executing
-  onExecute() {
+  async onExecute() {
     if (this.inputs[0]) {
       this.properties.value = this.getInputData(0)
     }
@@ -30,6 +35,7 @@ export class Watch extends LGraphNode {
     return this.title
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static stringyfy = function (o: string | number | Array<any> | null): string {
     if (o == null) {
       return 'null'
@@ -47,6 +53,7 @@ export class Watch extends LGraphNode {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onDrawBackground = (ctx: CanvasRenderingContext2D) => {
     //show the current value
     this.inputs[0].label = Watch.stringyfy(this.properties.value)

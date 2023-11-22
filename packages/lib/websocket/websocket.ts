@@ -1,4 +1,4 @@
-import { LGraph, ServerEvent, ServerEventPayload } from '@haski/lib'
+import { ServerEvent, ServerEventPayload } from '@haski/lib'
 import { WebSocket } from 'ws'
 
 /**
@@ -37,7 +37,7 @@ export type EventHandlerMap = {
  * @param WsEvent - The server event object.
  * @param lgraph - The LGraph object.
  * @param handlers - The map of event handlers.
- * @returns A boolean indicating whether the event was handled successfully.
+ * @returns A boolean indicating whether the event was handled by an eventhandler.
  */
 export const handleWsServerRequest = <T extends keyof ServerEventPayload>(
   WsEvent: ServerEvent<T>,
@@ -55,7 +55,5 @@ export const handleWsServerRequest = <T extends keyof ServerEventPayload>(
       return true
     } else return false
   }
-  const isHandled = handleEvent(WsEvent.eventName, WsEvent.payload)
-  console.log('isHandled', isHandled)
-  return isHandled
+  return handleEvent(WsEvent.eventName, WsEvent.payload)
 }

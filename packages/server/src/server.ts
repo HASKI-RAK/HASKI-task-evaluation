@@ -1,5 +1,6 @@
 /* eslint-disable immutable/no-mutation */
 import {
+  LGraph,
   LGraphNode,
   LiteGraph,
   registerCustomEvents,
@@ -8,7 +9,6 @@ import {
 } from '@haski/lib'
 import { PrismaClient } from '@prisma/client'
 import { createServer, IncomingMessage } from 'http'
-import { LGraph } from 'litegraph.js'
 import { ILogObj, Logger } from 'tslog'
 import { parse } from 'url'
 import { WebSocket, WebSocketServer } from 'ws'

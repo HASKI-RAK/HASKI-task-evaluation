@@ -1,9 +1,10 @@
 import {
-  LGraphNode,
   serializedLGraph,
   SerializedLGraphGroup,
   SerializedLGraphNode
 } from 'litegraph.js'
+
+import { LGraphNode } from '../nodes/litegraph-extensions'
 
 export type SerializedGraph = serializedLGraph<
   SerializedLGraphNode<LGraphNode>,

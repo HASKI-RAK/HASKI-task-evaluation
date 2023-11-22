@@ -1,9 +1,13 @@
-import { LGraph } from 'litegraph.js'
+import { LGraph } from '@haski/lib'
+
 import { log } from '../server'
-import { Prisma } from '@prisma/client'
 
-
-export function prismaGraphCreateOrUpdate(prisma: any, pathname: string | null, lgraph: LGraph) {
+export function prismaGraphCreateOrUpdate(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  prisma: any,
+  pathname: string | null,
+  lgraph: LGraph
+) {
   prisma.graph
     .findFirstOrThrow({
       where: {
