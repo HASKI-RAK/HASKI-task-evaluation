@@ -30,11 +30,19 @@ export type EventHandlerMap = {
   [K in keyof ServerEventPayload]: (payload: ServerEventPayload[K]) => void
 }
 
-export function handleWsServerRequest<T extends keyof ServerEventPayload>(
-  lgraph_json: ServerEvent<T>,
-  lgraph: LGraph,
+/**
+ * Handles a WebSocket server request.
+ *
+ * @template T - The type of the server event payload.
+ * @param WsEvent - The server event object.
+ * @param lgraph - The LGraph object.
+ * @param handlers - The map of event handlers.
+ * @returns A boolean indicating whether the event was handled successfully.
+ */
+export const handleWsServerRequest = <T extends keyof ServerEventPayload>(
+  WsEvent: ServerEvent<T>,
   handlers: Partial<EventHandlerMap>
-) {
+): boolean => {
   // Utility function to safely handle events
   function handleEvent<K extends keyof ServerEventPayload>(
     eventName: K,
@@ -44,7 +52,10 @@ export function handleWsServerRequest<T extends keyof ServerEventPayload>(
     if (handler) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ;(handler as any)(payload) // Cast is safe here because of the mapped types
-    }
+      return true
+    } else return false
   }
-  handleEvent(lgraph_json.eventName, lgraph_json.payload)
+  const isHandled = handleEvent(WsEvent.eventName, WsEvent.payload)
+  console.log('isHandled', isHandled)
+  return isHandled
 }

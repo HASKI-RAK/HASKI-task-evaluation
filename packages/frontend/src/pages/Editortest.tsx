@@ -84,6 +84,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 
 export const Editor = () => {
   const [open, setOpen] = useState(true)
+  const [snackbarMessage, setSnackbarMessage] = useState('')
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false)
   const [feedback, setFeedback] = useState<string | undefined>()
   const lgraph = useMemo(() => new LiteGraph.LGraph(), [])
@@ -116,7 +117,6 @@ export const Editor = () => {
     if (reason === 'clickaway') {
       return
     }
-
     setIsSnackbarOpen(false)
   }
 
@@ -137,20 +137,28 @@ export const Editor = () => {
   useEffect(() => {
     if (lastMessage !== null) {
       const lgraph_json = JSON.parse(lastMessage.data)
-      handleWsServerRequest(lgraph_json, lgraph, {
-        graphFinished: (payload) => {
-          lgraph.configure(payload)
-          lgraph.runStep()
-          lgraph.setDirtyCanvas(true, true)
-        },
-        nodeExecuting: (nodeId) => handleNodeExecuting(lgraph, nodeId),
-        nodeExecuted: (nodeId) => handleNodeExecuted(lgraph, nodeId),
-        graphSaved: () => setIsSnackbarOpen(true),
-        feedback: (feedback) => {
-          console.log(feedback)
-          setFeedback(feedback)
-        }
-      })
+      if (
+        !handleWsServerRequest(lgraph_json, {
+          graphFinished: (payload) => {
+            lgraph.configure(payload)
+            lgraph.runStep()
+            lgraph.setDirtyCanvas(true, true)
+          },
+          nodeExecuting: (nodeId) => handleNodeExecuting(lgraph, nodeId),
+          nodeExecuted: (nodeId) => handleNodeExecuted(lgraph, nodeId),
+          graphSaved: () => {
+            setSnackbarMessage('Graph saved')
+            setIsSnackbarOpen(true)
+          },
+          feedback: (feedback) => {
+            console.log(feedback)
+            setFeedback(feedback)
+          }
+        })
+      ) {
+        setSnackbarMessage('No handler for this event')
+        setIsSnackbarOpen(true)
+      }
     }
     setOpen(true)
     window.addEventListener('resize', checkSize)
@@ -287,7 +295,7 @@ export const Editor = () => {
       <Snackbar
         open={isSnackbarOpen}
         handleClose={handleSnackbarClose}
-        message="Graph saved"
+        message={snackbarMessage}
       />
     </>
   )
