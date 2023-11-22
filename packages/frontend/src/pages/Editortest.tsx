@@ -20,6 +20,7 @@ import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import useWebSocket, { ReadyState } from 'react-use-websocket'
 
+import Snackbar from '@/common/SnackBar'
 import Canvas from '@/components/Canvas'
 import TaskView from '@/components/TaskView'
 import { getConfig } from '@/utils/config'
@@ -83,6 +84,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 
 export const Editor = () => {
   const [open, setOpen] = useState(true)
+  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false)
   const lgraph = useMemo(() => new LiteGraph.LGraph(), [])
   const [socketUrl, setSocketUrl] = useState(
     getConfig().API_WS ?? 'ws://localhost:5000/ws/editor/ke.haski.app/2/2'
@@ -109,6 +111,14 @@ export const Editor = () => {
     setOpen(false)
   }
 
+  const handleSnackbarClose = (event: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return
+    }
+
+    setIsSnackbarOpen(false)
+  }
+
   const handleNodeExecuting = (lgraph: LGraph, nodeId: number) => {
     if (lgraph.getNodeById(nodeId) === null) return
     // eslint-disable-next-line immutable/no-mutation
@@ -126,7 +136,17 @@ export const Editor = () => {
   useEffect(() => {
     if (lastMessage !== null) {
       const lgraph_json = JSON.parse(lastMessage.data)
-      handleWsRequest(lgraph_json, lgraph, handleNodeExecuting, handleNodeExecuted)
+      handleWsRequest(
+        lgraph_json,
+        lgraph,
+        handleNodeExecuting,
+        handleNodeExecuted,
+        () => {
+          setIsSnackbarOpen(true)
+          console.log('isSnackbarOpen: ', isSnackbarOpen)
+          console.log('graphSaved')
+        }
+      )
     }
     setOpen(true)
     window.addEventListener('resize', checkSize)
@@ -145,7 +165,10 @@ export const Editor = () => {
   }
 
   const handleClickChangeSocketUrl = useCallback(
-    () => setSocketUrl('ws://localhost:5000'),
+    () =>
+      setSocketUrl(
+        getConfig().API_WS ?? 'ws://localhost:5000/ws/editor/ke.haski.app/2/2'
+      ),
     []
   )
 
@@ -157,112 +180,120 @@ export const Editor = () => {
     [ReadyState.UNINSTANTIATED]: 'Uninstantiated'
   }[readyState]
   return (
-    <Box sx={{ display: 'flex' }}>
-      <AppBar position="fixed" open={open}>
-        <Toolbar>
-          <Typography variant="h6" noWrap sx={{ flexGrow: 1 }} component="div">
-            Task Editor
-          </Typography>
-          <IconButton
-            aria-label="change socket url"
-            aria-controls="menu-appbar"
-            aria-haspopup="true"
-            color="inherit"
-            onClick={handleClickChangeSocketUrl}
-          >
-            <ReplayIcon />
-          </IconButton>
-          <IconButton
-            onClick={() =>
-              sendJsonMessage({
-                eventName: 'saveGraph',
-                payload: JSON.stringify(lgraph.serialize())
-              })
-            }
-            aria-label="save"
-            aria-controls="menu-appbar"
-            aria-haspopup="true"
-            color="inherit"
-          >
-            <SaveIcon />
-          </IconButton>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="end"
+    <>
+      <Box sx={{ display: 'flex' }}>
+        <AppBar position="fixed" open={open}>
+          <Toolbar>
+            <Typography variant="h6" noWrap sx={{ flexGrow: 1 }} component="div">
+              Task Editor
+            </Typography>
+            <IconButton
+              aria-label="change socket url"
+              aria-controls="menu-appbar"
+              aria-haspopup="true"
+              color="inherit"
+              onClick={handleClickChangeSocketUrl}
+            >
+              <ReplayIcon />
+            </IconButton>
+            <IconButton
+              onClick={() =>
+                sendJsonMessage({
+                  eventName: 'saveGraph',
+                  payload: JSON.stringify(lgraph.serialize())
+                })
+              }
+              aria-label="save"
+              aria-controls="menu-appbar"
+              aria-haspopup="true"
+              color="inherit"
+            >
+              <SaveIcon />
+            </IconButton>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              edge="end"
+              onClick={handleDrawerOpen}
+              sx={{ ...(open && { display: 'none' }) }}
+            >
+              <MenuIcon />
+            </IconButton>
+          </Toolbar>
+        </AppBar>
+        <Main open={open}>
+          <Button
             onClick={handleDrawerOpen}
-            sx={{ ...(open && { display: 'none' }) }}
+            variant="contained"
+            startIcon={
+              <ArrowBackIosNewIcon
+                sx={{
+                  transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
+                  transition: (theme) =>
+                    theme.transitions.create('transform', {
+                      duration: theme.transitions.duration.shortest
+                    })
+                }}
+              />
+            }
+            style={{ position: 'absolute', top: 0, right: 0 }}
           >
-            <MenuIcon />
-          </IconButton>
-        </Toolbar>
-      </AppBar>
-      <Main open={open}>
-        <Button
-          onClick={handleDrawerOpen}
-          variant="contained"
-          startIcon={
-            <ArrowBackIosNewIcon
-              sx={{
-                transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
-                transition: (theme) =>
-                  theme.transitions.create('transform', {
-                    duration: theme.transitions.duration.shortest
-                  })
-              }}
-            />
-          }
-          style={{ position: 'absolute', top: 0, right: 0 }}
+            {open ? 'Close' : 'Open'}
+          </Button>
+          <Canvas lgraph={lgraph} width={size.width} height={size.height} />
+        </Main>
+        {/* WS connection indicator status */}
+        <Typography
+          variant="body1"
+          sx={{
+            position: 'absolute',
+            bottom: 0,
+            padding: 1,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            color: 'white',
+            marginRight: drawerWidth
+          }}
         >
-          {open ? 'Close' : 'Open'}
-        </Button>
-        <Canvas lgraph={lgraph} width={size.width} height={size.height} />
-      </Main>
-      {/* WS connection indicator status */}
-      <Typography
-        variant="body1"
-        sx={{
-          position: 'absolute',
-          bottom: 0,
-          padding: 1,
-          backgroundColor: 'rgba(0,0,0,0.5)',
-          color: 'white',
-          marginRight: drawerWidth
-        }}
-      >
-        {connectionStatus}
-      </Typography>
-      <Drawer
-        sx={{
-          width: drawerWidth,
-          flexShrink: 0,
-          '& .MuiDrawer-paper': {
-            width: drawerWidth
-          }
-        }}
-        variant="persistent"
-        anchor="right"
-        open={open}
-      >
-        <DrawerHeader>
-          <IconButton onClick={handleDrawerClose}>
-            {theme.direction === 'rtl' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-          </IconButton>
-          <Typography variant="h6" noWrap component="div">
-            Task preview
-          </Typography>
-        </DrawerHeader>
-        <Divider />
-        <TaskView onSubmit={() => handleSubmit()} />
-      </Drawer>
-    </Box>
+          {connectionStatus}
+        </Typography>
+        <Drawer
+          sx={{
+            width: drawerWidth,
+            flexShrink: 0,
+            '& .MuiDrawer-paper': {
+              width: drawerWidth
+            }
+          }}
+          variant="persistent"
+          anchor="right"
+          open={open}
+        >
+          <DrawerHeader>
+            <IconButton onClick={handleDrawerClose}>
+              {theme.direction === 'rtl' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+            </IconButton>
+            <Typography variant="h6" noWrap component="div">
+              Task preview
+            </Typography>
+          </DrawerHeader>
+          <Divider />
+          <TaskView onSubmit={() => handleSubmit()} />
+        </Drawer>
+      </Box>
+      <Snackbar
+        open={isSnackbarOpen}
+        handleClose={handleSnackbarClose}
+        message="Graph saved"
+      />
+    </>
   )
 }
 function handleWsRequest<T extends keyof ServerEventPayload>(
   lgraph_json: ServerEvent<T>,
   lgraph: LGraph,
   handleNodeExecuting: (lgraph: LGraph, nodeId: number) => void,
-  handleNodeExecuted: (lgraph: LGraph, nodeId: number) => void
+  handleNodeExecuted: (lgraph: LGraph, nodeId: number) => void,
+  handleGraphSaved?: () => void
 ) {
   switch (lgraph_json.eventName) {
     case 'graphFinished':
@@ -275,6 +306,9 @@ function handleWsRequest<T extends keyof ServerEventPayload>(
       break
     case 'nodeExecuted':
       handleNodeExecuted(lgraph, lgraph_json.payload)
+      break
+    case 'graphSaved':
+      handleGraphSaved?.()
       break
   }
 }

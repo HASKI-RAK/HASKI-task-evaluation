@@ -34,6 +34,10 @@ wss1.on('connection', async function connection(ws: WebSocket, request) {
     lgraph.configure(JSON.parse(message.toString()))
     const { pathname } = parse(request.url ?? '', true)
     prismaGraphCreateOrUpdate(prisma, pathname, lgraph)
+    sendWs(ws, {
+      eventName: 'graphSaved',
+      payload: lgraph.serialize<SerializedGraph>()
+    })
   })
 
   // Here we can register custom events that re sent by the client
