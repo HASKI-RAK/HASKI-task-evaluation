@@ -5,8 +5,10 @@
 import { LGraphNode, LiteGraph } from './litegraph-extensions'
 
 /**
- * * This node is used to send data to the client into the TA form
- * path: output/feedback
+ * * This node is evaluated during runtime and is used to get user input send by the form.
+ * The server will listen to the user running the fraph and take an extra input from the form.
+ * This will be written into properties.value
+ * path: input/answer
  */
 export class AnswerInputNode extends LGraphNode {
   constructor() {
@@ -28,7 +30,6 @@ export class AnswerInputNode extends LGraphNode {
   //name of the function to call when executing
   async onExecute() {
     this.setOutputData(0, this.properties.value)
-    console.log('onExecute in input node properties value: ', this.properties.value)
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
