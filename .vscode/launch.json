@@ -7,14 +7,14 @@
         {
             "name": "Launch server.ts",
             "type": "node",
-            "cwd": "${workspaceFolder}/server",
+            "cwd": "${workspaceFolder}/packages/server",
             "request": "launch",
             "runtimeArgs": [
                 "-r",
                 "ts-node/register"
             ],
             "args": [
-                "${workspaceFolder}/server/src/server.ts"
+                "${workspaceFolder}/packages/server/src/server.ts"
             ]
         },
     ]
