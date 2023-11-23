@@ -37,6 +37,8 @@ export async function setupGraphFromPath(ws: WebSocket, request: IncomingMessage
 
       //! Set node properties
       // await new Promise((resolve) => setTimeout(resolve, 200))
+      // eslint-disable-next-line immutable/no-mutation
+      node.color = LiteGraph.NODE_DEFAULT_COLOR
       await onExecute?.call(node).catch((error) => {
         log.error(error)
         // TODO set node color to red
@@ -50,7 +52,7 @@ export async function setupGraphFromPath(ws: WebSocket, request: IncomingMessage
               "Error while executing node: '" +
               node.title +
               "' with error: " +
-              JSON.stringify(error)
+              JSON.stringify(error.message)
           }
         })
       })

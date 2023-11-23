@@ -5,22 +5,121 @@ import { WebSocket } from 'ws'
 
 import { LGraphNode, LiteGraph } from './litegraph-extensions'
 
+// record with all models
+const models = [
+  {
+    name: 'zephir',
+    path: 'D:\\Development\\python\\text-generation-webui-main\\models\\zephir-7b-beta'
+  },
+  {
+    name: 'zephir-7b-beta',
+    path: 'D:\\Development\\python\\text-generation-webui-main\\models\\zephir-7b-beta'
+  }
+]
+
 export class LLMNode extends LGraphNode {
   env: Record<string, unknown>
   constructor() {
     super()
+    // https://platform.openai.com/docs/api-reference/chat/create
     this.addInput('prompt', 'string')
-    this.addInput('max_tokens', 'number')
-    this.addInput('temperature', 'number')
-    this.addInput('top_p', 'number')
-    this.addInput('top_k', 'number')
-    this.addInput('presence_penalty', 'number')
-    this.addInput('repetition_penalty', 'number')
-    this.addInput('repetition_penalty_range', 'number')
-    this.addInput('guidance_scale', 'number')
-    this.addInput('model_path', 'string')
+    this.addWidget(
+      'number',
+      'max_tokens',
+      this.properties.max_tokens ?? 64,
+      (value: number) => {
+        this.properties.max_tokens = value
+      },
+      { min: 0, max: 2048, step: 1, precision: 0 }
+    )
+    this.addWidget(
+      'slider',
+      'temperature',
+      this.properties.temperature ?? 0.4,
+      function (value, widget, node) {
+        node.properties.temperature = value
+      },
+      { min: 0, max: 1 }
+    )
+    this.addWidget(
+      'slider',
+      'top_p',
+      this.properties.top_p ?? 1,
+      function (value, widget, node) {
+        node.properties.top_p = value
+      },
+      { min: 0, max: 1, step: 0.01, precision: 2 }
+    )
+    this.addWidget(
+      'slider',
+      'top_k',
+      this.properties.top_k ?? 1,
+      function (value, widget, node) {
+        node.properties.top_k = value
+      },
+      { min: 0, max: 1, step: 0.01, precision: 2 }
+    )
+    this.addWidget(
+      'slider',
+      'presence_penalty',
+      this.properties.presence_penalty ?? 0,
+      function (value, widget, node) {
+        node.properties.presence_penalty = value
+      },
+      { min: -2.0, max: 2.0, step: 0.1, precision: 1 }
+    )
+    this.addWidget(
+      'slider',
+      'repetition_penalty',
+      this.properties.repetition_penalty ?? 0,
+      function (value, widget, node) {
+        node.properties.repetition_penalty = value
+      },
+      { min: -2.0, max: 2.0, step: 0.1, precision: 1 }
+    )
+    this.addWidget(
+      'number',
+      'repetition_penalty_range',
+      this.properties.repetition_penalty_range ?? 512,
+      (value, widget, node) => {
+        node.properties.repetition_penalty_range = value
+      },
+      { min: 0, max: 2048, step: 1, precision: 0 }
+    )
+    this.addWidget(
+      'slider',
+      'guidance_scale',
+      this.properties.guidance_scale ?? 1,
+      (value, widget, node) => {
+        node.properties.guidance_scale = value
+      },
+      { min: 0, max: 2, step: 0.1, precision: 1 }
+    )
+    this.addWidget(
+      'combo',
+      'model',
+      this.properties.model ?? models[0].name,
+      (value, widget, node) => {
+        node.properties.model = models.find((model) => model.name === value)?.path ?? ''
+      },
+      {
+        values: models.map((model) => model.name)
+      }
+    )
+    this.serialize_widgets = true
     this.addOutput('string', 'string')
-    this.properties = { value: '' }
+    this.properties = {
+      value: '',
+      model: '',
+      temperature: 0.4,
+      max_tokens: 64,
+      top_p: 1,
+      top_k: 1,
+      presence_penalty: 0,
+      repetition_penalty: 0,
+      repetition_penalty_range: 512,
+      guidance_scale: 1
+    }
     this.title = 'LLM'
     this.env = {}
   }
@@ -44,17 +143,10 @@ export class LLMNode extends LGraphNode {
   async onExecute() {
     //get inputs
     const prompt = this.getInputData<string>(0).toString()
-    const max_tokens = this.getInputData<number>(1)
-    const temperature = this.getInputData<number>(2)
-    const top_p = this.getInputData<number>(3)
-    const top_k = this.getInputData<number>(4)
-    const presence_penalty = this.getInputData<number>(5)
-    const repetition_penalty = this.getInputData<number>(6)
-    const repetition_penalty_range = this.getInputData<number>(7)
-    const guidance_scale = this.getInputData<number>(8)
-    const model = this.getInputData<string>(9).toString()
     const input = {
-      model,
+      model:
+        models.find((model) => model.name === this.properties.model)?.path ??
+        models[0].path,
       messages: [
         {
           role: 'system',
@@ -65,14 +157,14 @@ export class LLMNode extends LGraphNode {
           content: prompt
         }
       ],
-      max_tokens,
-      temperature,
-      top_p,
-      top_k,
-      presence_penalty,
-      repetition_penalty,
-      repetition_penalty_range,
-      guidance_scale
+      max_tokens: this.properties.max_tokens,
+      temperature: this.properties.temperature,
+      top_p: this.properties.top_p,
+      top_k: this.properties.top_k,
+      presence_penalty: this.properties.presence_penalty,
+      repetition_penalty: this.properties.repetition_penalty,
+      repetition_penalty_range: this.properties.repetition_penalty_range,
+      guidance_scale: this.properties.guidance_scale
     }
 
     // TODO: sanity check input
@@ -89,7 +181,9 @@ export class LLMNode extends LGraphNode {
         body: required_input
       }
     )
-    console.log(response)
+    if (!response.ok) {
+      throw new Error('Network response was not ok')
+    }
 
     // get response
     const data = await response.json()
