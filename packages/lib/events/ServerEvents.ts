@@ -39,6 +39,10 @@ export type ClientEvent<K extends keyof ClientEventPayload, P = ClientEventPaylo
   payload: P
 }
 
+export type WebSocketEvent<E extends ServerEventPayload | ClientEventPayload> = {
+  eventName: keyof E
+  payload: E[keyof E]
+}
 // // test
 // const event: ServerEvent<'server:ready'> = {
 //   eventName: 'server:ready',

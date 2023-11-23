@@ -1,4 +1,11 @@
-import { handleWsServerRequest, LGraph, LiteGraph } from '@haski/lib'
+import {
+  handleWsRequest,
+  LGraph,
+  LiteGraph,
+  SerializedGraph,
+  ServerEventPayload,
+  WebSocketEvent
+} from '@haski/lib'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
@@ -112,17 +119,18 @@ export const Editor = () => {
   const handleSaveGraph = () => {
     sendJsonMessage({
       eventName: 'saveGraph',
-      payload: JSON.stringify(lgraph.serialize())
+      payload: lgraph.serialize()
     })
   }
 
   useEffect(() => {
     if (lastMessage !== null) {
-      const lgraph_json = JSON.parse(lastMessage.data)
+      const wsEvent: WebSocketEvent<ServerEventPayload> = JSON.parse(lastMessage.data)
       //* Handle events from server
       if (
-        !handleWsServerRequest(lgraph_json, {
+        !handleWsRequest<ServerEventPayload>(wsEvent, {
           graphFinished: (payload) => {
+            console.log('Graph finished: ', payload)
             lgraph.configure(payload)
             lgraph.setDirtyCanvas(true, true)
           },
@@ -154,10 +162,10 @@ export const Editor = () => {
     // TODO: Add type to json
     sendJsonMessage({
       eventName: 'runGraph',
-      payload: JSON.stringify({
-        answer,
-        graph: lgraph.serialize()
-      })
+      payload: {
+        answer: answer,
+        graph: lgraph.serialize<SerializedGraph>()
+      }
     })
   }
 

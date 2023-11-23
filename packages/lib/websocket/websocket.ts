@@ -1,4 +1,9 @@
-import { ServerEvent, ServerEventPayload } from '@haski/lib'
+import {
+  ClientEventPayload,
+  ServerEvent,
+  ServerEventPayload,
+  WebSocketEvent
+} from '@haski/lib'
 import { WebSocket } from 'ws'
 
 /**
@@ -13,41 +18,35 @@ export const sendWs = <K extends keyof ServerEventPayload>(
   ws.send(JSON.stringify(event))
 }
 
-/**
- * Register custom events on the websocket
- * @param ws websocket
- */
-export const registerCustomEvents = (ws: WebSocket): void => {
-  ws.on('message', function (message) {
-    const parsed = JSON.parse(message.toString())
-    const { eventName, payload } = parsed
-    ws.emit(eventName, payload)
-  })
-}
-
 // Define a mapping of event names to handler functions
-export type EventHandlerMap = {
-  [K in keyof ServerEventPayload]: (payload: ServerEventPayload[K]) => void
+export type EventHandlerMap<S extends ServerEventPayload | ClientEventPayload> = {
+  [K in keyof S]: (payload: S[K]) => void
 }
 
 /**
  * Handles a WebSocket server request.
- *
- * @template T - The type of the server event payload.
- * @param WsEvent - The server event object.
- * @param lgraph - The LGraph object.
- * @param handlers - The map of event handlers.
- * @returns A boolean indicating whether the event was handled by an eventhandler.
+ * The type determines the event name and payload type.
+ * @param WsEvent - Event to handle
+ * @param handlers - Mapping of event names to handler functions
+ * @returns Whether the event was handled
+ * @example
+ * ```ts
+ * // Type determines the handler functions
+ * handleWsRequest<ServerEventPayload>(lgraph_json, {
+          graphFinished: (payload) => {},
+          nodeExecuting: (nodeId) => {},
+          nodeExecuted: (nodeId) => {},
+          graphSaved: () => {},
+          feedback: (feedback) => {}
+        })
+ * ```
  */
-export const handleWsServerRequest = <T extends keyof ServerEventPayload>(
-  WsEvent: ServerEvent<T>,
-  handlers: Partial<EventHandlerMap>
+export const handleWsRequest = <S extends ServerEventPayload | ClientEventPayload>(
+  WsEvent: WebSocketEvent<S>,
+  handlers: Partial<EventHandlerMap<S>>
 ): boolean => {
   // Utility function to safely handle events
-  function handleEvent<K extends keyof ServerEventPayload>(
-    eventName: K,
-    payload: ServerEventPayload[K]
-  ) {
+  function handleEvent<K extends keyof S>(eventName: K, payload: S[keyof S]): boolean {
     const handler = handlers[eventName]
     if (handler) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -55,5 +54,5 @@ export const handleWsServerRequest = <T extends keyof ServerEventPayload>(
       return true
     } else return false
   }
-  return handleEvent(WsEvent.eventName, WsEvent.payload)
+  return handleEvent<keyof S>(WsEvent.eventName, WsEvent.payload)
 }

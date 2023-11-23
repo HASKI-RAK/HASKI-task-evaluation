@@ -1,12 +1,14 @@
 /* eslint-disable immutable/no-mutation */
 import {
   AnswerInputNode,
+  ClientEventPayload,
+  handleWsRequest,
   LGraph,
   LGraphNode,
   LiteGraph,
-  registerCustomEvents,
   sendWs,
-  SerializedGraph
+  SerializedGraph,
+  WebSocketEvent
 } from '@haski/lib'
 import { PrismaClient } from '@prisma/client'
 import { createServer, IncomingMessage } from 'http'
@@ -31,36 +33,13 @@ wss1.on('connection', async function connection(ws: WebSocket, request) {
   ws.on('error', console.error) // TODO: Expand error handling
   const lgraph = await sendGraphFromPath(ws, request)
 
+  // ! Register custom events
   log.debug('Registering custom events')
-  registerCustomEvents(ws)
-
-  ws.on('saveGraph', function (message) {
-    log.debug('event: saveGraph')
-    lgraph.configure(JSON.parse(message.toString()))
-    const { pathname } = parse(request.url ?? '', true)
-    prismaGraphCreateOrUpdate(prisma, pathname, lgraph)
-    sendWs(ws, {
-      eventName: 'graphSaved',
-      payload: lgraph.serialize<SerializedGraph>()
-    })
-  })
-
-  // Here we can register custom events that re sent by the client
-  ws.on('runGraph', function (message) {
-    log.debug('event: runGraph')
-    const { answer, graph } = JSON.parse(message.toString())
-    lgraph.configure(graph)
-    // set answer for nodes
-    lgraph.findNodesByClass<AnswerInputNode>(AnswerInputNode).forEach((node) => {
-      node.properties.value = answer
-    })
-    // ! RUN GRAPH ITERATION
-    runLgraph(lgraph).then(() => {
-      log.debug('Finished running graph')
-      sendWs(ws, {
-        eventName: 'graphFinished',
-        payload: lgraph.serialize<SerializedGraph>()
-      })
+  ws.on('message', function (message) {
+    const parsed: WebSocketEvent<ClientEventPayload> = JSON.parse(message.toString())
+    handleWsRequest<ClientEventPayload>(parsed, {
+      runGraph: (payload) => runGraph(payload, ws, lgraph),
+      saveGraph: (payload) => saveGraph(payload, lgraph, request, ws)
     })
   })
 
@@ -110,7 +89,45 @@ main().catch(async (e) => {
   process.exit(1)
 })
 
+function saveGraph(
+  payload: ClientEventPayload['saveGraph'],
+  lgraph: LGraph,
+  request: IncomingMessage,
+  ws: WebSocket
+): void {
+  log.debug('event: saveGraph')
+  lgraph.configure(payload)
+  const { pathname } = parse(request.url ?? '', true)
+  prismaGraphCreateOrUpdate(prisma, pathname, lgraph)
+  sendWs(ws, {
+    eventName: 'graphSaved',
+    payload: lgraph.serialize<SerializedGraph>()
+  })
+}
+
+function runGraph(
+  payload: ClientEventPayload['runGraph'],
+  ws: WebSocket,
+  lgraph: LGraph
+): void {
+  log.debug('event: runGraph')
+  lgraph.configure(payload.graph)
+  // set answer for nodes
+  lgraph.findNodesByClass<AnswerInputNode>(AnswerInputNode).forEach((node) => {
+    node.properties.value = payload.answer
+  })
+  // RUN GRAPH ITERATION
+  runLgraph(lgraph).then(() => {
+    log.debug('Finished running graph')
+    sendWs(ws, {
+      eventName: 'graphFinished',
+      payload: lgraph.serialize<SerializedGraph>()
+    })
+  })
+}
+
 export async function sendGraphFromPath(ws: WebSocket, request: IncomingMessage) {
+  log.debug('Sending graph from path')
   const { pathname } = parse(request.url ?? '', true)
   // TODO: get graph from path
   const lgraph = new LiteGraph.LGraph()
