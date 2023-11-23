@@ -1,3 +1,4 @@
+import { AnswerInputNode } from './AnswerInputNode'
 import { FeedbackOutputNode } from './FeedbackOutputNode'
 import { LGraph, LGraphNode, LiteGraph } from './litegraph-extensions'
 import { LLMNode } from './LLMNode'
@@ -14,7 +15,18 @@ LiteGraph.registerNodeType(Watch.getPath(), Watch)
 LiteGraph.registerNodeType(Textfield.getPath(), Textfield)
 LiteGraph.registerNodeType(FeedbackOutputNode.getPath(), FeedbackOutputNode)
 LiteGraph.registerNodeType(LLMNode.getPath(), LLMNode)
+LiteGraph.registerNodeType(AnswerInputNode.getPath(), AnswerInputNode)
 
 // LiteGraph.registerNodeType('basic/const', ConstNumber)
 
-export { LGraph, LGraphNode, LiteGraph, MyAddNode, Watch }
+export {
+  AnswerInputNode,
+  FeedbackOutputNode,
+  LGraph,
+  LGraphNode,
+  LiteGraph,
+  LLMNode,
+  MyAddNode,
+  Textfield,
+  Watch
+}

@@ -124,7 +124,6 @@ export const Editor = () => {
         !handleWsServerRequest(lgraph_json, {
           graphFinished: (payload) => {
             lgraph.configure(payload)
-            lgraph.runStep()
             lgraph.setDirtyCanvas(true, true)
           },
           nodeExecuting: (nodeId) => handleNodeExecuting(lgraph, nodeId),
@@ -151,11 +150,14 @@ export const Editor = () => {
   }, [lastMessage])
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleSubmit = () => {
+  const handleSubmit = (answer: string) => {
     // TODO: Add type to json
     sendJsonMessage({
       eventName: 'runGraph',
-      payload: JSON.stringify(lgraph.serialize())
+      payload: JSON.stringify({
+        answer,
+        graph: lgraph.serialize()
+      })
     })
   }
 
@@ -239,7 +241,7 @@ export const Editor = () => {
             </Typography>
           </DrawerHeader>
           <Divider />
-          <TaskView onSubmit={() => handleSubmit()} feedback={feedback} />
+          <TaskView onSubmit={(answer) => handleSubmit(answer)} feedback={feedback} />
         </Drawer>
       </Box>
       <Snackbar

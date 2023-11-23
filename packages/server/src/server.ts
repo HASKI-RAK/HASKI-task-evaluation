@@ -1,5 +1,6 @@
 /* eslint-disable immutable/no-mutation */
 import {
+  AnswerInputNode,
   LGraph,
   LGraphNode,
   LiteGraph,
@@ -47,7 +48,12 @@ wss1.on('connection', async function connection(ws: WebSocket, request) {
   // Here we can register custom events that re sent by the client
   ws.on('runGraph', function (message) {
     log.debug('event: runGraph')
-    lgraph.configure(JSON.parse(message.toString()))
+    const { answer, graph } = JSON.parse(message.toString())
+    lgraph.configure(graph)
+    // set answer for nodes
+    lgraph.findNodesByClass<AnswerInputNode>(AnswerInputNode).forEach((node) => {
+      node.properties.value = answer
+    })
     // ! RUN GRAPH ITERATION
     runLgraph(lgraph).then(() => {
       log.debug('Finished running graph')
@@ -176,6 +182,11 @@ export async function sendGraphFromPath(ws: WebSocket, request: IncomingMessage)
 export async function runLgraph(lgraph: LGraph, onlyOnExecute = false) {
   const execorder = lgraph.computeExecutionOrder<LGraphNode[]>(onlyOnExecute, true)
   for (const node of execorder) {
-    await node.onExecute?.()
+    try {
+      await node.onExecute?.()
+    } catch (error) {
+      log.error(error)
+      // TODO reset node green states
+    }
   }
 }

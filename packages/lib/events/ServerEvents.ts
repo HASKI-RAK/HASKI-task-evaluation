@@ -23,6 +23,10 @@ export type ServerEventPayload = {
 
 export type ClientEventPayload = {
   saveGraph: SerializedGraph
+  runGraph: {
+    answer: string
+    graph: SerializedGraph
+  }
 }
 
 export type ServerEvent<K extends keyof ServerEventPayload, P = ServerEventPayload[K]> = {
