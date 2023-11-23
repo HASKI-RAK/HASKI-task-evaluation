@@ -6,6 +6,7 @@ import { WebSocket } from 'ws'
 import { LGraphNode, LiteGraph } from './litegraph-extensions'
 
 export class LLMNode extends LGraphNode {
+  env: Record<string, unknown>
   constructor() {
     super()
     this.addInput('prompt', 'string')
@@ -21,6 +22,7 @@ export class LLMNode extends LGraphNode {
     this.addOutput('string', 'string')
     this.properties = { value: '' }
     this.title = 'LLM'
+    this.env = {}
   }
 
   //name of the node
@@ -32,6 +34,10 @@ export class LLMNode extends LGraphNode {
 
   setWebSocket(_ws: WebSocket): void {
     this.ws = _ws
+  }
+
+  setEnv(_env: Record<string, unknown>): void {
+    this.env = _env
   }
 
   //name of the function to call when executing
@@ -73,13 +79,16 @@ export class LLMNode extends LGraphNode {
     const required_input = JSON.stringify(input)
     console.log(required_input)
     // fetch from server
-    const response = await fetch('http://localhost:8000/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: required_input
-    })
+    const response = await fetch(
+      (this.env.MODEL_WORKER_URL ?? 'http://localhost:8000') + '/v1/chat/completions',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: required_input
+      }
+    )
     console.log(response)
 
     // get response

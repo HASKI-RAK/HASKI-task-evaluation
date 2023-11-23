@@ -19,6 +19,10 @@ export type ServerEventPayload = {
   nodeExecuted: number // node id
   graphSaved: SerializedGraph // graph
   feedback: string // value
+  nodeError: {
+    nodeId: number
+    error: string
+  }
 }
 
 export type ClientEventPayload = {

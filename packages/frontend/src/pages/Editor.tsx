@@ -10,6 +10,7 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import {
+  AlertColor,
   Box,
   Button,
   Divider,
@@ -66,8 +67,15 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 
 export const Editor = () => {
   const [open, setOpen] = useState(true)
-  const [snackbarMessage, setSnackbarMessage] = useState('')
-  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false)
+  const [snackbar, setSnackbar] = useState<{
+    message: string
+    severity: AlertColor
+    open: boolean
+  }>({
+    message: '',
+    severity: 'success',
+    open: false
+  })
   const [feedback, setFeedback] = useState<string | undefined>()
   const lgraph = useMemo(() => new LiteGraph.LGraph(), [])
   const [socketUrl, setSocketUrl] = useState(
@@ -99,7 +107,7 @@ export const Editor = () => {
     if (reason === 'clickaway') {
       return
     }
-    setIsSnackbarOpen(false)
+    setSnackbar({ ...snackbar, open: false })
   }
 
   const handleNodeExecuting = (lgraph: LGraph, nodeId: number) => {
@@ -113,6 +121,13 @@ export const Editor = () => {
     if (lgraph.getNodeById(nodeId) === null) return
     // eslint-disable-next-line immutable/no-mutation
     lgraph.getNodeById(nodeId)!.color = '#FFFFFF00'
+    lgraph.setDirtyCanvas(true, true)
+  }
+
+  const handleNodeError = (lgraph: LGraph, nodeId: number) => {
+    if (lgraph.getNodeById(nodeId) === null) return
+    // eslint-disable-next-line immutable/no-mutation
+    lgraph.getNodeById(nodeId)!.color = '#FF0000'
     lgraph.setDirtyCanvas(true, true)
   }
 
@@ -137,17 +152,31 @@ export const Editor = () => {
           nodeExecuting: (nodeId) => handleNodeExecuting(lgraph, nodeId),
           nodeExecuted: (nodeId) => handleNodeExecuted(lgraph, nodeId),
           graphSaved: () => {
-            setSnackbarMessage('Graph saved')
-            setIsSnackbarOpen(true)
+            setSnackbar({
+              message: 'Graph saved',
+              severity: 'success',
+              open: true
+            })
           },
           feedback: (feedback) => {
             console.log(feedback)
             setFeedback(feedback)
+          },
+          nodeError(payload) {
+            handleNodeError(lgraph, payload.nodeId)
+            setSnackbar({
+              message: payload.error,
+              severity: 'error',
+              open: true
+            })
           }
         })
       ) {
-        setSnackbarMessage('No handler for this event')
-        setIsSnackbarOpen(true)
+        setSnackbar({
+          message: 'No handler for this event',
+          severity: 'error',
+          open: true
+        })
       }
     }
     setOpen(true)
@@ -253,9 +282,10 @@ export const Editor = () => {
         </Drawer>
       </Box>
       <Snackbar
-        open={isSnackbarOpen}
+        open={snackbar.open}
         handleClose={handleSnackbarClose}
-        message={snackbarMessage}
+        message={snackbar.message}
+        severity={snackbar.severity}
       />
     </>
   )

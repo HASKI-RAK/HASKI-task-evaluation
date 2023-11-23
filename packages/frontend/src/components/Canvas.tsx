@@ -19,6 +19,8 @@ const Canvas = (props: CanvasProps) => {
       // to prevent multiple instances of lgraphcanvas
       // eslint-disable-next-line immutable/no-mutation
       lcanvas.current = new LGraphCanvas(canvasRef.current, props.lgraph)
+      // eslint-disable-next-line immutable/no-mutation
+      lcanvas.current.allow_interaction = true
     }
     return () => {
       lgraph.stop()
@@ -28,10 +30,15 @@ const Canvas = (props: CanvasProps) => {
   return (
     <canvas
       ref={canvasRef}
+      tabIndex={0}
       width={props.width}
       height={props.height}
       id="mycanvas"
       style={{ border: '1px solid' }}
+      // onKeyDown={(event) => {
+      //   console.log('key pressed: ', event)
+      //   lcanvas.current?.processKey(event as unknown as KeyboardEvent)
+      // }}
     />
   )
 }

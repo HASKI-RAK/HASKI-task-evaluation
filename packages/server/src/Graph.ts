@@ -12,8 +12,8 @@ import { log, prisma } from './server'
  * @param request - The IncomingMessage object representing the request.
  * @returns The LiteGraph instance representing the graph.
  */
-export async function sendGraphFromPath(ws: WebSocket, request: IncomingMessage) {
-  log.debug('Sending graph from path')
+export async function setupGraphFromPath(ws: WebSocket, request: IncomingMessage) {
+  log.debug('Setup graph from path')
   const { pathname } = parse(request.url ?? '', true)
   // TODO: get graph from path
   const lgraph = new LiteGraph.LGraph()
@@ -27,6 +27,7 @@ export async function sendGraphFromPath(ws: WebSocket, request: IncomingMessage)
   // eslint-disable-next-line immutable/no-mutation
   lgraph.onNodeAdded = function (node: LGraphNode) {
     node.setWebSocket?.(ws) // register websocket if node uses it
+    node.setEnv?.({ MODEL_WORKER_URL: process.env.MODEL_WORKER_URL })
     const onExecute = node.onExecute
     // eslint-disable-next-line immutable/no-mutation
     node.onExecute = async function () {
@@ -36,7 +37,21 @@ export async function sendGraphFromPath(ws: WebSocket, request: IncomingMessage)
 
       //! Set node properties
       // await new Promise((resolve) => setTimeout(resolve, 200))
-      await onExecute?.call(node)
+      await onExecute?.call(node).catch((error) => {
+        log.error(error)
+        // TODO reset node green states
+        sendWs(ws, {
+          eventName: 'nodeError',
+          payload: {
+            nodeId: node.id,
+            error:
+              "Error while executing node: '" +
+              node.title +
+              "' with error: " +
+              JSON.stringify(error)
+          }
+        })
+      })
 
       log.trace(`Executed node: ${node.title}`)
       sendWs(ws, { eventName: 'nodeExecuted', payload: node.id })

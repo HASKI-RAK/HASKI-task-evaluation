@@ -5,6 +5,8 @@ import WebSocketNode from '../behavior/WebSocketNode'
 
 interface ILGraphNode extends LGN {
   onExecute(): Promise<void>
+  setEnv?(env: Record<string, unknown>): void
+  env?: Record<string, unknown>
 }
 
 // extend the LGraphNode class by adding a new method
@@ -18,7 +20,8 @@ export abstract class LGraphNode extends LGN implements ILGraphNode, WebSocketNo
     throw new Error('onExecute() not implemented')
   }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  setWebSocket?(_ws: WebSocket): void {}
+  setWebSocket?(_ws: WebSocket): void
+  setEnv?(env: Record<string, unknown>): void
 }
 
 export default LGraphNode

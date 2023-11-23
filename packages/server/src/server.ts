@@ -6,7 +6,7 @@ import { ILogObj, Logger } from 'tslog'
 import { parse } from 'url'
 import { WebSocket, WebSocketServer } from 'ws'
 
-import { sendGraphFromPath } from './Graph'
+import { setupGraphFromPath } from './Graph'
 import { runGraph, saveGraph } from './WebsocketOperations'
 
 // Init
@@ -22,7 +22,7 @@ export const prisma = new PrismaClient()
  */
 wss1.on('connection', async function connection(ws: WebSocket, request) {
   ws.on('error', console.error) // TODO: Expand error handling
-  const lgraph = await sendGraphFromPath(ws, request)
+  const lgraph = await setupGraphFromPath(ws, request)
 
   // ! Register custom events
   log.debug('Registering custom events')
