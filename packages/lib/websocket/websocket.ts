@@ -43,7 +43,7 @@ export type EventHandlerMap<S extends ServerEventPayload | ClientEventPayload> =
  */
 export const handleWsRequest = <S extends ServerEventPayload | ClientEventPayload>(
   WsEvent: WebSocketEvent<S>,
-  handlers: Partial<EventHandlerMap<S>>
+  handlers: EventHandlerMap<S>
 ): boolean => {
   // Utility function to safely handle events
   function handleEvent<K extends keyof S>(eventName: K, payload: S[keyof S]): boolean {
