@@ -39,7 +39,9 @@ export async function setupGraphFromPath(ws: WebSocket, request: IncomingMessage
       // await new Promise((resolve) => setTimeout(resolve, 200))
       await onExecute?.call(node).catch((error) => {
         log.error(error)
-        // TODO reset node green states
+        // TODO set node color to red
+        // eslint-disable-next-line immutable/no-mutation
+        node.color = '#ff0000'
         sendWs(ws, {
           eventName: 'nodeError',
           payload: {

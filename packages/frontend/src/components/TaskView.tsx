@@ -1,5 +1,5 @@
 import { Button, FormControl, Stack, TextField, Typography } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { memo, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 const useTask = (id: string) => {
@@ -96,4 +96,4 @@ const TaskView = ({
     </Stack>
   )
 }
-export default TaskView
+export default memo(TaskView)

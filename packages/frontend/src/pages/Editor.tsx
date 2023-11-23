@@ -20,7 +20,7 @@ import {
   Typography,
   useTheme
 } from '@mui/material'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import useWebSocket, { ReadyState } from 'react-use-websocket'
 
 import Snackbar from '@/common/SnackBar'
@@ -124,13 +124,6 @@ export const Editor = () => {
     lgraph.setDirtyCanvas(true, true)
   }
 
-  const handleNodeError = (lgraph: LGraph, nodeId: number) => {
-    if (lgraph.getNodeById(nodeId) === null) return
-    // eslint-disable-next-line immutable/no-mutation
-    lgraph.getNodeById(nodeId)!.color = '#FF0000'
-    lgraph.setDirtyCanvas(true, true)
-  }
-
   const handleSaveGraph = () => {
     sendJsonMessage({
       eventName: 'saveGraph',
@@ -163,7 +156,7 @@ export const Editor = () => {
             setFeedback(feedback)
           },
           nodeError(payload) {
-            handleNodeError(lgraph, payload.nodeId)
+            console.warn('Node error: ', payload)
             setSnackbar({
               message: payload.error,
               severity: 'error',
@@ -290,3 +283,5 @@ export const Editor = () => {
     </>
   )
 }
+
+export default memo(Editor)
