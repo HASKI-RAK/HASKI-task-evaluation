@@ -4,6 +4,7 @@
 import { WebSocket } from 'ws'
 
 import { LGraphNode, LiteGraph } from './litegraph-extensions'
+import { PromptMessageType } from './types/NodeLinkMessage'
 
 // record with all models
 const models = [
@@ -17,12 +18,20 @@ const models = [
   }
 ]
 
+/**
+ * Language Model node
+ */
 export class LLMNode extends LGraphNode {
   env: Record<string, unknown>
   constructor() {
     super()
     // https://platform.openai.com/docs/api-reference/chat/create
-    this.addInput('prompt', 'string')
+
+    // both inputs are optional. if message is not set, messages will be used
+    this.addInput('message', 'message')
+    // both inputs are optional
+    this.addInput('message[]', '*[]')
+
     this.addWidget(
       'number',
       'max_tokens',
@@ -39,7 +48,7 @@ export class LLMNode extends LGraphNode {
       function (value, widget, node) {
         node.properties.temperature = value
       },
-      { min: 0, max: 1 }
+      { min: 0, max: 1, step: 0.01, precision: 2 }
     )
     this.addWidget(
       'slider',
@@ -53,11 +62,11 @@ export class LLMNode extends LGraphNode {
     this.addWidget(
       'slider',
       'top_k',
-      this.properties.top_k ?? 1,
+      this.properties.top_k ?? 50,
       function (value, widget, node) {
         node.properties.top_k = value
       },
-      { min: 0, max: 1, step: 0.01, precision: 2 }
+      { min: 1, max: 200, step: 1, precision: 0 }
     )
     this.addWidget(
       'slider',
@@ -142,21 +151,13 @@ export class LLMNode extends LGraphNode {
   //name of the function to call when executing
   async onExecute() {
     //get inputs
-    const prompt = this.getInputData<string>(0).toString()
+    const message = this.getInputData<PromptMessageType | undefined>(0)
+    const messages = this.getInputData<PromptMessageType[] | undefined>(1)
     const input = {
       model:
         models.find((model) => model.name === this.properties.model)?.path ??
         models[0].path,
-      messages: [
-        {
-          role: 'system',
-          content: 'You are a helpful chatbot. You are helping a user with a problem.'
-        },
-        {
-          role: 'user',
-          content: prompt
-        }
-      ],
+      messages: message ? [message] : messages,
       max_tokens: this.properties.max_tokens,
       temperature: this.properties.temperature,
       top_p: this.properties.top_p,
