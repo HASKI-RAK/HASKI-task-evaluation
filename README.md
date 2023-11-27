@@ -32,6 +32,7 @@ Created and maintained by David Fischer.
    ```
 3. Run prisma migrations:
    ```bash
+   cd packages/server
    yarn setup
    ```
 

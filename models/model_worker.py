@@ -9,7 +9,7 @@ from flask_cors import CORS
 model = SentenceTransformer("all-MiniLM-L6-v2")
 
 app = flask.Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 
 # path for getting cosine similarity based on two sentences
@@ -32,4 +32,4 @@ def cosine_similarity():
     return flask.jsonify(result)
 
 
-app.run()
+app.run(host="localhost", port=8002, debug=True)

@@ -21,7 +21,7 @@ export class CosineSimilarity extends LGraphNode {
     this.properties = {
       value: -1
     }
-    this.title = 'LLM'
+    this.title = 'Cosine Similarity'
     this.env = {}
   }
 
@@ -52,17 +52,17 @@ export class CosineSimilarity extends LGraphNode {
     const required_input = JSON.stringify(input)
     console.log(required_input)
     // fetch from server
-    console.log(this.env.SIMILARITY_WORKER)
-    const response = await fetch(
-      (this.env.SIMILARITY_WORKER ?? 'http://localhost:5000') + '/cosine_similarity',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: required_input
-      }
-    )
+    console.log(this.env.SIMILARITY_WORKER_URL)
+    const url =
+      (this.env.SIMILARITY_WORKER_URL ?? 'http://localhost:8002') + '/cosine_similarity'
+    console.log(url)
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: required_input
+    })
     if (!response.ok) {
       throw new Error('Network response was not ok')
     }

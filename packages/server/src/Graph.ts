@@ -4,6 +4,7 @@ import { parse } from 'url'
 import { WebSocket } from 'ws'
 
 import { log, prisma } from './server'
+import * as demoGraphJson from './utils/demoGraph.json'
 
 /**
  * Sends a graph from a given path to a WebSocket.
@@ -28,7 +29,7 @@ export async function setupGraphFromPath(ws: WebSocket, request: IncomingMessage
   // eslint-disable-next-line immutable/no-mutation
   lgraph.onNodeAdded = function (node: LGraphNode) {
     node.setWebSocket?.(ws) // register websocket if node uses it
-    node.setEnv?.({ MODEL_WORKER_URL: process.env.MODEL_WORKER_URL })
+    node.setEnv?.(process.env)
     const onExecute = node.onExecute
     // eslint-disable-next-line immutable/no-mutation
     node.onExecute = async function () {
@@ -75,27 +76,7 @@ export async function setupGraphFromPath(ws: WebSocket, request: IncomingMessage
 
 // TODO: Remove this function
 function testGraph(lgraph: LGraph, ws: WebSocket) {
-  const my_sum = LiteGraph.createNode('basic/sum', 'sum', { pos: [500, 600] })
-
-  const node_const = LiteGraph.createNode('basic/const', 'const', { pos: [200, 200] })
-  const node_out = LiteGraph.createNode('basic/watch', 'watch', { pos: [800, 200] })
-  const node_out2 = LiteGraph.createNode('basic/watch', 'watch', { pos: [800, 400] })
-  const node_text = LiteGraph.createNode('basic/textfield', 'textfield', {
-    pos: [500, 400]
-  })
-  node_const.setValue(4.5)
-
-  lgraph.add(node_const)
-  lgraph.add(node_out)
-  lgraph.add(my_sum)
-  lgraph.add(node_text)
-  lgraph.add(node_out2)
-
-  node_const.connect(0, my_sum, 0)
-  node_const.connect(0, my_sum, 1)
-  my_sum.connect(0, node_out, 0)
-
-  node_text.connect(0, node_out2, 0)
+  lgraph.configure(demoGraphJson)
   sendWs(ws, { eventName: 'graphFinished', payload: lgraph.serialize() })
   return lgraph
 }

@@ -11,3 +11,5 @@ packages/frontend/.env
 venv/
 .env
 models/.flaskenv
+.yarnrc.yml
+*__pycache__/
