@@ -1,6 +1,6 @@
 {
-  "last_node_id": 68,
-  "last_link_id": 104,
+  "last_node_id": 73,
+  "last_link_id": 111,
   "nodes": [
     {
       "id": 67,
@@ -8,7 +8,7 @@
       "pos": [883.19286242566, 851.7274727230182],
       "size": { "0": 140, "1": 26 },
       "flags": { "collapsed": true },
-      "order": 17,
+      "order": 20,
       "mode": 0,
       "inputs": [{ "name": "in", "type": 0, "link": 102 }],
       "outputs": [{ "name": "out", "links": [103], "slot_index": 0 }],
@@ -41,7 +41,7 @@
       "pos": [1146.19286242566, 837.727472723018],
       "size": { "0": 140, "1": 26 },
       "flags": { "collapsed": true },
-      "order": 21,
+      "order": 24,
       "mode": 0,
       "inputs": [{ "name": "a", "type": 0, "link": 104 }],
       "outputs": [{ "name": "out", "type": "string", "links": [96], "slot_index": 0 }],
@@ -65,7 +65,7 @@
       },
       "size": { "0": 140, "1": 46 },
       "flags": { "collapsed": false },
-      "order": 15,
+      "order": 18,
       "mode": 0,
       "inputs": [
         { "name": "string", "type": "string", "link": 90 },
@@ -81,14 +81,14 @@
       "pos": [1020, 826],
       "size": [100, 60],
       "flags": { "collapsed": false },
-      "order": 19,
+      "order": 22,
       "mode": 0,
       "inputs": [
         { "name": "A", "type": "number,array,object", "link": 103 },
         { "name": "B", "type": "number", "link": 101 }
       ],
       "outputs": [{ "name": "=", "type": "number", "links": [104], "slot_index": 0 }],
-      "properties": { "A": 0.842484712600708, "B": 100, "OP": "*" },
+      "properties": { "A": 0.27139508724212646, "B": 100, "OP": "*" },
       "color": "#333"
     },
     {
@@ -97,7 +97,7 @@
       "pos": [1290, 788],
       "size": { "0": 140, "1": 46 },
       "flags": { "collapsed": true },
-      "order": 23,
+      "order": 26,
       "mode": 0,
       "inputs": [
         { "name": "a", "type": "string", "link": 97 },
@@ -138,7 +138,7 @@
       "pos": [1458, 821],
       "size": { "0": 140, "1": 46 },
       "flags": { "collapsed": true },
-      "order": 24,
+      "order": 28,
       "mode": 0,
       "inputs": [
         { "name": "a", "type": "string", "link": 99 },
@@ -193,7 +193,7 @@
       },
       "size": { "0": 210, "1": 270 },
       "flags": {},
-      "order": 22,
+      "order": 27,
       "mode": 0,
       "inputs": [
         { "name": "message", "type": "message", "link": null },
@@ -242,7 +242,7 @@
       },
       "size": { "0": 140, "1": 46 },
       "flags": { "collapsed": true },
-      "order": 20,
+      "order": 25,
       "mode": 0,
       "inputs": [
         { "name": "*", "type": "*", "link": 25 },
@@ -257,7 +257,7 @@
           },
           {
             "role": "user",
-            "content": "Give feedback to the student based on the EXPERT SOLUTION: Das Strategiemuster ist für das Rechenprogramm nicht wirklich geeignet, weil es ein sehr simples Programm ist. Dieses kommt mit wenigen Codezeilen aus, ohne konkrete Strategien zu benötigen. Es ist weiterhin für das Datenkompressionsmodell ungeeignet, da jeder Parameter den das komplexe Modell benötigt, auch an das simple Modell gereicht wird, ohne Verwendung zu finden. Eine Implementierung würde in diesem Fall das Adapter Entwurfsmuster benötigen.Student answer: \"Das Strategiemuster ist für das Rechenprogramm nicht optimal geeignet. Der Grund hierfür ist, dass das Programm sehr simpel ist und die Anwendung der vier Grundrechenarten mit einer einfachen bedingten Anweisung (if-else oder switch) implementiert werden könnte, ohne die Notwendigkeit für verschiedene Strategien.\n\nEbenfalls ungeeignet ist das Strategiemuster für das Modul zur Datenkompression. In diesem Fall müssten alle Parameter, die das komplexe Modell benötigt, auch an das einfache Modell weitergegeben werden, obwohl sie dort nicht verwendet werden. Eine effektivere Lösung wäre hier die Verwendung des Adapter Entwurfsmusters, um die Schnittstelle an die speziellen Bedürfnisse anzupassen.\n\"."
+            "content": "Context: - Eine Transaktionsanwendung, die auf einer Website verschiedene Bezahlvarianten anbietet. - Ein simples Rechenprogramm, welches erlaubt zwischen den vier Grundrechenarten zu wählen. - Ein Modul, dass eine Datenbank mit verschiedenen Sortieralgorithmen durchsuchen kann. - Ein Modul, welches Datenmengen nach unterschiedlichen Inhaltstypen filtern kann. - Routensuche einem Navigationsgerät nach Größen, wie schnellster Ankunft, Mautstraßenvermeidung oder kürzestem Weg. - Ein Modul welches zwischen einem sehr simplen, parameterarmen Datenkompressionsmodell und einem komplexen Modell entscheidet, welches viele parameterbedingte Einstellungsmöglichkeiten bietet.Give feedback to the student based on the EXPERT SOLUTION: \"Das Strategiemuster ist für das Rechenprogramm nicht wirklich geeignet, weil es ein sehr simples Programm ist. Dieses kommt mit wenigen Codezeilen aus, ohne konkrete Strategien zu benötigen. Es ist weiterhin für das Datenkompressionsmodell ungeeignet, da jeder Parameter den das komplexe Modell benötigt, auch an das simple Modell gereicht wird, ohne Verwendung zu finden. Eine Implementierung würde in diesem Fall das Adapter Entwurfsmuster benötigen.\"Student answer: \"The adapter design pattern is used to facilitate communication between classes that are not compatible.\"."
           }
         ]
       },
@@ -280,7 +280,7 @@
       },
       "size": { "0": 210, "1": 58 },
       "flags": { "collapsed": false },
-      "order": 10,
+      "order": 12,
       "mode": 0,
       "inputs": [{ "name": "content", "type": "string", "link": 70 }],
       "outputs": [
@@ -312,7 +312,7 @@
       },
       "size": { "0": 210, "1": 58 },
       "flags": {},
-      "order": 18,
+      "order": 23,
       "mode": 0,
       "inputs": [{ "name": "content", "type": "string", "link": 74 }],
       "outputs": [
@@ -321,7 +321,7 @@
       "properties": {
         "value": {
           "role": "user",
-          "content": "Give feedback to the student based on the EXPERT SOLUTION: Das Strategiemuster ist für das Rechenprogramm nicht wirklich geeignet, weil es ein sehr simples Programm ist. Dieses kommt mit wenigen Codezeilen aus, ohne konkrete Strategien zu benötigen. Es ist weiterhin für das Datenkompressionsmodell ungeeignet, da jeder Parameter den das komplexe Modell benötigt, auch an das simple Modell gereicht wird, ohne Verwendung zu finden. Eine Implementierung würde in diesem Fall das Adapter Entwurfsmuster benötigen.Student answer: \"Das Strategiemuster ist für das Rechenprogramm nicht optimal geeignet. Der Grund hierfür ist, dass das Programm sehr simpel ist und die Anwendung der vier Grundrechenarten mit einer einfachen bedingten Anweisung (if-else oder switch) implementiert werden könnte, ohne die Notwendigkeit für verschiedene Strategien.\n\nEbenfalls ungeeignet ist das Strategiemuster für das Modul zur Datenkompression. In diesem Fall müssten alle Parameter, die das komplexe Modell benötigt, auch an das einfache Modell weitergegeben werden, obwohl sie dort nicht verwendet werden. Eine effektivere Lösung wäre hier die Verwendung des Adapter Entwurfsmusters, um die Schnittstelle an die speziellen Bedürfnisse anzupassen.\n\"."
+          "content": "Context: - Eine Transaktionsanwendung, die auf einer Website verschiedene Bezahlvarianten anbietet. - Ein simples Rechenprogramm, welches erlaubt zwischen den vier Grundrechenarten zu wählen. - Ein Modul, dass eine Datenbank mit verschiedenen Sortieralgorithmen durchsuchen kann. - Ein Modul, welches Datenmengen nach unterschiedlichen Inhaltstypen filtern kann. - Routensuche einem Navigationsgerät nach Größen, wie schnellster Ankunft, Mautstraßenvermeidung oder kürzestem Weg. - Ein Modul welches zwischen einem sehr simplen, parameterarmen Datenkompressionsmodell und einem komplexen Modell entscheidet, welches viele parameterbedingte Einstellungsmöglichkeiten bietet.Give feedback to the student based on the EXPERT SOLUTION: \"Das Strategiemuster ist für das Rechenprogramm nicht wirklich geeignet, weil es ein sehr simples Programm ist. Dieses kommt mit wenigen Codezeilen aus, ohne konkrete Strategien zu benötigen. Es ist weiterhin für das Datenkompressionsmodell ungeeignet, da jeder Parameter den das komplexe Modell benötigt, auch an das simple Modell gereicht wird, ohne Verwendung zu finden. Eine Implementierung würde in diesem Fall das Adapter Entwurfsmuster benötigen.\"Student answer: \"The adapter design pattern is used to facilitate communication between classes that are not compatible.\"."
         }
       },
       "widgets_values": ["user"],
@@ -353,260 +353,8 @@
         "precision": 1,
         "value": "You are a helpful professor. First you compare the student answer to the sample solution in terms of similarity. Then you assert whether the students answer is correct. Give short answers."
       },
-      "color": "#223",
+      "color": "#333",
       "bgcolor": "#335"
-    },
-    {
-      "id": 49,
-      "type": "string/concatenate",
-      "pos": [864.9990844726576, 426.79999389648447],
-      "size": { "0": 140, "1": 46 },
-      "flags": { "collapsed": true },
-      "order": 16,
-      "mode": 0,
-      "inputs": [
-        { "name": "a", "type": "string", "link": 86 },
-        { "name": "b", "type": "string", "link": 89 }
-      ],
-      "outputs": [{ "name": "out", "type": "string", "links": [74], "slot_index": 0 }],
-      "properties": {},
-      "color": "#333"
-    },
-    {
-      "id": 41,
-      "type": "input/answer",
-      "pos": {
-        "0": 126,
-        "1": 244,
-        "2": 0,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 0
-      },
-      "size": { "0": 140, "1": 26 },
-      "flags": { "collapsed": true },
-      "order": 4,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "string",
-          "type": "string",
-          "links": [61, 90],
-          "label": "Das Strategiemuster ist für das Rechenprogramm nicht optimal geeignet. Der Grund hierfür ist, dass das Programm sehr simpel ist und die Anwendung der vier Grundrechenarten mit einer einfachen bedingten Anweisung (if-else oder switch) implementiert werden könnte, ohne die Notwendigkeit für verschiedene Strategien.\n\nEbenfalls ungeeignet ist das Strategiemuster für das Modul zur Datenkompression. In diesem Fall müssten alle Parameter, die das komplexe Modell benötigt, auch an das einfache Modell weitergegeben werden, obwohl sie dort nicht verwendet werden. Eine effektivere Lösung wäre hier die Verwendung des Adapter Entwurfsmusters, um die Schnittstelle an die speziellen Bedürfnisse anzupassen.\n",
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "value": "Das Strategiemuster ist für das Rechenprogramm nicht optimal geeignet. Der Grund hierfür ist, dass das Programm sehr simpel ist und die Anwendung der vier Grundrechenarten mit einer einfachen bedingten Anweisung (if-else oder switch) implementiert werden könnte, ohne die Notwendigkeit für verschiedene Strategien.\n\nEbenfalls ungeeignet ist das Strategiemuster für das Modul zur Datenkompression. In diesem Fall müssten alle Parameter, die das komplexe Modell benötigt, auch an das einfache Modell weitergegeben werden, obwohl sie dort nicht verwendet werden. Eine effektivere Lösung wäre hier die Verwendung des Adapter Entwurfsmusters, um die Schnittstelle an die speziellen Bedürfnisse anzupassen.\n"
-      },
-      "color": "#323",
-      "bgcolor": "#535"
-    },
-    {
-      "id": 43,
-      "type": "basic/textfield",
-      "pos": {
-        "0": 120,
-        "1": 198,
-        "2": 0,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 0
-      },
-      "size": [200, 100],
-      "flags": { "collapsed": true },
-      "order": 5,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [{ "name": "text", "type": "string", "links": [60], "slot_index": 0 }],
-      "title": "Student answer:",
-      "properties": { "precision": 1, "value": "Student answer: \"" },
-      "color": "#333"
-    },
-    {
-      "id": 44,
-      "type": "string/concatenate",
-      "pos": [293, 218],
-      "size": { "0": 140, "1": 46 },
-      "flags": { "collapsed": true },
-      "order": 11,
-      "mode": 0,
-      "inputs": [
-        { "name": "a", "type": "string", "link": 60 },
-        { "name": "b", "type": "string", "link": 61 }
-      ],
-      "outputs": [{ "name": "out", "type": "string", "links": [87], "slot_index": 0 }],
-      "properties": {},
-      "color": "#333"
-    },
-    {
-      "id": 55,
-      "type": "basic/textfield",
-      "pos": {
-        "0": 300,
-        "1": 262,
-        "2": 0,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 0
-      },
-      "size": [210, 88],
-      "flags": { "collapsed": true },
-      "order": 6,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [{ "name": "text", "type": "string", "links": [88], "slot_index": 0 }],
-      "title": "Padding",
-      "properties": { "precision": 1, "value": "\"." },
-      "color": "#333"
-    },
-    {
-      "id": 56,
-      "type": "string/concatenate",
-      "pos": [454, 241],
-      "size": { "0": 140, "1": 46 },
-      "flags": { "collapsed": true },
-      "order": 13,
-      "mode": 0,
-      "inputs": [
-        { "name": "a", "type": "string", "link": 87 },
-        { "name": "b", "type": "string", "link": 88 }
-      ],
-      "outputs": [{ "name": "out", "type": "string", "links": [89], "slot_index": 0 }],
-      "properties": {},
-      "color": "#333"
-    },
-    {
-      "id": 53,
-      "type": "string/concatenate",
-      "pos": [382, 608],
-      "size": { "0": 140, "1": 46 },
-      "flags": { "collapsed": true },
-      "order": 12,
-      "mode": 0,
-      "inputs": [
-        { "name": "a", "type": "string", "link": 81 },
-        { "name": "b", "type": "string", "link": 82 }
-      ],
-      "outputs": [
-        { "name": "out", "type": "string", "links": [84, 91], "slot_index": 0 }
-      ],
-      "properties": {},
-      "color": "#333"
-    },
-    {
-      "id": 47,
-      "type": "string/concatenate",
-      "pos": [521, 415],
-      "size": { "0": 140, "1": 46 },
-      "flags": { "collapsed": true },
-      "order": 14,
-      "mode": 0,
-      "inputs": [
-        { "name": "a", "type": "string", "link": 83 },
-        { "name": "b", "type": "string", "link": 84 }
-      ],
-      "outputs": [{ "name": "out", "type": "string", "links": [86], "slot_index": 0 }],
-      "properties": {},
-      "color": "#333"
-    },
-    {
-      "id": 50,
-      "type": "basic/textfield",
-      "pos": {
-        "0": 111,
-        "1": 721,
-        "2": 0,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 0
-      },
-      "size": [260, 190],
-      "flags": { "collapsed": false },
-      "order": 7,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [{ "name": "text", "type": "string", "links": [82], "slot_index": 0 }],
-      "properties": {
-        "precision": 1,
-        "value": "Es ist weiterhin für das Datenkompressionsmodell ungeeignet, da jeder Parameter den das komplexe Modell benötigt, auch an das simple Modell gereicht wird, ohne Verwendung zu finden. Eine Implementierung würde in diesem Fall das Adapter Entwurfsmuster benötigen."
-      },
-      "color": "#233",
-      "bgcolor": "#355"
-    },
-    {
-      "id": 54,
-      "type": "basic/textfield",
-      "pos": {
-        "0": 112,
-        "1": 354,
-        "2": 0,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 0
-      },
-      "size": [200, 100],
-      "flags": {},
-      "order": 8,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [{ "name": "text", "type": "string", "links": [83], "slot_index": 0 }],
-      "title": "Task",
-      "properties": {
-        "precision": 1,
-        "value": "Give feedback to the student based on the EXPERT SOLUTION: "
-      },
-      "color": "#232",
-      "bgcolor": "#353"
-    },
-    {
-      "id": 52,
-      "type": "basic/textfield",
-      "pos": {
-        "0": 111,
-        "1": 517,
-        "2": 0,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 0
-      },
-      "size": [221.2957763671875, 165.90636444091797],
-      "flags": { "collapsed": false },
-      "order": 9,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [{ "name": "text", "type": "string", "links": [81], "slot_index": 0 }],
-      "properties": {
-        "precision": 1,
-        "value": "Das Strategiemuster ist für das Rechenprogramm nicht wirklich geeignet, weil es ein sehr simples Programm ist. Dieses kommt mit wenigen Codezeilen aus, ohne konkrete Strategien zu benötigen. "
-      },
-      "color": "#233",
-      "bgcolor": "#355"
     },
     {
       "id": 58,
@@ -614,7 +362,7 @@
       "pos": [1728, 537],
       "size": { "0": 140, "1": 46 },
       "flags": { "collapsed": true },
-      "order": 25,
+      "order": 29,
       "mode": 0,
       "inputs": [
         { "name": "a", "type": "string", "link": 100 },
@@ -641,15 +389,353 @@
       },
       "size": { "0": 140, "1": 26 },
       "flags": { "collapsed": false },
-      "order": 26,
+      "order": 30,
       "mode": 0,
       "inputs": [
         { "name": "value", "type": "*", "link": 95, "label": "Feedback Output" }
       ],
       "outputs": [],
       "properties": {
-        "value": "Student answer to solution similarity: 84.2484712600708 .The student's feedback is correct and accurately reflects the limitations of using the Strategy pattern for a simple calculator program and a data compression module. However, the student's explanation for the latter could be improved by providing more details on how the Adapter pattern would address the issue of unnecessary parameters being passed to the simple module. Overall, the student's feedback demonstrates a good understanding of the concept of the Strategy pattern and its limitations in certain scenarios."
+        "value": "Student answer to solution similarity: 27.139508724212646 .The student's answer is not relevant to the given context. The adapter design pattern is used to adapt an existing interface of a class to another interface that a client expects. It is not used to facilitate communication between classes that are not compatible in the given context of simple computational programs and data compression algorithms. The feedback provided by the expert solution is more appropriate in this case."
       },
+      "color": "#333"
+    },
+    {
+      "id": 49,
+      "type": "string/concatenate",
+      "pos": [865, 427],
+      "size": { "0": 140, "1": 46 },
+      "flags": { "collapsed": false },
+      "order": 21,
+      "mode": 0,
+      "inputs": [
+        { "name": "a", "type": "string", "link": 111 },
+        { "name": "b", "type": "string", "link": 89 }
+      ],
+      "outputs": [{ "name": "out", "type": "string", "links": [74], "slot_index": 0 }],
+      "properties": {},
+      "color": "#333"
+    },
+    {
+      "id": 69,
+      "type": "basic/textfield",
+      "pos": {
+        "0": 313.72747802734375,
+        "1": 89.1817626953125,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0
+      },
+      "size": [200, 100],
+      "flags": { "collapsed": true },
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [{ "name": "text", "type": "string", "links": [105], "slot_index": 0 }],
+      "title": "Context:",
+      "properties": { "precision": 1, "value": "Context: " },
+      "color": "#333"
+    },
+    {
+      "id": 70,
+      "type": "basic/textfield",
+      "pos": {
+        "0": 297.72747802734375,
+        "1": 148.18173217773438,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0
+      },
+      "size": [200, 100],
+      "flags": { "collapsed": true },
+      "order": 5,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [{ "name": "text", "type": "string", "links": [106], "slot_index": 0 }],
+      "title": "Student Task",
+      "properties": {
+        "precision": 1,
+        "value": "Hier sind einige mögliche Anwendungsbeispiele für das Entwurfsmuster Strategie. Für zwei davon ist das Muster aber eher ungeeignet: - Eine Transaktionsanwendung, die auf einer Website verschiedene Bezahlvarianten anbietet. - Ein simples Rechenprogramm, welches erlaubt zwischen den vier Grundrechenarten zu wählen. - Ein Modul, dass eine Datenbank mit verschiedenen Sortieralgorithmen durchsuchen kann. - Ein Modul, welches Datenmengen nach unterschiedlichen Inhaltstypen filtern kann. - Routensuche einem Navigationsgerät nach Größen, wie schnellster Ankunft, Mautstraßenvermeidung oder kürzestem Weg. - Ein Modul welches zwischen einem sehr simplen, parameterarmen Datenkompressionsmodell und einem komplexen Modell entscheidet, welches viele parameterbedingte Einstellungsmöglichkeiten bietet."
+      },
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 71,
+      "type": "string/concatenate",
+      "pos": [467, 113],
+      "size": { "0": 140, "1": 46 },
+      "flags": { "collapsed": true },
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        { "name": "a", "type": "string", "link": 105 },
+        { "name": "b", "type": "string", "link": 106 }
+      ],
+      "outputs": [{ "name": "out", "type": "string", "links": [110], "slot_index": 0 }],
+      "properties": {},
+      "color": "#333"
+    },
+    {
+      "id": 41,
+      "type": "input/answer",
+      "pos": {
+        "0": 105,
+        "1": 244,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0
+      },
+      "size": { "0": 140, "1": 26 },
+      "flags": { "collapsed": true },
+      "order": 6,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "string",
+          "type": "string",
+          "links": [61, 90],
+          "label": "The adapter design pattern is used to facilitate communication between classes that are not compatible.",
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "value": "The adapter design pattern is used to facilitate communication between classes that are not compatible."
+      },
+      "color": "#333",
+      "bgcolor": "#535"
+    },
+    {
+      "id": 43,
+      "type": "basic/textfield",
+      "pos": {
+        "0": 103,
+        "1": 193,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0
+      },
+      "size": [200, 100],
+      "flags": { "collapsed": true },
+      "order": 7,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [{ "name": "text", "type": "string", "links": [60], "slot_index": 0 }],
+      "title": "Student answer:",
+      "properties": { "precision": 1, "value": "Student answer: \"" },
+      "color": "#333"
+    },
+    {
+      "id": 55,
+      "type": "basic/textfield",
+      "pos": {
+        "0": 265,
+        "1": 258,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0
+      },
+      "size": [210, 88],
+      "flags": { "collapsed": true },
+      "order": 8,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [{ "name": "text", "type": "string", "links": [88], "slot_index": 0 }],
+      "title": "Padding",
+      "properties": { "precision": 1, "value": "\"." },
+      "color": "#333"
+    },
+    {
+      "id": 44,
+      "type": "string/concatenate",
+      "pos": [263, 216],
+      "size": { "0": 140, "1": 46 },
+      "flags": { "collapsed": true },
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        { "name": "a", "type": "string", "link": 60 },
+        { "name": "b", "type": "string", "link": 61 }
+      ],
+      "outputs": [{ "name": "out", "type": "string", "links": [87], "slot_index": 0 }],
+      "properties": {},
+      "color": "#333"
+    },
+    {
+      "id": 56,
+      "type": "string/concatenate",
+      "pos": [397, 250],
+      "size": { "0": 140, "1": 46 },
+      "flags": { "collapsed": true },
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        { "name": "a", "type": "string", "link": 87 },
+        { "name": "b", "type": "string", "link": 88 }
+      ],
+      "outputs": [{ "name": "out", "type": "string", "links": [89], "slot_index": 0 }],
+      "properties": {},
+      "color": "#333"
+    },
+    {
+      "id": 73,
+      "type": "string/concatenate",
+      "pos": [684, 282],
+      "size": { "0": 140, "1": 46 },
+      "flags": { "collapsed": true },
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        { "name": "a", "type": "string", "link": 110 },
+        { "name": "b", "type": "string", "link": 109 }
+      ],
+      "outputs": [{ "name": "out", "type": "string", "links": [111], "slot_index": 0 }],
+      "properties": {},
+      "color": "#333"
+    },
+    {
+      "id": 52,
+      "type": "basic/textfield",
+      "pos": {
+        "0": 109.49999237060547,
+        "1": 500.8999938964844,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0
+      },
+      "size": [221.2957763671875, 165.90636444091797],
+      "flags": { "collapsed": false },
+      "order": 9,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [{ "name": "text", "type": "string", "links": [81], "slot_index": 0 }],
+      "properties": {
+        "precision": 1,
+        "value": "\"Das Strategiemuster ist für das Rechenprogramm nicht wirklich geeignet, weil es ein sehr simples Programm ist. Dieses kommt mit wenigen Codezeilen aus, ohne konkrete Strategien zu benötigen. "
+      },
+      "color": "#333",
+      "bgcolor": "#355"
+    },
+    {
+      "id": 50,
+      "type": "basic/textfield",
+      "pos": {
+        "0": 111.49999237060547,
+        "1": 719.9000244140625,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0
+      },
+      "size": [260, 190],
+      "flags": { "collapsed": false },
+      "order": 10,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [{ "name": "text", "type": "string", "links": [82], "slot_index": 0 }],
+      "properties": {
+        "precision": 1,
+        "value": "Es ist weiterhin für das Datenkompressionsmodell ungeeignet, da jeder Parameter den das komplexe Modell benötigt, auch an das simple Modell gereicht wird, ohne Verwendung zu finden. Eine Implementierung würde in diesem Fall das Adapter Entwurfsmuster benötigen.\""
+      },
+      "color": "#333",
+      "bgcolor": "#355"
+    },
+    {
+      "id": 54,
+      "type": "basic/textfield",
+      "pos": {
+        "0": 105,
+        "1": 353,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0
+      },
+      "size": [200, 100],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [{ "name": "text", "type": "string", "links": [83], "slot_index": 0 }],
+      "title": "Task",
+      "properties": {
+        "precision": 1,
+        "value": "Give feedback to the student based on the EXPERT SOLUTION: "
+      },
+      "color": "#333",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 53,
+      "type": "string/concatenate",
+      "pos": [367, 616],
+      "size": { "0": 140, "1": 46 },
+      "flags": { "collapsed": true },
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        { "name": "a", "type": "string", "link": 81 },
+        { "name": "b", "type": "string", "link": 82 }
+      ],
+      "outputs": [
+        { "name": "out", "type": "string", "links": [84, 91], "slot_index": 0 }
+      ],
+      "properties": {},
+      "color": "#333"
+    },
+    {
+      "id": 47,
+      "type": "string/concatenate",
+      "pos": [518, 426],
+      "size": { "0": 140, "1": 46 },
+      "flags": { "collapsed": true },
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        { "name": "a", "type": "string", "link": 83 },
+        { "name": "b", "type": "string", "link": 84 }
+      ],
+      "outputs": [{ "name": "out", "type": "string", "links": [109], "slot_index": 0 }],
+      "properties": {},
       "color": "#333"
     }
   ],
@@ -665,7 +751,6 @@
     [82, 50, 0, 53, 1, "string"],
     [83, 54, 0, 47, 0, "string"],
     [84, 53, 0, 47, 1, "string"],
-    [86, 47, 0, 49, 0, "string"],
     [87, 44, 0, 56, 0, "string"],
     [88, 55, 0, 56, 1, "string"],
     [89, 56, 0, 49, 1, "string"],
@@ -681,7 +766,12 @@
     [101, 66, 0, 64, 1, "number"],
     [102, 57, 0, 67, 0, "int"],
     [103, 67, 0, 64, 0, "number,array,object"],
-    [104, 64, 0, 59, 0, "number"]
+    [104, 64, 0, 59, 0, "number"],
+    [105, 69, 0, 71, 0, "string"],
+    [106, 70, 0, 71, 1, "string"],
+    [109, 47, 0, 73, 1, "string"],
+    [110, 71, 0, 73, 0, "string"],
+    [111, 73, 0, 49, 0, "string"]
   ],
   "groups": [
     { "title": "Similarity", "bounding": [684, 605, 944, 351], "color": "#b58b2a" },
