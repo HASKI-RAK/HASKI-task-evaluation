@@ -22,7 +22,7 @@ const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<Editor />}>
       {/* /ke.moodle/2/2 */}
-      <Route path="/editor/:domain/:courseId/:elementId" element={<Editor />} />
+      <Route path="ws/editor/:domain/:courseId/:elementId" element={<Editor />} />
       {/* <Route path="dashboard" element={<Dashboard />} /> */}
       {/* ... etc. */}
     </Route>

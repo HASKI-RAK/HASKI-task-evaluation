@@ -8,3 +8,6 @@ dev-dist
 tsconfig.node.tsbuildinfo
 packages/frontend/.env
 .yarn/*
+venv/
+.env
+models/.flaskenv

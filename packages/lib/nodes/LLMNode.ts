@@ -172,6 +172,7 @@ export class LLMNode extends LGraphNode {
     const required_input = JSON.stringify(input)
     console.log(required_input)
     // fetch from server
+    console.log(this.env.MODEL_WORKER_URL)
     const response = await fetch(
       (this.env.MODEL_WORKER_URL ?? 'http://localhost:8000') + '/v1/chat/completions',
       {

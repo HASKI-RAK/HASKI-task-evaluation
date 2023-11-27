@@ -30,6 +30,10 @@ Created and maintained by David Fischer.
    ```bash
    yarn install
    ```
+3. Run prisma migrations:
+   ```bash
+   yarn setup
+   ```
 
 ### Running the Project
 

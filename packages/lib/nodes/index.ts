@@ -1,5 +1,6 @@
 import { AnswerInputNode } from './AnswerInputNode'
 import { ConcatObject } from './ConcatObject'
+import { CosineSimilarity } from './CosineSimilarity'
 import { FeedbackOutputNode } from './FeedbackOutputNode'
 import { LGraph, LGraphNode, LiteGraph } from './litegraph-extensions'
 import { LLMNode } from './LLMNode'
@@ -20,6 +21,7 @@ LiteGraph.registerNodeType(LLMNode.getPath(), LLMNode)
 LiteGraph.registerNodeType(AnswerInputNode.getPath(), AnswerInputNode)
 LiteGraph.registerNodeType(PromptMessage.getPath(), PromptMessage)
 LiteGraph.registerNodeType(ConcatObject.getPath(), ConcatObject)
+LiteGraph.registerNodeType(CosineSimilarity.getPath(), CosineSimilarity)
 
 // LiteGraph.registerNodeType('basic/const', ConstNumber)
 

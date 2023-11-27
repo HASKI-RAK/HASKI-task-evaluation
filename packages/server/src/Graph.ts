@@ -17,6 +17,7 @@ export async function setupGraphFromPath(ws: WebSocket, request: IncomingMessage
   const { pathname } = parse(request.url ?? '', true)
   // TODO: get graph from path
   const lgraph = new LiteGraph.LGraph()
+  log.debug('Loading graph from DB for route: ', pathname)
   const loaded_graph = await prisma.graph.findFirst({
     where: {
       path: pathname ?? ''

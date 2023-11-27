@@ -10,9 +10,16 @@
   ],
   "scripts": {
     "dev": "yarn workspaces foreach -i --parallel --verbose --all run dev",
-    "lint": "yarn workspaces foreach --parallel --all run lint"
+    "lint": "yarn workspaces foreach --parallel --all run lint",
+    "setup": "prisma generate --schema packages/server/prisma/schema.prisma"
   },
   "pre-commit": "lint",
   "license": "MIT",
-  "packageManager": "yarn@4.0.2"
+  "packageManager": "yarn@4.0.2",
+  "devDependencies": {
+    "prisma": "^5.6.0"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.6.0"
+  }
 }
