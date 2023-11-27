@@ -77,6 +77,7 @@ export const Editor = () => {
     open: false
   })
   const [feedback, setFeedback] = useState<string | undefined>()
+  const [successPercentage, setSuccessPercentage] = useState<number | undefined>()
   const lgraph = useMemo(() => new LiteGraph.LGraph(), [])
   const [socketUrl, setSocketUrl] = useState(
     getConfig().API_WS ?? 'ws://localhost:5000/ws/editor/ke.haski.app/2/2'
@@ -152,8 +153,12 @@ export const Editor = () => {
             })
           },
           feedback: (feedback) => {
-            console.log(feedback)
+            console.log('Feedback: ', feedback)
             setFeedback(feedback)
+          },
+          successPercentage(percentage) {
+            console.log('Success percentage: ', percentage)
+            setSuccessPercentage(percentage)
           },
           nodeError(payload) {
             console.warn('Node error: ', payload)
@@ -271,7 +276,11 @@ export const Editor = () => {
             </Typography>
           </DrawerHeader>
           <Divider />
-          <TaskView onSubmit={(answer) => handleSubmit(answer)} feedback={feedback} />
+          <TaskView
+            onSubmit={(answer) => handleSubmit(answer)}
+            feedback={feedback}
+            successPercentage={successPercentage}
+          />
         </Drawer>
       </Box>
       <Snackbar

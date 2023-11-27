@@ -18,7 +18,8 @@ export type ServerEventPayload = {
   nodeExecuting: number // node id
   nodeExecuted: number // node id
   graphSaved: SerializedGraph // graph
-  feedback: string // value
+  feedback: string // string from the feedback node
+  successPercentage: number // can be used for cosine similarity and is indicated by a progress bar in the frontend. used by successPercentageNode
   nodeError: {
     nodeId: number
     error: string

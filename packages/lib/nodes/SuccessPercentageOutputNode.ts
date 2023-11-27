@@ -10,20 +10,20 @@ import { LGraphNode, LiteGraph } from './litegraph-extensions'
  * * This node is used to send data to the client into the TA form
  * path: output/feedback
  */
-export class FeedbackOutputNode extends LGraphNode {
+export class SuccessPercentageOutputNode extends LGraphNode {
   constructor() {
     super()
-    this.addInput('value', '*')
-    this.title = 'feedback output'
+    this.addInput('number', 'number')
+    this.title = 'success percentage'
   }
 
   // statics
-  static title = 'feedback output'
+  static title = 'success percentage'
 
-  static path = 'output/feedback'
+  static path = 'output/success-percentage'
 
   static getPath(): string {
-    return FeedbackOutputNode.path
+    return SuccessPercentageOutputNode.path
   }
 
   // this node uses the websocket
@@ -36,8 +36,8 @@ export class FeedbackOutputNode extends LGraphNode {
     if (this.inputs[0]) {
       this.properties.value = this.getInputData(0)
     }
-    const output: ServerEvent<'feedback'> = {
-      eventName: 'feedback',
+    const output: ServerEvent<'successPercentage'> = {
+      eventName: 'successPercentage',
       payload: this.properties.value
     }
     this.ws?.send(JSON.stringify(output))
@@ -53,11 +53,14 @@ export class FeedbackOutputNode extends LGraphNode {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onDrawBackground = (ctx: CanvasRenderingContext2D) => {
     //show the current value
-    this.inputs[0].label = 'Feedback Output'
+    this.inputs[0].label = 'Success Percentage'
   }
 
   //register in the system
   static register() {
-    LiteGraph.registerNodeType(FeedbackOutputNode.path, FeedbackOutputNode)
+    LiteGraph.registerNodeType(
+      SuccessPercentageOutputNode.path,
+      SuccessPercentageOutputNode
+    )
   }
 }

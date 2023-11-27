@@ -6,6 +6,7 @@ import { LGraph, LGraphNode, LiteGraph } from './litegraph-extensions'
 import { LLMNode } from './LLMNode'
 import { MyAddNode } from './MyAddNode'
 import { PromptMessage } from './PromptMessage'
+import { SuccessPercentageOutputNode } from './SuccessPercentageOutputNode'
 import { Textfield } from './Textfield'
 import { Watch } from './Watch'
 
@@ -22,6 +23,10 @@ LiteGraph.registerNodeType(AnswerInputNode.getPath(), AnswerInputNode)
 LiteGraph.registerNodeType(PromptMessage.getPath(), PromptMessage)
 LiteGraph.registerNodeType(ConcatObject.getPath(), ConcatObject)
 LiteGraph.registerNodeType(CosineSimilarity.getPath(), CosineSimilarity)
+LiteGraph.registerNodeType(
+  SuccessPercentageOutputNode.getPath(),
+  SuccessPercentageOutputNode
+)
 
 // LiteGraph.registerNodeType('basic/const', ConstNumber)
 
