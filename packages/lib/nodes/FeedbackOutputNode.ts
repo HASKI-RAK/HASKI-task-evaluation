@@ -13,7 +13,7 @@ import { LGraphNode, LiteGraph } from './litegraph-extensions'
 export class FeedbackOutputNode extends LGraphNode {
   constructor() {
     super()
-    this.addInput('value', '*')
+    this.addIn('*')
     this.title = 'feedback output'
   }
 

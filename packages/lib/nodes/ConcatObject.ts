@@ -14,12 +14,12 @@ export class ConcatObject extends LGraphNode {
     super()
     this.title = 'Concat Object'
     //platform.openai.com/docs/api-reference/chat/create
-    this.addInput('*', '*')
-    this.addInput('*', '*')
+    this.addIn('*')
+    this.addIn('*')
 
     this.properties = { value: [] }
 
-    this.addOut('any')
+    this.addOut('*')
   }
   //name of the node
   static title = 'Concat Object'

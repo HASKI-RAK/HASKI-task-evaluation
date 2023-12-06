@@ -13,7 +13,7 @@ import { LGraphNode, LiteGraph } from './litegraph-extensions'
 export class SuccessPercentageOutputNode extends LGraphNode {
   constructor() {
     super()
-    this.addInput('number', 'number')
+    this.addIn('number')
     this.title = 'success percentage'
   }
 

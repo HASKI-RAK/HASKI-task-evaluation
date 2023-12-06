@@ -9,7 +9,7 @@ export class Watch extends LGraphNode {
   constructor() {
     super()
     this.size = [60, 30]
-    this.addInput('value', '*')
+    this.addIn('*')
     this.properties = { value: 0 }
     this.title = 'watch'
   }

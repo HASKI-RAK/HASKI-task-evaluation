@@ -28,10 +28,9 @@ export class LLMNode extends LGraphNode {
     // https://platform.openai.com/docs/api-reference/chat/create
 
     // both inputs are optional. if message is not set, messages will be used
-    this.addInput('message', 'message')
+    this.addIn('message')
     // both inputs are optional
-    this.addInput('message[]', '*[]')
-
+    this.addIn('*', 'messages')
     this.addWidget(
       'number',
       'max_tokens',

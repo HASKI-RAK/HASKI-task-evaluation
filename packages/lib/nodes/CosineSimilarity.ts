@@ -4,7 +4,6 @@
 import { WebSocket } from 'ws'
 
 import { LGraphNode, LiteGraph } from './litegraph-extensions'
-import { InOut } from './types/NodeLinkMessage'
 
 /**
  * Cosine Similaritys
@@ -15,8 +14,8 @@ export class CosineSimilarity extends LGraphNode {
     super()
     // https://platform.openai.com/docs/api-reference/chat/create
 
-    this.addInput('string', 'string')
-    this.addInput('string', 'string')
+    this.addIn('string')
+    this.addIn('string')
 
     this.addOut('number')
     this.properties = {

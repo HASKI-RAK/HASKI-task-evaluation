@@ -24,7 +24,7 @@ export class PromptMessage extends LGraphNode {
         values: ['system', 'user', 'assistant', 'tool']
       }
     )
-    this.addInput('content', 'string')
+    this.addIn('string')
 
     this.serialize_widgets = true
 
