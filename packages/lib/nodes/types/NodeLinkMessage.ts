@@ -1,11 +1,7 @@
+// import { INodeOutputSlot } from 'litegraph.js'
 export type PromptMessageType = {
   role: string
   content: string
 }
 
-export enum InOut {
-  STRING = 'string',
-  NUMBER = 'number',
-  BOOLEAN = 'boolean',
-  MESSAGE = 'message'
-}
+export type InOut = 'string' | 'number' | 'boolean' | 'message' | 'any'

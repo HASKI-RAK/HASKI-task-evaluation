@@ -11,7 +11,7 @@ import { TextWidget } from './widgets/TextWidget'
 export class Textfield extends LGraphNode {
   constructor() {
     super()
-    this.addOutput('text', 'string')
+    this.addOut('string')
     this.properties = { precision: 1, value: 'Enter your text' }
     this.addCustomWidget<TextWidget>(new TextWidget())
 

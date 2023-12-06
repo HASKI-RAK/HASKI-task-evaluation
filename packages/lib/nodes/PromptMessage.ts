@@ -28,7 +28,7 @@ export class PromptMessage extends LGraphNode {
 
     this.serialize_widgets = true
 
-    this.addOutput('message', 'message')
+    this.addOut('message')
   }
   //name of the node
   static title = 'Prompt Message'

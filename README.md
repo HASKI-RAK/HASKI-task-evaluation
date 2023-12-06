@@ -30,7 +30,12 @@ Created and maintained by David Fischer.
    ```bash
    yarn install
    ```
-3. Run prisma migrations:
+3. Create a `.env` file in the `packages/server` directory and add the following content:
+   ```bash
+   DATABASE_URL="postgresql://USERNAME:PASSWORD@localhost:5432/DATABASENAME?schema=public"
+   ```
+   Replace the connection string with your own database connection string.
+4. Run prisma migrations:
    ```bash
    cd packages/server
    yarn setup
@@ -38,7 +43,7 @@ Created and maintained by David Fischer.
 
 ### Running the Project
 
-To run the project in a development environment, use the following command:
+To run the project in a development environment, use the following command in the root directory:
 
 ```bash
 yarn dev

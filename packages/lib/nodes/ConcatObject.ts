@@ -19,7 +19,7 @@ export class ConcatObject extends LGraphNode {
 
     this.properties = { value: [] }
 
-    this.addOutput('*[]', '*[]')
+    this.addOut('any')
   }
   //name of the node
   static title = 'Concat Object'

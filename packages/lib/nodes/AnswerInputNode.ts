@@ -13,7 +13,7 @@ import { LGraphNode, LiteGraph } from './litegraph-extensions'
 export class AnswerInputNode extends LGraphNode {
   constructor() {
     super()
-    this.addOutput('string', 'string')
+    this.addOut('string')
     this.properties = { value: '' }
     this.title = 'Answer Input'
   }

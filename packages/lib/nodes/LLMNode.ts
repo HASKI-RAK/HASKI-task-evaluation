@@ -116,7 +116,7 @@ export class LLMNode extends LGraphNode {
       }
     )
     this.serialize_widgets = true
-    this.addOutput('string', 'string')
+    this.addOut('string')
     this.properties = {
       value: '',
       model: '',

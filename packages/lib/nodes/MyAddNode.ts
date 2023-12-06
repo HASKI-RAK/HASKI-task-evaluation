@@ -8,7 +8,7 @@ export class MyAddNode extends LGraphNode {
     super()
     this.addInput('A', 'number')
     this.addInput('B', 'number')
-    this.addOutput('A+B', 'number')
+    this.addOut('number', 'A+B')
     this.properties = { precision: 1, path: 'basic/sum' }
     this.title = 'sum'
   }

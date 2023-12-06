@@ -4,6 +4,7 @@
 import { WebSocket } from 'ws'
 
 import { LGraphNode, LiteGraph } from './litegraph-extensions'
+import { InOut } from './types/NodeLinkMessage'
 
 /**
  * Cosine Similaritys
@@ -17,7 +18,7 @@ export class CosineSimilarity extends LGraphNode {
     this.addInput('string', 'string')
     this.addInput('string', 'string')
 
-    this.addOutput('int', 'int')
+    this.addOut('number')
     this.properties = {
       value: -1
     }
