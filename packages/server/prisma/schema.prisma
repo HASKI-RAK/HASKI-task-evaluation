@@ -16,3 +16,9 @@ model Graph {
   path  String @unique
   graph String
 }
+
+model Settings {
+  id       Int    @id @default(autoincrement())
+  path     String @unique
+  modelUrl String // openAI conform model url
+}

@@ -43,6 +43,35 @@ wss2.on('connection', function connection(ws) {
   // ...
 })
 /**
+ * Handle get, post, put, delete requests
+ */
+server.on('request', async (request, response) => {
+  const { pathname } = parse(request.url ?? '', true)
+  // Announce that we are going to handle this request
+  log.trace('Handling request for ', pathname)
+  if (request.method === 'GET') {
+    if (pathname === '/editor/ke.haski.app/2/2') {
+      response.writeHead(404)
+      response.end()
+    } else if (pathname === '/bar') {
+      response.writeHead(404)
+      response.end()
+    }
+  } else if (request.method === 'POST') {
+    if (pathname === '/editor/ke.haski.app/2/2') {
+      response.writeHead(404)
+      response.end()
+    } else if (pathname === '/bar') {
+      response.writeHead(404)
+      response.end()
+    }
+  } else {
+    response.writeHead(404)
+    response.end()
+  }
+})
+
+/**
  ** Handle initial websocket connection on http server
  */
 server.on('upgrade', function upgrade(request, socket, head) {
