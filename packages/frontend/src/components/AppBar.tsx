@@ -1,9 +1,11 @@
 import MenuIcon from '@mui/icons-material/Menu'
 import ReplayIcon from '@mui/icons-material/Replay'
 import SaveIcon from '@mui/icons-material/Save'
-import { IconButton, styled, Toolbar, Typography } from '@mui/material'
+import { IconButton, MenuItem, Select, styled, Toolbar, Typography } from '@mui/material'
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar'
 import Tooltip from '@mui/material/Tooltip'
+import { useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 
 import { drawerWidth } from '@/pages/Editor'
 
@@ -32,12 +34,25 @@ const AppBarStyled = styled(MuiAppBar, {
 }))
 
 export const AppBar = (props: AppBarProps) => {
+  const location = useLocation()
+  const [worflow, setWorkflow] = useState<string[]>([])
+
+  useEffect(() => {
+    setWorkflow([location.pathname])
+  }, [location])
   return (
     <AppBarStyled position="fixed" open={props.open}>
       <Toolbar>
         <Typography variant="h6" noWrap sx={{ flexGrow: 1 }} component="div">
           Task Editor
         </Typography>
+        <Select value={worflow[0]} sx={{ minWidth: 200 }}>
+          {Object.entries(worflow).map(([key, value]) => (
+            <MenuItem key={key} value={key}>
+              {value}
+            </MenuItem>
+          ))}
+        </Select>
         <Tooltip title="Reconnect to websocket">
           <IconButton
             aria-label="change socket url"

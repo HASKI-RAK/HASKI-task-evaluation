@@ -29,6 +29,7 @@ def cosine_similarity():
     emb2 = model.encode(sentence2)
     cos_sim: Tensor = util.cos_sim(emb1, emb2)
     result = cos_sim.tolist()[0][0]
+    print(result)
     return flask.jsonify(result)
 
 
