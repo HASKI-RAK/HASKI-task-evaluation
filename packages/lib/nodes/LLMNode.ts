@@ -15,6 +15,10 @@ const models = [
   {
     name: 'zephir-7b-beta',
     path: 'D:\\Development\\python\\text-generation-webui-main\\models\\zephir-7b-beta'
+  },
+  {
+    name: 'SUS-Chat-34B',
+    path: 'SUS-Chat-34B'
   }
 ]
 
