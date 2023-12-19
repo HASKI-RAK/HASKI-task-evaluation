@@ -13,3 +13,4 @@ venv/
 models/.flaskenv
 .yarnrc.yml
 *__pycache__/
+.vscode/settings.json

@@ -33,4 +33,4 @@ def cosine_similarity():
     return flask.jsonify(result)
 
 
-app.run(host="localhost", port=8002, debug=True)
+app.run(debug=True)
