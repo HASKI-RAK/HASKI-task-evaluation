@@ -42,6 +42,20 @@ export abstract class LGraphNode extends LGN implements ILGraphNode, WebSocketNo
   }
 
   /**
+   * @deprecated use addIn() instead
+   */
+  addInputs(array: [string, string | -1, Partial<INodeInputSlot> | undefined][]): void {
+    throw new Error('deprecated. Called with: ' + array + ' but use addIn() instead')
+  }
+
+  /**
+   * @deprecated use addOut() instead
+   */
+  addOutputs(array: [string, string | -1, Partial<INodeOutputSlot> | undefined][]): void {
+    throw new Error('deprecated. Called with: ' + array + ' but use addOut() instead')
+  }
+
+  /**
    * @deprecated use addOut() instead
    */
   addOutput(

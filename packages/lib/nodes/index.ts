@@ -1,17 +1,18 @@
 import { AnswerInputNode } from './AnswerInputNode'
 import { ConcatObject } from './ConcatObject'
+import { ConcatString } from './ConcatString'
 import { CosineSimilarity } from './CosineSimilarity'
 import { FeedbackOutputNode } from './FeedbackOutputNode'
 import { LGraph, LGraphNode, LiteGraph } from './litegraph-extensions'
 import { LLMNode } from './LLMNode'
 import { MyAddNode } from './MyAddNode'
+import { Precision } from './Precision'
 import { PromptMessage } from './PromptMessage'
 import { SuccessPercentageOutputNode } from './SuccessPercentageOutputNode'
 import { Textfield } from './Textfield'
 import { Watch } from './Watch'
-
 // Reset the registered types (standard nodes)
-// LiteGraph.clearRegisteredTypes()
+LiteGraph.clearRegisteredTypes()
 
 // Register our custom nodes
 LiteGraph.registerNodeType(MyAddNode.getPath(), MyAddNode)
@@ -27,6 +28,8 @@ LiteGraph.registerNodeType(
   SuccessPercentageOutputNode.getPath(),
   SuccessPercentageOutputNode
 )
+LiteGraph.registerNodeType(Precision.getPath(), Precision)
+LiteGraph.registerNodeType(ConcatString.getPath(), ConcatString)
 
 // LiteGraph.registerNodeType('basic/const', ConstNumber)
 
