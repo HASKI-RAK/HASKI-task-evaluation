@@ -11,6 +11,7 @@ import { LGraphNode, LiteGraph } from './litegraph-extensions'
 export class NumberNode extends LGraphNode {
   constructor() {
     super()
+    this.properties.value = 0
     this.addWidget(
       'number',
       'value',
@@ -26,7 +27,6 @@ export class NumberNode extends LGraphNode {
       }
     )
     this.addOut('number')
-    this.properties.value = 0
     this.serialize_widgets = true
     this.title = 'number'
   }
@@ -51,12 +51,6 @@ export class NumberNode extends LGraphNode {
     }
     return this.title
   }
-
-  // // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  // onDrawBackground = (ctx: CanvasRenderingContext2D) => {
-  //   //show the current value
-  //   this.outputs[0].label = this.properties.value.toString()
-  // }
 
   //register in the system
   static register() {
