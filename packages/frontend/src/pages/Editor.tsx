@@ -78,6 +78,7 @@ export const Editor = () => {
   })
   const [feedback, setFeedback] = useState<string | undefined>()
   const [successPercentage, setSuccessPercentage] = useState<number | undefined>()
+  const [maxInputChars, setMaxInputChars] = useState<number>(300)
   const lgraph = useMemo(() => new LiteGraph.LGraph(), [])
   const [socketUrl, setSocketUrl] = useState(
     getConfig().API_WS ?? 'ws://localhost:5000/ws/editor/ke.haski.app/2/2'
@@ -167,6 +168,9 @@ export const Editor = () => {
               severity: 'error',
               open: true
             })
+          },
+          maxInputChars(maxChars) {
+            setMaxInputChars(maxChars)
           }
         })
       ) {
@@ -280,6 +284,7 @@ export const Editor = () => {
             onSubmit={(answer) => handleSubmit(answer)}
             feedback={feedback}
             successPercentage={successPercentage}
+            maxInputChars={maxInputChars}
           />
         </Drawer>
       </Box>

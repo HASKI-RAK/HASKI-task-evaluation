@@ -7,25 +7,24 @@ import { ServerEvent } from '../events'
 import { LGraphNode, LiteGraph } from './litegraph-extensions'
 
 /**
- * * This node is used to send data to the client into the TA form
- * path: output/feedback
+ * * This node is used to limit the amount of characters a user can input
+ * * It is used in the frontend to limit the amount of characters a user can input
  */
-export class SuccessPercentageOutputNode extends LGraphNode {
-  properties: Record<string, number>
+export class MaxInputChars extends LGraphNode {
   constructor() {
     super()
     this.addIn('number')
-    this.title = 'success percentage'
-    this.properties = { value: 0 }
+    this.properties = { value: 300 }
+    this.title = 'max input chars'
   }
 
   // statics
-  static title = 'success percentage'
+  static title = 'max input chars'
 
-  static path = 'output/success-percentage'
+  static path = 'input/max-input-chars'
 
   static getPath(): string {
-    return SuccessPercentageOutputNode.path
+    return MaxInputChars.path
   }
 
   // this node uses the websocket
@@ -38,8 +37,8 @@ export class SuccessPercentageOutputNode extends LGraphNode {
     if (this.inputs[0]) {
       this.properties.value = this.getInputData(0)
     }
-    const output: ServerEvent<'successPercentage'> = {
-      eventName: 'successPercentage',
+    const output: ServerEvent<'maxInputChars'> = {
+      eventName: 'maxInputChars',
       payload: this.properties.value
     }
     this.ws?.send(JSON.stringify(output))
@@ -47,7 +46,7 @@ export class SuccessPercentageOutputNode extends LGraphNode {
 
   getTitle(): string {
     if (this.flags.collapsed) {
-      return 'success: ' + Math.trunc((this.properties.value * 10 ** 3) / 10 ** 3)
+      return this.inputs[0].label ?? this.title
     }
     return this.title
   }
@@ -55,15 +54,11 @@ export class SuccessPercentageOutputNode extends LGraphNode {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onDrawBackground = (ctx: CanvasRenderingContext2D) => {
     //show the current value
-    this.inputs[0].label =
-      'success: ' + Math.trunc((this.properties.value * 10 ** 3) / 10 ** 3)
+    this.inputs[0].label = 'max input chars: ' + (this.properties.value ?? this.title)
   }
 
   //register in the system
   static register() {
-    LiteGraph.registerNodeType(
-      SuccessPercentageOutputNode.path,
-      SuccessPercentageOutputNode
-    )
+    LiteGraph.registerNodeType(MaxInputChars.path, MaxInputChars)
   }
 }

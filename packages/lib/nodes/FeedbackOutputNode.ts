@@ -11,10 +11,12 @@ import { LGraphNode, LiteGraph } from './litegraph-extensions'
  * path: output/feedback
  */
 export class FeedbackOutputNode extends LGraphNode {
+  properties: Record<string, string>
   constructor() {
     super()
     this.addIn('*')
     this.title = 'feedback output'
+    this.properties = { value: '' }
   }
 
   // statics
@@ -53,7 +55,8 @@ export class FeedbackOutputNode extends LGraphNode {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onDrawBackground = (ctx: CanvasRenderingContext2D) => {
     //show the current value
-    this.inputs[0].label = 'Feedback Output'
+    this.inputs[0].label =
+      'feedback: ' + (this.properties.value.substring(0, 10) ?? this.title)
   }
 
   //register in the system

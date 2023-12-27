@@ -5,7 +5,9 @@ import { CosineSimilarity } from './CosineSimilarity'
 import { FeedbackOutputNode } from './FeedbackOutputNode'
 import { LGraph, LGraphNode, LiteGraph } from './litegraph-extensions'
 import { LLMNode } from './LLMNode'
+import { MaxInputChars } from './MaxInputChars'
 import { MyAddNode } from './MyAddNode'
+import { NumberNode } from './NumberNode'
 import { Precision } from './Precision'
 import { PromptMessage } from './PromptMessage'
 import { SuccessPercentageOutputNode } from './SuccessPercentageOutputNode'
@@ -30,6 +32,8 @@ LiteGraph.registerNodeType(
 )
 LiteGraph.registerNodeType(Precision.getPath(), Precision)
 LiteGraph.registerNodeType(ConcatString.getPath(), ConcatString)
+LiteGraph.registerNodeType(MaxInputChars.getPath(), MaxInputChars)
+LiteGraph.registerNodeType(NumberNode.getPath(), NumberNode)
 
 // LiteGraph.registerNodeType('basic/const', ConstNumber)
 

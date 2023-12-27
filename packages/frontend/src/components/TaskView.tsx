@@ -42,11 +42,13 @@ const useTask = (id: string) => {
 const TaskView = ({
   onSubmit,
   feedback,
-  successPercentage
+  successPercentage,
+  maxInputChars = 300
 }: {
   onSubmit: (answer: string) => void
   feedback?: string
   successPercentage?: number
+  maxInputChars?: number
 }) => {
   const { id } = useParams<{ id: string }>()
   const { data: task } = useTask(id ?? '1')
@@ -54,9 +56,19 @@ const TaskView = ({
   const [error, setError] = useState<string | null>(null)
   const [answer, setAnswer] = useState<string>('')
 
+  const handleSetAnswer = (event: React.ChangeEvent<HTMLInputElement>) => {
+    validateAnswer()
+    setAnswer(event.target.value)
+  }
+
   const validateAnswer = (): boolean => {
     if (answer.length < 10) {
       setError('Answer must be at least 10 characters long')
+      return false
+    } else if (answer.length > maxInputChars) {
+      // TODO: find optimal length based on literature
+      // to ensure the user doesnt paste a lot of text containing the answer
+      setError('Answer must be at most ' + maxInputChars + ' characters long')
       return false
     } else {
       setError(null)
@@ -102,9 +114,10 @@ const TaskView = ({
               label="Answer"
               multiline
               error={!!error}
-              rows={4}
+              helperText={error}
+              rows={6}
               placeholder="Write your answer here"
-              onChange={(event) => setAnswer(event.target.value)}
+              onChange={handleSetAnswer}
             />
             <Button variant="contained" type="submit" onClick={() => handleSubmit()}>
               Submit
