@@ -39,7 +39,10 @@ export class TextWidget implements IWidget {
     const transform = ctx.getTransform()
 
     // get the canvas scale factor
-    const scale = transform.a
+    const scaleA = transform.a
+
+    const scaleD = transform.d
+    const scale = scaleA > scaleD ? scaleA : scaleD
 
     // get the canvas offset
     const left = canvasRect.left + window.pageXOffset
@@ -95,14 +98,13 @@ export class TextWidget implements IWidget {
     } else {
       // if it does exist, update the value
       const html = document.getElementById('textWidget' + node.id) as HTMLInputElement
-      html.style.position = 'absolute'
       html.style.left = `${nodeLeft}px`
       html.style.top = `${nodeTop}px`
       html.style.width = `${width}px`
       html.style.height = `${height}px`
-      if (html) {
-        html.value = node.properties.value
-      }
+      // if (html) {
+      //   html.value = node.properties.value
+      // }
     }
 
     // draw rect behind text

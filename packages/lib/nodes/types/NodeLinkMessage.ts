@@ -4,4 +4,4 @@ export type PromptMessageType = {
   content: string
 }
 
-export type InOut = 'string' | 'number' | 'boolean' | 'message' | '*'
+export type InOut = 'string' | 'number' | 'boolean' | 'message' | '[number]' | '*'

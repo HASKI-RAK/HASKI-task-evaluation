@@ -11,6 +11,7 @@ import { MyAddNode } from './MyAddNode'
 import { NumberNode } from './NumberNode'
 import { Precision } from './Precision'
 import { PromptMessage } from './PromptMessage'
+import { SentenceTransformer } from './SentenceTransformer'
 import { SuccessPercentageOutputNode } from './SuccessPercentageOutputNode'
 import { Textfield } from './Textfield'
 import { Watch } from './Watch'
@@ -28,6 +29,7 @@ LiteGraph.registerNodeType(AnswerInputNode.getPath(), AnswerInputNode)
 LiteGraph.registerNodeType(PromptMessage.getPath(), PromptMessage)
 LiteGraph.registerNodeType(ConcatObject.getPath(), ConcatObject)
 LiteGraph.registerNodeType(CosineSimilarity.getPath(), CosineSimilarity)
+LiteGraph.registerNodeType(SentenceTransformer.getPath(), SentenceTransformer)
 LiteGraph.registerNodeType(
   SuccessPercentageOutputNode.getPath(),
   SuccessPercentageOutputNode
