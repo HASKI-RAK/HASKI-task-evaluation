@@ -76,8 +76,9 @@ export const Editor = () => {
     severity: 'success',
     open: false
   })
-  const [feedback, setFeedback] = useState<string | undefined>()
-  const [successPercentage, setSuccessPercentage] = useState<number | undefined>()
+  const [outputs, setOutputs] = useState<
+    Record<string, ServerEventPayload['output']> | undefined
+  >(undefined)
   const [maxInputChars, setMaxInputChars] = useState<number>(300)
   const lgraph = useMemo(() => new LiteGraph.LGraph(), [])
   const [socketUrl, setSocketUrl] = useState(
@@ -153,13 +154,13 @@ export const Editor = () => {
               open: true
             })
           },
-          feedback: (feedback) => {
-            console.log('Feedback: ', feedback)
-            setFeedback(feedback)
-          },
-          successPercentage(percentage) {
-            console.log('Success percentage: ', percentage)
-            setSuccessPercentage(percentage)
+          output(output) {
+            // check if output is already in outputs, if not add it, otherwise update it
+            setOutputs((prev) => {
+              if (prev === undefined) return { [output.uniqueId]: output }
+              return { ...prev, [output.uniqueId]: output }
+            })
+            console.log('Output: ', output)
           },
           nodeError(payload) {
             console.warn('Node error: ', payload)
@@ -282,8 +283,7 @@ export const Editor = () => {
           <Divider />
           <TaskView
             onSubmit={(answer) => handleSubmit(answer)}
-            feedback={feedback}
-            successPercentage={successPercentage}
+            outputs={outputs}
             maxInputChars={maxInputChars}
           />
         </Drawer>

@@ -121,6 +121,7 @@ export abstract class LGraphNode extends LGN implements ILGraphNode, WebSocketNo
       string: { color_off: '#00FF0060', color_on: '#00FF00' },
       message: { color_off: '#D9FF0060', color_on: '#D9FF00' },
       '[number]': { color_off: '#00FFFF60', color_on: '#00FFFF' },
+      '[string]': { color_off: '#FF00FF60', color_on: '#FF00FF' },
       '*': { color_off: '#FFFFFF60', color_on: '#FFFFFF' }
     }
 

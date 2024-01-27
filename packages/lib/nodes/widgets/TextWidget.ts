@@ -30,6 +30,7 @@ export class TextWidget implements IWidget {
     const x = 0
     let y = posY
     ctx.save()
+
     const canvas = ctx.canvas
     const canvasRect = canvas.getBoundingClientRect()
     // get this node's position relative to the canvas
@@ -50,15 +51,18 @@ export class TextWidget implements IWidget {
     const top = canvasRect.top + window.pageYOffset
 
     // get the node's position relative to the canvas
-    const nodeX = nodeRect[0] + left
-    const nodeY = nodeRect[1] + top
+    const nodeX = nodeRect[0]
+    const nodeY = nodeRect[1]
 
     const nodeWidth = nodeRect[2] * scale
     const nodeHeight = nodeRect[3] * scale
 
+    const transformedX = transform.a * nodeX + transform.c * nodeY + transform.e
+    const transformedY = transform.b * nodeX + transform.d * nodeY + transform.f
+
     // offset based on canvas scale and transform
-    const nodeLeft = nodeX * scale + transform.e
-    const nodeTop = nodeY * scale + transform.f
+    const nodeLeft = transform.e * transform.d
+    const nodeTop = transform.f * transform.d
 
     // insert html text field above canvas if it doesn't exist
     if (!document.getElementById('textWidget' + node.id)) {

@@ -6,7 +6,11 @@ import werkzeug
 # import cors:
 from flask_cors import CORS
 
-model = SentenceTransformer("all-MiniLM-L6-v2")
+# model = SentenceTransformer("all-MiniLM-L6-v2")
+model = SentenceTransformer(
+    "sentence-transformers/all-mpnet-base-v2"
+)  # 384 word pieces max
+
 
 app = flask.Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})

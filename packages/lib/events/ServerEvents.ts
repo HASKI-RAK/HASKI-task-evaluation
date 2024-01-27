@@ -12,14 +12,22 @@ export type SerializedGraph = serializedLGraph<
   SerializedLGraphGroup
 >
 
+export type OutputType = 'text' | 'score' | 'classifications'
+
 // type that matches ServerEventName with payload
 export type ServerEventPayload = {
   graphFinished: SerializedGraph // graph
   nodeExecuting: number // node id
   nodeExecuted: number // node id
   graphSaved: SerializedGraph // graph
-  feedback: string // string from the feedback node
-  successPercentage: number // can be used for cosine similarity and is indicated by a progress bar in the frontend. used by successPercentageNode
+  output: {
+    uniqueId: string
+    type: OutputType
+    label: string
+    value: string | number | string[]
+  }
+  //feedback: string // string from the feedback node
+  //successPercentage: number // can be used for cosine similarity and is indicated by a progress bar in the frontend. used by successPercentageNode
   maxInputChars: number // used by maxInputCharsNode. Can be used to limit how many characters a user can input. Default is 300
   nodeError: {
     nodeId: number
