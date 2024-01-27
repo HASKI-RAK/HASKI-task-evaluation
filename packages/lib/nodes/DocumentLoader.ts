@@ -33,7 +33,7 @@ export class DocumentLoader extends LGraphNode {
     })
 
     this.serialize_widgets = true
-    this.title = 'textfield'
+    this.title = 'document loader'
     this.size = [200, 100]
   }
   //name of the node
