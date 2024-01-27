@@ -3,6 +3,7 @@ import { CleanNode } from './CleanNode'
 import { ConcatObject } from './ConcatObject'
 import { ConcatString } from './ConcatString'
 import { CosineSimilarity } from './CosineSimilarity'
+import { DocumentLoader } from './DocumentLoader'
 import { LGraph, LGraphNode, LiteGraph } from './litegraph-extensions'
 import { LLMNode } from './LLMNode'
 import { MaxInputChars } from './MaxInputChars'
@@ -34,6 +35,7 @@ LiteGraph.registerNodeType(ConcatString.getPath(), ConcatString)
 LiteGraph.registerNodeType(MaxInputChars.getPath(), MaxInputChars)
 LiteGraph.registerNodeType(NumberNode.getPath(), NumberNode)
 LiteGraph.registerNodeType(CleanNode.getPath(), CleanNode) // Preprocessing
+LiteGraph.registerNodeType(DocumentLoader.getPath(), DocumentLoader)
 
 // LiteGraph.registerNodeType('basic/const', ConstNumber)
 
