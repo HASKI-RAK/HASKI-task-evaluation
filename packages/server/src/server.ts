@@ -78,6 +78,10 @@ server.on('request', async (request, response) => {
     } else if (pathname === '/bar') {
       response.writeHead(404)
       response.end()
+    } else if (pathname === '/v1/benchmark') {
+      // load graph from db based on post request
+      response.writeHead(200)
+      response.end()
     }
   } else {
     response.writeHead(404)
