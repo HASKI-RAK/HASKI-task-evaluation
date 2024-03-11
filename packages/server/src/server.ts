@@ -1,40 +1,54 @@
 /* eslint-disable immutable/no-mutation */
 import { ClientEventPayload, handleWsRequest, WebSocketEvent } from '@haski/lib'
-import { PrismaClient } from '@prisma/client'
 import { createServer } from 'http'
 import { ILogObj, Logger } from 'tslog'
 import { parse } from 'url'
 import { WebSocket, WebSocketServer } from 'ws'
 
+import prisma from '../client'
 import { setupGraphFromPath } from './Graph'
 import { runGraph, saveGraph } from './WebsocketOperations'
 
 // Init
 export const log: Logger<ILogObj> = new Logger()
-const server = createServer()
+export const server = createServer()
 export const wss1 = new WebSocketServer({ noServer: true })
 const wss2 = new WebSocketServer({ noServer: true })
-// Database
-export const prisma = new PrismaClient()
 
 /**
  * * Handle websocket when on valid path
  */
 wss1.on('connection', async function connection(ws: WebSocket, request) {
+  const timeItStart = Date.now()
   ws.on('error', console.error) // TODO: Expand error handling
   const lgraph = await setupGraphFromPath(ws, request)
 
   // ! Register custom events
   log.debug('Registering custom events')
-  ws.on('message', function (message) {
+  ws.on('message', async function (message) {
+    const timeItStartMessage = Date.now()
     const parsed: WebSocketEvent<ClientEventPayload> = JSON.parse(message.toString())
     handleWsRequest<ClientEventPayload>(parsed, {
       runGraph: (payload) => runGraph(payload, ws, lgraph),
-      saveGraph: (payload) => saveGraph(payload, lgraph, request, ws)
+      saveGraph: async (payload) => saveGraph(payload, lgraph, request, ws)
     })
+      .then((handled) => {
+        if (!handled) {
+          log.warn('Unhandled event: ', parsed.eventName)
+        }
+      })
+      .finally(() => {
+        const timeItEndMessage = Date.now()
+        log.info(
+          'Time it took to handle message: ',
+          timeItEndMessage - timeItStartMessage
+        )
+      })
   })
 
   // ...
+  const timeItEnd = Date.now()
+  log.info('Time it took to setup graph: ', timeItEnd - timeItStart)
 })
 // TODO: For later use
 wss2.on('connection', function connection(ws) {
@@ -117,7 +131,10 @@ server.on('upgrade', function upgrade(request, socket, head) {
  */
 const main = async () => {
   log.info('Server listening on port: ', process.env.PORT ?? 5000)
-  server.listen(process.env.PORT ?? 5000)
+  if (process.env.NODE_ENV !== 'test') {
+    // https://stackoverflow.com/questions/60803230/node-eaddrinuse-address-already-in-use-3000-when-testing-with-jest-and-super
+    server.listen(process.env.PORT ?? 5000)
+  }
 }
 
 main().catch(async (e) => {

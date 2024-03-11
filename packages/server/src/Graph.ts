@@ -3,7 +3,8 @@ import { IncomingMessage } from 'http'
 import { parse } from 'url'
 import { WebSocket } from 'ws'
 
-import { log, prisma } from './server'
+import prisma from '../client'
+import { log } from './server'
 import * as demoGraphJson from './utils/demoGraph.json'
 
 /**
@@ -70,6 +71,9 @@ export async function setupGraphFromPath(ws: WebSocket, request: IncomingMessage
     return lgraph
   } else {
     // ? test graph
+    const test = testGraph(lgraph, ws)
+    test.clear()
+    return test
     return testGraph(lgraph, ws)
   }
 }

@@ -5,7 +5,6 @@ import {
   WebSocketEvent
 } from '@haski/lib'
 import { WebSocket } from 'ws'
-
 /**
  * Send a message to the client on an established WebSocket connection
  * @param ws - WebSocket used to send the message
@@ -20,7 +19,7 @@ export const sendWs = <K extends keyof ServerEventPayload>(
 
 // Define a mapping of event names to handler functions
 export type EventHandlerMap<S extends ServerEventPayload | ClientEventPayload> = {
-  [K in keyof S]: (payload: S[K]) => void
+  [K in keyof S]: (payload: S[K]) => void | Promise<void>
 }
 
 /**
@@ -44,13 +43,15 @@ export type EventHandlerMap<S extends ServerEventPayload | ClientEventPayload> =
 export const handleWsRequest = <S extends ServerEventPayload | ClientEventPayload>(
   WsEvent: WebSocketEvent<S>,
   handlers: EventHandlerMap<S>
-): boolean => {
+): Promise<boolean> => {
   // Utility function to safely handle events
-  function handleEvent<K extends keyof S>(eventName: K, payload: S[keyof S]): boolean {
+  async function handleEvent<K extends keyof S>(
+    eventName: K,
+    payload: S[keyof S]
+  ): Promise<boolean> {
     const handler = handlers[eventName]
     if (handler) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ;(handler as any)(payload) // Cast is safe here because of the mapped types
+      await handler(payload as S[K])
       return true
     } else return false
   }

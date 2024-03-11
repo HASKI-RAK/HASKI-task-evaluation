@@ -4,6 +4,7 @@ dist
 dist-ssr
 *.local
 node_modules/*
+packages/server/coverage
 dev-dist
 tsconfig.node.tsbuildinfo
 packages/frontend/.env

@@ -1,14 +1,16 @@
 import { LGraph } from '@haski/lib'
+import { Prisma, PrismaClient } from '@prisma/client'
+import { DefaultArgs } from '@prisma/client/runtime/library'
 
 import { log } from '../server'
 
-export function prismaGraphCreateOrUpdate(
+export async function prismaGraphCreateOrUpdate(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  prisma: any,
+  prisma: PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>,
   pathname: string | null,
   lgraph: LGraph
 ) {
-  prisma.graph
+  return prisma.graph
     .findFirstOrThrow({
       where: {
         path: pathname ?? ''
