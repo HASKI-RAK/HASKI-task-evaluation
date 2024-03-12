@@ -89,6 +89,7 @@ server.on('request', async (request, response) => {
       response.writeHead(404)
       response.end()
     } else if (pathname === '/v1/benchmark') {
+      //! TODO: clean up
       // load graph from db based on post request
       const body: Uint8Array[] = []
       request.on('data', (chunk) => {
