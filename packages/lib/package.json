@@ -5,5 +5,8 @@
   "main": "index.ts",
   "author": "David Fischer",
   "license": "MIT",
-  "type": "commonjs"
+  "type": "commonjs",
+  "dependencies": {
+    "litegraph.js": "^0.7.14"
+  }
 }

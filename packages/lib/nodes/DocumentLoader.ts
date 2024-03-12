@@ -3,7 +3,6 @@
 /* eslint-disable immutable/no-let */
 /* eslint-disable immutable/no-mutation */
 /* eslint-disable immutable/no-this */
-import { LGraphCanvas, Vector2 } from 'litegraph.js'
 
 import { LGraphNode } from './litegraph-extensions'
 
@@ -33,11 +32,10 @@ export class DocumentLoader extends LGraphNode {
     })
 
     this.serialize_widgets = true
-    this.title = 'document loader'
+    this.title = 'Document loader'
     this.size = [200, 100]
   }
   //name of the node
-  static title = 'document loader'
   static path = 'basic/document-loader'
   static getPath(): string {
     return DocumentLoader.path

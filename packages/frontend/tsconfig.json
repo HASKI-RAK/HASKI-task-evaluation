@@ -18,7 +18,6 @@
     "baseUrl": "./",
     "paths": {
       "@/*": ["src/*"],
-      "litegraph.js": ["../../lib/nodes/litegraph-extensions/litegraph/litegraph.js"]
     }
   },
   "include": ["src"],

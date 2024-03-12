@@ -2,7 +2,7 @@ import {
   serializedLGraph,
   SerializedLGraphGroup,
   SerializedLGraphNode
-} from '../nodes/litegraph-extensions/litegraph/litegraph.js'
+} from 'litegraph.js'
 
 import { LGraphNode } from '../nodes/litegraph-extensions'
 

@@ -4,7 +4,7 @@ import { ConcatObject } from './ConcatObject'
 import { ConcatString } from './ConcatString'
 import { CosineSimilarity } from './CosineSimilarity'
 import { DocumentLoader } from './DocumentLoader'
-import { LGraph, LGraphNode, LiteGraph } from './litegraph-extensions'
+import { LiteGraph } from './litegraph-extensions'
 import { LLMNode } from './LLMNode'
 import { MaxInputChars } from './MaxInputChars'
 import { MyAddNode } from './MyAddNode'
@@ -50,9 +50,6 @@ export {
   ConcatString,
   CosineSimilarity,
   DocumentLoader,
-  LGraph,
-  LGraphNode,
-  LiteGraph,
   LLMNode,
   MaxInputChars,
   MyAddNode,
@@ -65,3 +62,4 @@ export {
   Textfield,
   Watch
 }
+export * from './litegraph-extensions'
