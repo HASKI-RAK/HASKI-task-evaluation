@@ -51,6 +51,23 @@ yarn dev
 
 This will launch both the server and the frontend PWA in development mode.
 
+### Benchmarking
+
+To run a benchmark, send a POST request to `http://localhost:5000/v1/benchmark` with the following body:
+
+```json
+{
+  "path": "<your_path>",
+  "data": {
+    "question": "What is 1+1?",
+    "realAnswer": "2",
+    "answer": "2"
+  }
+}
+```
+
+Replace `<your_path>` with the path you want to benchmark. When you launch the application as in chapter "Running the Project", you can specify the path in the URL. After you hit save, the graph for the path will be saved in the database and you can use it for benchmarking.
+
 ## Structure
 
 The project is structured into multiple workspaces located under `packages/*`, enabling seamless integration and development of the individual components.
