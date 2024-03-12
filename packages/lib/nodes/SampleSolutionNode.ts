@@ -5,16 +5,16 @@
 /* eslint-disable immutable/no-this */
 import { Textfield } from './Textfield'
 
-export class QuestionNode extends Textfield {
+export class SampleSolutionNode extends Textfield {
   constructor() {
     super()
-    this.properties = { value: 'Enter your question' }
-    this.title = 'Question'
+    this.properties = { value: 'Enter the sample solution.' }
+    this.title = 'Sample solution'
   }
   //name of the node
-  static title = 'Question'
-  static path = 'input/question'
+  static title = 'Sample solution'
+  static path = 'input/sample-solution'
   static getPath(): string {
-    return QuestionNode.path
+    return SampleSolutionNode.path
   }
 }

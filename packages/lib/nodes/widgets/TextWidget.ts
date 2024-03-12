@@ -62,7 +62,7 @@ export class TextWidget implements IWidget {
 
     // offset based on canvas scale and transform
     const nodeLeft = transform.e * transform.d
-    const nodeTop = transform.f * transform.d
+    const nodeTop = transform.f * transform.d + 20
 
     // insert html text field above canvas if it doesn't exist
     if (!document.getElementById('textWidget' + node.id)) {

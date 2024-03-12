@@ -14,12 +14,11 @@ export class Textfield extends LGraphNode {
     this.addOut('string')
     this.properties = { precision: 1, value: 'Enter your text' }
     this.addCustomWidget<TextWidget>(new TextWidget())
-
-    this.title = 'textfield'
     this.size = [200, 100]
+    this.title = 'Textfield'
   }
   //name of the node
-  static title = 'textfield'
+  static title = 'Textfield'
   static path = 'basic/textfield'
   static getPath(): string {
     return Textfield.path

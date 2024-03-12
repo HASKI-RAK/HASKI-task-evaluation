@@ -13,6 +13,7 @@ import { OutputNode } from './OutputNode'
 import { Precision } from './Precision'
 import { PromptMessage } from './PromptMessage'
 import { QuestionNode } from './QuestionNode'
+import { SampleSolutionNode } from './SampleSolutionNode'
 import { SentenceTransformer } from './SentenceTransformer'
 import { Textfield } from './Textfield'
 import { Watch } from './Watch'
@@ -38,6 +39,7 @@ LiteGraph.registerNodeType(NumberNode.getPath(), NumberNode)
 LiteGraph.registerNodeType(CleanNode.getPath(), CleanNode) // Preprocessing
 LiteGraph.registerNodeType(DocumentLoader.getPath(), DocumentLoader)
 LiteGraph.registerNodeType(QuestionNode.getPath(), QuestionNode)
+LiteGraph.registerNodeType(SampleSolutionNode.getPath(), SampleSolutionNode)
 
 // LiteGraph.registerNodeType('basic/const', ConstNumber)
 
