@@ -68,6 +68,8 @@ To run a benchmark, send a POST request to `http://localhost:5000/v1/benchmark` 
 
 Replace `<your_path>` with the path you want to benchmark. When you launch the application as in chapter "Running the Project", you can specify the path in the URL. After you hit save, the graph for the path will be saved in the database and you can use it for benchmarking.
 
+> Note: The graph has to have the following nodes for the benchmark to work: "Answer Input", "question", "feedback output". You can use multiple of these nodes.
+
 ## Structure
 
 The project is structured into multiple workspaces located under `packages/*`, enabling seamless integration and development of the individual components.
