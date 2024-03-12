@@ -35,6 +35,7 @@ export class Textfield extends LGraphNode {
     if (pos[1] < 10) {
       return
     }
+    event.preventDefault()
     graphCanvas.showEditPropertyValue(this, 'value', { pos: pos })
     // graphCanvas.prompt(
     //   'Enter your text',

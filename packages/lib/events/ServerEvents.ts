@@ -35,11 +35,22 @@ export type ServerEventPayload = {
   }
 }
 
+export type ServerBenchmarkPostPayload = (string | number | string[])[]
+
 export type ClientEventPayload = {
   saveGraph: SerializedGraph
   runGraph: {
     answer: string
     graph: SerializedGraph
+  }
+}
+
+export type ClientBenchmarkPostPayload = {
+  path: string
+  data: {
+    question: string
+    realAnswer: string
+    answer: string
   }
 }
 

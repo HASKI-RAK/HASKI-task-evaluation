@@ -1,6 +1,4 @@
 import { LGraph, LGraphNode, LiteGraph, sendWs } from '@haski/lib'
-import { IncomingMessage } from 'http'
-import { parse } from 'url'
 import { WebSocket } from 'ws'
 
 import prisma from '../client'
@@ -11,18 +9,20 @@ import * as demoGraphJson from './utils/demoGraph.json'
  * Sends a graph from a given path to a WebSocket.
  *
  * @param ws - The WebSocket to send the graph to.
- * @param request - The IncomingMessage object representing the request.
+ * @param pathname - The path to the graph. In the database.
  * @returns The LiteGraph instance representing the graph.
  */
-export async function setupGraphFromPath(ws: WebSocket, request: IncomingMessage) {
+export async function setupGraphFromPath(
+  ws: WebSocket,
+  pathname: string
+): Promise<LGraph> {
   log.debug('Setup graph from path')
-  const { pathname } = parse(request.url ?? '', true)
   // TODO: get graph from path
   const lgraph = new LiteGraph.LGraph()
   log.debug('Loading graph from DB for route: ', pathname)
   const loaded_graph = await prisma.graph.findFirst({
     where: {
-      path: pathname ?? ''
+      path: pathname
     }
   })
 

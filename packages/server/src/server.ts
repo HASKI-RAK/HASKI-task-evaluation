@@ -1,12 +1,22 @@
 /* eslint-disable immutable/no-mutation */
-import { ClientEventPayload, handleWsRequest, WebSocketEvent } from '@haski/lib'
+import {
+  AnswerInputNode,
+  ClientBenchmarkPostPayload,
+  ClientEventPayload,
+  handleWsRequest,
+  LiteGraph,
+  OutputNode,
+  QuestionNode,
+  ServerBenchmarkPostPayload,
+  WebSocketEvent
+} from '@haski/lib'
 import { createServer } from 'http'
 import { ILogObj, Logger } from 'tslog'
 import { parse } from 'url'
 import { WebSocket, WebSocketServer } from 'ws'
 
 import prisma from '../client'
-import { setupGraphFromPath } from './Graph'
+import { runLgraph, setupGraphFromPath } from './Graph'
 import { runGraph, saveGraph } from './WebsocketOperations'
 
 // Init
@@ -21,7 +31,7 @@ const wss2 = new WebSocketServer({ noServer: true })
 wss1.on('connection', async function connection(ws: WebSocket, request) {
   const timeItStart = Date.now()
   ws.on('error', console.error) // TODO: Expand error handling
-  const lgraph = await setupGraphFromPath(ws, request)
+  const lgraph = await setupGraphFromPath(ws, request.url ?? '')
 
   // ! Register custom events
   log.debug('Registering custom events')
@@ -80,8 +90,47 @@ server.on('request', async (request, response) => {
       response.end()
     } else if (pathname === '/v1/benchmark') {
       // load graph from db based on post request
-      response.writeHead(200)
-      response.end()
+      const body: Uint8Array[] = []
+      request.on('data', (chunk) => {
+        body.push(chunk)
+      })
+      request.on('end', async () => {
+        const parsedBody: ClientBenchmarkPostPayload = JSON.parse(
+          Buffer.concat(body).toString()
+        )
+        log.debug('Benchmark post request: ', parsedBody)
+        const graph = await prisma.graph.findFirst({
+          where: {
+            path: parsedBody.path
+          }
+        })
+        if (!graph) {
+          response.writeHead(404)
+          response.end()
+          return
+        }
+        const lgraph = new LiteGraph.LGraph()
+        lgraph.configure(JSON.parse(graph.graph))
+        // Fill in the answer and question
+        lgraph.findNodesByClass(AnswerInputNode).forEach((node) => {
+          node.properties.value = parsedBody.data.answer
+        })
+        lgraph.findNodesByClass(QuestionNode).forEach((node) => {
+          node.properties.value = parsedBody.data.question
+        })
+        // Run the graph
+        runLgraph(lgraph).then(() => {
+          const output: ServerBenchmarkPostPayload = lgraph
+            .findNodesByClass(OutputNode)
+            .map((node) => {
+              return node.properties.value
+            })
+          log.debug('Benchmark post response: ', output)
+          response.writeHead(200, { 'Content-Type': 'application/json' })
+          response.write(JSON.stringify(output))
+          response.end()
+        })
+      })
     }
   } else {
     response.writeHead(404)

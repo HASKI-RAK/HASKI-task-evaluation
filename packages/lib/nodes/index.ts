@@ -12,6 +12,7 @@ import { NumberNode } from './NumberNode'
 import { OutputNode } from './OutputNode'
 import { Precision } from './Precision'
 import { PromptMessage } from './PromptMessage'
+import { QuestionNode } from './QuestionNode'
 import { SentenceTransformer } from './SentenceTransformer'
 import { Textfield } from './Textfield'
 import { Watch } from './Watch'
@@ -36,17 +37,29 @@ LiteGraph.registerNodeType(MaxInputChars.getPath(), MaxInputChars)
 LiteGraph.registerNodeType(NumberNode.getPath(), NumberNode)
 LiteGraph.registerNodeType(CleanNode.getPath(), CleanNode) // Preprocessing
 LiteGraph.registerNodeType(DocumentLoader.getPath(), DocumentLoader)
+LiteGraph.registerNodeType(QuestionNode.getPath(), QuestionNode)
 
 // LiteGraph.registerNodeType('basic/const', ConstNumber)
 
 export {
   AnswerInputNode,
+  CleanNode,
+  ConcatObject,
+  ConcatString,
+  CosineSimilarity,
+  DocumentLoader,
   LGraph,
   LGraphNode,
   LiteGraph,
   LLMNode,
+  MaxInputChars,
   MyAddNode,
+  NumberNode,
   OutputNode,
+  Precision,
+  PromptMessage,
+  QuestionNode,
+  SentenceTransformer,
   Textfield,
   Watch
 }
