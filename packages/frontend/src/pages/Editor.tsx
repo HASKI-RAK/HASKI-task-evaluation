@@ -83,7 +83,7 @@ export const Editor = () => {
   const [maxInputChars, setMaxInputChars] = useState<number>(300)
   const lgraph = useMemo(() => new LiteGraph.LGraph(), [])
   const [socketUrl, setSocketUrl] = useState(
-    getConfig().API_WS ?? 'ws://localhost:5000/ws/editor/ke.haski.app/2/2'
+    getConfig().API_WS ?? 'ws://localhost:5000' + window.location.pathname
   )
   const [size, setSize] = useState({
     width: window.outerWidth,
@@ -208,7 +208,7 @@ export const Editor = () => {
   const handleClickChangeSocketUrl = useCallback(
     () =>
       setSocketUrl(
-        getConfig().API_WS ?? 'ws://localhost:5000/ws/editor/ke.haski.app/2/2'
+        getConfig().API_WS ?? 'ws://localhost:5000' + window.location.pathname
       ),
     []
   )

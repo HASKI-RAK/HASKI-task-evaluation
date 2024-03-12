@@ -1,5 +1,5 @@
 {
-  "include": ["src", "../lib/websocket/websocket.ts", "src/utils/demoGraph.json", "tests/WebsocketOperations.test.ts", "__mocks__/client.ts", "client.ts"],
+  "include": ["src", "src/utils/demoGraph.json", "tests/WebsocketOperations.test.ts", "__mocks__/client.ts", "client.ts"],
   "compilerOptions": {
     /* Visit https://aka.ms/tsconfig to read more about this file */
 

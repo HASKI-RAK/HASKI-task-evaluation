@@ -1,29 +1,20 @@
 /* eslint-disable immutable/no-mutation */
-import {
-  AnswerInputNode,
-  ClientBenchmarkPostPayload,
-  ClientEventPayload,
-  handleWsRequest,
-  LiteGraph,
-  OutputNode,
-  QuestionNode,
-  ServerBenchmarkPostPayload,
-  WebSocketEvent
-} from '@haski/lib'
+import { ClientEventPayload, handleWsRequest, WebSocketEvent } from '@haski/lib'
 import { createServer } from 'http'
 import { ILogObj, Logger } from 'tslog'
 import { parse } from 'url'
 import { WebSocket, WebSocketServer } from 'ws'
 
 import prisma from '../client'
-import { runLgraph, setupGraphFromPath } from './Graph'
+import { setupGraphFromPath } from './Graph'
+import { handlers } from './handlers'
+import { handleRestRequest, HttpMethod, RestRequest } from './utils/rest'
 import { runGraph, saveGraph } from './WebsocketOperations'
 
 // Init
 export const log: Logger<ILogObj> = new Logger()
 export const server = createServer()
 export const wss1 = new WebSocketServer({ noServer: true })
-const wss2 = new WebSocketServer({ noServer: true })
 
 /**
  * * Handle websocket when on valid path
@@ -55,90 +46,40 @@ wss1.on('connection', async function connection(ws: WebSocket, request) {
         )
       })
   })
-
-  // ...
   const timeItEnd = Date.now()
   log.info('Time it took to setup graph: ', timeItEnd - timeItStart)
 })
-// TODO: For later use
-wss2.on('connection', function connection(ws) {
-  ws.on('error', console.error)
 
-  // ...
-})
 /**
- * Handle get, post, put, delete requests
+ ** Handle get, post, put, delete requests
  */
-server.on('request', async (request, response) => {
+server.on('request', (request, response) => {
   const { pathname } = parse(request.url ?? '', true)
-  // Announce that we are going to handle this request
-  log.trace('Handling request for ', pathname)
-  if (request.method === 'GET') {
-    if (pathname === '/editor/ke.haski.app/2/2') {
-      response.writeHead(404)
-      response.end()
-    } else if (pathname === '/bar') {
-      response.writeHead(404)
-      response.end()
-    }
-  } else if (request.method === 'POST') {
-    if (pathname === '/editor/ke.haski.app/2/2') {
-      response.writeHead(404)
-      response.end()
-    } else if (pathname === '/bar') {
-      response.writeHead(404)
-      response.end()
-    } else if (pathname === '/v1/benchmark') {
-      //! TODO: clean up
-      // load graph from db based on post request
-      const body: Uint8Array[] = []
-      request.on('data', (chunk) => {
-        body.push(chunk)
-      })
-      request.on('end', async () => {
-        const parsedBody: ClientBenchmarkPostPayload = JSON.parse(
-          Buffer.concat(body).toString()
-        )
-        log.debug('Benchmark post request: ', parsedBody)
-        const graph = await prisma.graph.findFirst({
-          where: {
-            path: parsedBody.path
-          }
-        })
-        if (!graph) {
-          response.writeHead(404)
-          response.end()
-          return
-        }
-        const lgraph = new LiteGraph.LGraph()
-        lgraph.configure(JSON.parse(graph.graph))
-        // Fill in the answer and question
-        lgraph.findNodesByClass(AnswerInputNode).forEach((node) => {
-          node.properties.value = parsedBody.data.answer
-        })
-        lgraph.findNodesByClass(QuestionNode).forEach((node) => {
-          node.properties.value = parsedBody.data.question
-        })
-        // Run the graph
-        runLgraph(lgraph).then(() => {
-          const output: ServerBenchmarkPostPayload = lgraph
-            .findNodesByClass(OutputNode)
-            .map((node) => {
-              return node.properties.value
-            })
-          log.debug('Benchmark post response: ', output)
-          response.writeHead(200, { 'Content-Type': 'application/json' })
-          response.write(JSON.stringify(output))
-          response.end()
-        })
-      })
-    }
+  const method = request.method as HttpMethod
+  const route = pathname ?? '/'
+
+  if (request.method === 'POST' || request.method === 'PUT') {
+    // Parse the request body as needed
+    // For example, if the payload is JSON:
+    const requestBody: Buffer[] = []
+    request.on('data', (chunk) => requestBody.push(chunk))
+    request.on('end', () => {
+      const payload = JSON.parse(Buffer.concat(requestBody).toString())
+      const restRequest: RestRequest<typeof payload> = {
+        method,
+        route,
+        payload
+      }
+      handleRestRequest(request, response, restRequest, handlers)
+    })
   } else {
-    response.writeHead(404)
-    response.end()
+    const restRequest: RestRequest<undefined> = {
+      method,
+      route
+    }
+    handleRestRequest(request, response, restRequest, handlers)
   }
 })
-
 /**
  ** Handle initial websocket connection on http server
  */
@@ -147,36 +88,9 @@ server.on('upgrade', function upgrade(request, socket, head) {
   // Announce that we are going to handle this request
   log.trace('Handling request for ', pathname)
 
-  if (pathname === '/ws/editor/ke.haski.app/2/2') {
-    //TODO: check path
-    wss1.handleUpgrade(request, socket, head, function done(ws) {
-      wss1.emit('connection', ws, request)
-    })
-  } else if (pathname === '/bar') {
-    wss2.handleUpgrade(request, socket, head, function done(ws) {
-      wss2.emit('connection', ws, request)
-    })
-  } else if (pathname === '/v1/chat/completions') {
-    // send mock model response
-    socket.write(
-      JSON.stringify({
-        id: 'mock',
-        model: 'mock',
-        created: new Date().toISOString(),
-        choices: [
-          {
-            text: 'mock',
-            index: 0,
-            logprobs: null,
-            finish_reason: 'length'
-          }
-        ]
-      })
-    )
-  } else {
-    socket.destroy()
-    log.warn('Invalid path')
-  }
+  wss1.handleUpgrade(request, socket, head, function done(ws) {
+    wss1.emit('connection', ws, request)
+  })
 })
 
 /**
