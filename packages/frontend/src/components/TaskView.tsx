@@ -3,7 +3,6 @@ import { Button, FormControl, Stack, TextField, Typography } from '@mui/material
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress'
 import { styled } from '@mui/material/styles'
 import { memo, useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
 
 interface MyThemeComponentProps {
   color?: 'primary' | 'secondary'
@@ -30,28 +29,17 @@ const BorderLinearProgress = styled(LinearProgress, {
   }
 }))
 
-const useTask = (id: string) => {
-  console.log('useTask', id)
-  return {
-    data: {
-      title: 'Strategie Entwurfsmuster',
-      description: 'Explain the strategy pattern'
-    }
-  }
-}
-
 const TaskView = ({
   onSubmit,
   outputs,
-  maxInputChars = 300
+  maxInputChars = 300,
+  question
 }: {
   onSubmit: (answer: string) => void
   outputs?: Record<string, ServerEventPayload['output']>
   maxInputChars?: number
+  question: string
 }) => {
-  const { id } = useParams<{ id: string }>()
-  const { data: task } = useTask(id ?? '1')
-
   const [error, setError] = useState<string | null>(null)
   const [answer, setAnswer] = useState<string>('')
 
@@ -98,8 +86,8 @@ const TaskView = ({
 
   return (
     <Stack spacing={2} margin={2}>
-      <Typography variant="h4">{task.title}</Typography>
-      <Typography variant="body1">{task.description}</Typography>
+      <Typography variant="h4">Your task</Typography>
+      <Typography variant="body1">{question}</Typography>
       <form
         onSubmit={handleSubmit}
         noValidate

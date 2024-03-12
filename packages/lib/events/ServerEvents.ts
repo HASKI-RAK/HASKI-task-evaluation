@@ -33,6 +33,7 @@ export type ServerEventPayload = {
     nodeId: number
     error: string
   }
+  question: string
 }
 
 export type ServerBenchmarkPostPayload = (string | number | string[])[]

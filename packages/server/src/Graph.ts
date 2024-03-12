@@ -1,4 +1,4 @@
-import { LGraph, LGraphNode, LiteGraph, sendWs } from '@haski/lib'
+import { LGraph, LGraphNode, LiteGraph, QuestionNode, sendWs } from '@haski/lib'
 import { WebSocket } from 'ws'
 
 import prisma from '../client'
@@ -68,6 +68,8 @@ export async function setupGraphFromPath(
     lgraph.configure(JSON.parse(loaded_graph.graph))
     log.debug('Loaded graph from DB for route: ', pathname)
     sendWs(ws, { eventName: 'graphFinished', payload: lgraph.serialize() })
+
+    sendQuestion(lgraph, ws)
     return lgraph
   } else {
     // ? test graph
@@ -75,6 +77,17 @@ export async function setupGraphFromPath(
     test.clear()
     return test
     return testGraph(lgraph, ws)
+  }
+}
+
+export function sendQuestion(lgraph: LGraph, ws: WebSocket) {
+  const question = lgraph.findNodesByClass(QuestionNode).pop()
+  if (question) {
+    // send question
+    sendWs(ws, {
+      eventName: 'question',
+      payload: question.properties.value
+    })
   }
 }
 

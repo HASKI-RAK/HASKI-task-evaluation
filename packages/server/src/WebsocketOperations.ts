@@ -11,7 +11,7 @@ import { parse } from 'url'
 import { WebSocket } from 'ws'
 
 import prisma from '../client'
-import { runLgraph } from './Graph'
+import { runLgraph, sendQuestion } from './Graph'
 import { log } from './server'
 import { prismaGraphCreateOrUpdate } from './utils/prismaOperations'
 
@@ -53,4 +53,5 @@ export async function saveGraph(
     eventName: 'graphSaved',
     payload: lgraph.serialize<SerializedGraph>()
   })
+  sendQuestion(lgraph, ws)
 }

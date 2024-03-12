@@ -76,6 +76,7 @@ export const Editor = () => {
     severity: 'success',
     open: false
   })
+  const [question, setQuestion] = useState<string>('')
   const [outputs, setOutputs] = useState<
     Record<string, ServerEventPayload['output']> | undefined
   >(undefined)
@@ -144,6 +145,9 @@ export const Editor = () => {
             console.log('Graph finished: ', payload)
             lgraph.configure(payload)
             lgraph.setDirtyCanvas(true, true)
+          },
+          question(payload) {
+            setQuestion(payload)
           },
           nodeExecuting: (nodeId) => handleNodeExecuting(lgraph, nodeId),
           nodeExecuted: (nodeId) => handleNodeExecuted(lgraph, nodeId),
@@ -282,6 +286,7 @@ export const Editor = () => {
           </DrawerHeader>
           <Divider />
           <TaskView
+            question={question}
             onSubmit={(answer) => handleSubmit(answer)}
             outputs={outputs}
             maxInputChars={maxInputChars}

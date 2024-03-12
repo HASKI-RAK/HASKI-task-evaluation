@@ -6,6 +6,7 @@
 import { Textfield } from './Textfield'
 
 export class QuestionNode extends Textfield {
+  properties: { value: string }
   constructor() {
     super()
     this.properties = { value: 'Enter your question' }

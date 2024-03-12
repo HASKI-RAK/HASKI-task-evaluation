@@ -6,9 +6,10 @@ import { AnswerInputNode, ClientEventPayload, LGraph } from '@haski/lib'
 import { IncomingMessage } from 'http'
 import { WebSocket } from 'ws'
 
+import { saveGraph } from '../src/Graph'
 import { server } from '../src/server'
 import * as demoGraphJson from '../src/utils/demoGraph.json'
-import { runGraph, saveGraph } from '../src/WebsocketOperations'
+import { runGraph } from '../src/WebsocketOperations'
 
 jest.mock('ws')
 jest.mock('../src/utils/prismaOperations')
