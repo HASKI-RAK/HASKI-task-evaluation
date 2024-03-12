@@ -1954,7 +1954,6 @@ __metadata:
     eslint-plugin-prettier: "npm:^5.0.1"
     eslint-plugin-react: "npm:^7.33.2"
     eslint-plugin-simple-import-sort: "npm:^10.0.0"
-    litegraph.js: "npm:^0.7.14"
     pre-commit: "npm:^1.2.2"
     prettier: "npm:^3.0.3"
     react: "npm:^18.2.0"
@@ -1982,7 +1981,6 @@ __metadata:
     "@types/ws": "npm:^8.5.8"
     jest: "npm:^29.0.0"
     jest-mock-extended: "npm:2.0.4"
-    litegraph.js: "npm:^0.7.14"
     pg-promise: "npm:^11.5.4"
     prisma: "npm:^5.5.2"
     ts-jest: "npm:^29.1.2"
@@ -6628,13 +6626,6 @@ __metadata:
   version: 1.2.4
   resolution: "lines-and-columns@npm:1.2.4"
   checksum: 3da6ee62d4cd9f03f5dc90b4df2540fb85b352081bee77fe4bbcd12c9000ead7f35e0a38b8d09a9bb99b13223446dd8689ff3c4959807620726d788701a83d2d
-  languageName: node
-  linkType: hard
-
-"litegraph.js@npm:^0.7.14":
-  version: 0.7.14
-  resolution: "litegraph.js@npm:0.7.14"
-  checksum: bf920ef449f9af3e9b156551689cdd27c88600520a9a9ec2d559ffe04fc17e6ad6468248cf1eba45dc90809a8bb5bbf964d2c688eb54fe9f3f05943c1a5a5826
   languageName: node
   linkType: hard
 

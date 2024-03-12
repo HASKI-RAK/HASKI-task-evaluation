@@ -41,7 +41,6 @@
   "dependencies": {
     "@haski/lib": "*",
     "@prisma/client": "^5.5.2",
-    "litegraph.js": "^0.7.14",
     "pg-promise": "^11.5.4",
     "prisma": "^5.5.2",
     "tslog": "^4.9.2",
