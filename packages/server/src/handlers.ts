@@ -7,6 +7,7 @@ import {
   QuestionNode,
   ServerBenchmarkPostPayload
 } from '@haski/lib'
+import { SampleSolutionNode } from '@haski/lib/nodes/SampleSolutionNode'
 
 import prisma from '../client'
 import { runLgraph } from './Graph'
@@ -46,6 +47,9 @@ export const handlers: RestHandlerMap<ClientBenchmarkPostPayload | undefined> = 
       })
       lgraph.findNodesByClass(QuestionNode).forEach((node) => {
         node.properties.value = data.question
+      })
+      lgraph.findNodesByClass(SampleSolutionNode).forEach((node) => {
+        node.properties.value = data.realAnswer
       })
 
       // Run the graph
