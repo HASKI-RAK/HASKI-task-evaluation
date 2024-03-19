@@ -1,5 +1,4 @@
-from torch import Tensor
-from sentence_transformers import SentenceTransformer, util
+from sentence_transformers import SentenceTransformer
 import flask
 import werkzeug
 
@@ -10,7 +9,8 @@ from flask_cors import CORS
 model = SentenceTransformer(
     "sentence-transformers/all-mpnet-base-v2"
 )  # 384 word pieces max
-
+print(model.encode("This is a test sentence"))  # warm up
+print("Model loaded")
 
 app = flask.Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
@@ -32,7 +32,8 @@ def cosine_similarity():
     # result = cos_sim.tolist()[0][0]
     # print(result)
     result = emb1.tolist()
+    print(result)
     return flask.jsonify(result)
 
 
-app.run(debug=True, port=8002)
+app.run(debug=False, port=8002)

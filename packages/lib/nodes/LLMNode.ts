@@ -19,6 +19,10 @@ const models = [
   {
     name: 'SUS-Chat-34B',
     path: 'SUS-Chat-34B'
+  },
+  {
+    name: 'juanako-7b-UNA',
+    path: 'juanako-7b-UNA'
   }
 ]
 
