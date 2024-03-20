@@ -30,7 +30,7 @@ export async function setupGraphFromPath(
   // eslint-disable-next-line immutable/no-mutation
   lgraph.onNodeAdded = function (node: LGraphNode) {
     node.setWebSocket?.(ws) // register websocket if node uses it
-    node.setEnv?.(process.env)
+    node.init?.(process.env)
     const onExecute = node.onExecute
     // eslint-disable-next-line immutable/no-mutation
     node.onExecute = async function () {

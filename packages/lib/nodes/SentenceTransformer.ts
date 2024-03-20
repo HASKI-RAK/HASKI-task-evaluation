@@ -37,7 +37,7 @@ export class SentenceTransformer extends LGraphNode {
     this.ws = _ws
   }
 
-  setEnv(_env: Record<string, unknown>): void {
+  init(_env: Record<string, unknown>): void {
     this.env = _env
   }
 

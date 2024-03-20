@@ -5,32 +5,35 @@ import { WebSocket } from 'ws'
 
 import { LGraphNode, LiteGraph } from './litegraph-extensions'
 import { PromptMessageType } from './types/NodeLinkMessage'
+import { OpenAiApiResponse, OpenAiModel } from './types/OpenAiApi'
 
 // record with all models
-const models = [
-  {
-    name: 'zephir',
-    path: 'D:\\Development\\python\\text-generation-webui-main\\models\\zephir-7b-beta'
-  },
-  {
-    name: 'zephir-7b-beta',
-    path: 'D:\\Development\\python\\text-generation-webui-main\\models\\zephir-7b-beta'
-  },
-  {
-    name: 'SUS-Chat-34B',
-    path: 'SUS-Chat-34B'
-  }
-]
+// const models = [
+//   {
+//     name: 'zephir',
+//     path: 'D:\\Development\\python\\text-generation-webui-main\\models\\zephir-7b-beta'
+//   },
+//   {
+//     name: 'zephir-7b-beta',
+//     path: 'D:\\Development\\python\\text-generation-webui-main\\models\\zephir-7b-beta'
+//   },
+//   {
+//     name: 'SUS-Chat-34B',
+//     path: 'SUS-Chat-34B'
+//   }
+// ]
 
 /**
  * Language Model node
  */
 export class LLMNode extends LGraphNode {
   env: Record<string, unknown>
+  models: { [key: string]: string }
+
   constructor() {
     super()
     // https://platform.openai.com/docs/api-reference/chat/create
-
+    this.models = {}
     // both inputs are optional. if message is not set, messages will be used
     this.addIn('message')
     // both inputs are optional
@@ -110,12 +113,13 @@ export class LLMNode extends LGraphNode {
     this.addWidget(
       'combo',
       'model',
-      this.properties.model ?? models[0].name,
+      this.properties.model ?? this.models[0],
       (value, widget, node) => {
-        node.properties.model = models.find((model) => model.name === value)?.path ?? ''
+        node.properties.model =
+          this.models[Object.keys(this.models)[value]] ?? this.models[0]
       },
       {
-        values: models.map((model) => model.name)
+        values: Object.keys(this.models)
       }
     )
     this.serialize_widgets = true
@@ -147,8 +151,44 @@ export class LLMNode extends LGraphNode {
     this.ws = _ws
   }
 
-  setEnv(_env: Record<string, unknown>): void {
+  init(_env: Record<string, unknown>): void {
     this.env = _env
+    this.fetchModels(this.env.MODEL_WORKER_URL + '/v1/models').then((models) => {
+      this.models = models
+    })
+  }
+
+  async fetchModels(endpoint: string): Promise<{ [key: string]: string }> {
+    try {
+      // Fetch the data from the specified endpoint
+      const response = await fetch(endpoint)
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+      const data: OpenAiApiResponse = await response.json()
+
+      // Ensure the data format is as expected
+      if (data.object !== 'list' || !Array.isArray(data.data)) {
+        throw new Error('Invalid data format')
+      }
+
+      // Process the data to create a key-value list
+      const result = data.data.reduce(
+        (acc: { [key: string]: string }, model: OpenAiModel) => {
+          const key = `${model.owned_by}/${model.id}`
+          // Assuming the unique identifier for selection is the model id itself
+          const value = model.id
+          acc[key] = value
+          return acc
+        },
+        {}
+      )
+
+      return result
+    } catch (error) {
+      console.error('Failed to fetch models:', error)
+      return {}
+    }
   }
 
   //name of the function to call when executing
@@ -157,9 +197,7 @@ export class LLMNode extends LGraphNode {
     const message = this.getInputData<PromptMessageType | undefined>(0)
     const messages = this.getInputData<PromptMessageType[] | undefined>(1)
     const input = {
-      model:
-        models.find((model) => model.name === this.properties.model)?.path ??
-        models[0].path,
+      model: this.properties.model,
       messages: message ? [message] : messages,
       max_tokens: this.properties.max_tokens,
       temperature: this.properties.temperature,

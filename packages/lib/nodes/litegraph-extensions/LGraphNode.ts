@@ -6,7 +6,7 @@ import { InOut } from '../types/NodeLinkMessage'
 
 interface ILGraphNode extends LGN {
   onExecute(): Promise<void>
-  setEnv?(env: Record<string, unknown>): void
+  init?(env: Record<string, unknown>): void
   env?: Record<string, unknown>
   addOut<T extends InOut>(
     type: T,
@@ -129,7 +129,7 @@ export abstract class LGraphNode extends LGN implements ILGraphNode, WebSocketNo
   }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   setWebSocket?(_ws: WebSocket): void
-  setEnv?(env: Record<string, unknown>): void
+  init?(env: Record<string, unknown>): void
 }
 
 export default LGraphNode
