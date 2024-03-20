@@ -226,24 +226,24 @@ export const Editor = () => {
   }
 
   const handleUploadGraph = () => {
-    const input = document.createElement('input')
-    input.type = 'file'
-    input.accept = '.json'
-    input.onchange = (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0]
-      if (file) {
-        const reader = new FileReader()
-        reader.onload = (e) => {
-          const contents = e.target?.result
-          if (typeof contents === 'string') {
-            lgraph.configure(JSON.parse(contents))
-            lgraph.setDirtyCanvas(true, true)
-          }
-        }
-        reader.readAsText(file)
-      }
-    }
-    input.click()
+    // const input = document.createElement('input')
+    // input.type = 'file'
+    // input.accept = '.json'
+    // input.onchange = (e) => {
+    //   const file = (e.target as HTMLInputElement).files?.[0]
+    //   if (file) {
+    //     const reader = new FileReader()
+    //     reader.onload = (e) => {
+    //       const contents = e.target?.result
+    //       if (typeof contents === 'string') {
+    //         lgraph.configure(JSON.parse(contents))
+    //         lgraph.setDirtyCanvas(true, true)
+    //       }
+    //     }
+    //     reader.readAsText(file)
+    //   }
+    // }
+    // input.click()
   }
 
   const connectionStatus = {
