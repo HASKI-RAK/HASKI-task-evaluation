@@ -4,7 +4,7 @@
 
 import { LGraphNode, LiteGraph } from './litegraph-extensions'
 /**
- * * Extracts the first number from a string
+ * * Extracts the last number from a string
  */
 export class ExtractNumberNode extends LGraphNode {
   properties: {
@@ -37,7 +37,7 @@ export class ExtractNumberNode extends LGraphNode {
     }
     const matches = this.properties.value.match(/\d+/)
     if (matches) {
-      this.properties.value = matches[0]
+      this.properties.value = matches.pop() ?? ''
     }
 
     const number = parseFloat(this.properties.value)

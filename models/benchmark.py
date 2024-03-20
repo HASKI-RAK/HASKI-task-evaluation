@@ -38,16 +38,18 @@ if args.path is None:
 def print_results(results):
     # Print the results
     for _id, score in results.items():
-        print(f"ID: {_id}, Score: {score}")
+        print(f"ID: {_id}, Score: {score[0]}, Text: {score[1]}")
 
 
-def perform_analysis(input_file, results):
+def perform_analysis(input_file, results: dict):
     # Read dataset from Excel file
     df = pd.read_excel(input_file)
 
     # Extract scores from the Excel file and the results
     excel_scores = df["score"].values
-    result_scores = np.array([results[_id] for _id in df["id"]])
+    result_scores = np.array(
+        [results[0][_id] for _id in df["id"]]
+    )  # no backward compatibility
 
     # Calculate metrics
     mse = mean_squared_error(excel_scores, result_scores)
@@ -119,7 +121,7 @@ else:
     df = pd.read_excel(args.input_file)
 
     # Dictionary to store the results
-    results = {}
+    results: dict = {}
 
     # Iterate over each row in the dataset
     for index, row in df.iterrows():
@@ -137,11 +139,11 @@ else:
         # Send POST request
         response = requests.post("http://localhost:5000/v1/benchmark", json=payload)
 
-        # Extract the score from the response
-        score = response.json()[0]
+        # Extract the result from the response
+        result = response.json()
 
-        # Store the result in the dictionary
-        results[_id] = score
+        # Store the result in the dictionary. result is a tuple [score,text]
+        results[_id] = result
 
     # Save the results as a pickle dump
     with open("results.pkl", "wb") as file:

@@ -16,4 +16,4 @@ models/.flaskenv
 *__pycache__/
 .vscode/settings.json
 *.xlsx
-models/results.pkl
+models/*.pkl

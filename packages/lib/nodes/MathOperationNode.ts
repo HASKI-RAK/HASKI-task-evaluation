@@ -33,7 +33,7 @@ export class MathOperationNode extends LGraphNode {
         values: ['+', '-', '*', '/']
       }
     )
-
+    this.serialize_widgets = true
     this.addOut('number')
     this.title = 'Math Operation'
   }
@@ -82,6 +82,12 @@ export class MathOperationNode extends LGraphNode {
     }
 
     this.setOutputData(0, number)
+  }
+  getTitle(): string {
+    if (this.flags.collapsed) {
+      return this.properties.operation
+    }
+    return this.title
   }
 
   //register in the system

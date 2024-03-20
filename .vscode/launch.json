@@ -14,25 +14,49 @@
                 "ts-node/register"
             ],
             "args": [
-                "${workspaceFolder}/packages/server/src/server.ts"
+                "${workspaceFolder}/packages/server/src/server.ts",
             ]
         },
-            {
-      "name": "Jest file",
-      "type": "pwa-node",
-      "request": "launch",
-      "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/jest",
-      "args": ["${fileBasenameNoExtension}", "--runInBand", "--watch", "--coverage=false", "--no-cache"],
-      "cwd": "${workspaceRoot}",
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen",
-      "sourceMaps": true,
-      "windows": {
-        "program": "${workspaceFolder}/node_modules/jest/bin/jest",
-        "name": "Launch Program",
-        "type": "pwa-node",
-        "request": "launch"
-      }
-    }
+        // args: "./scientsbank.xlsx","--run_name", "llm_only_wizzard_uncensored_full_v2" ,"--path" ,"/ws/editor/haski.de/2/4"  
+        {
+            "name": "Python Debugger: Current File with Arguments",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/models",
+            "args": [
+                "d:\\Development\\HASKI\\HASKI-task-evaluation\\models\\scientsbank.xlsx",
+                "--run_name",
+                "llm_only_wizzard_uncensored_full_v2",
+                "--path",
+                "/ws/editor/haski.de/2/4",
+                "--load",
+                "--analyze",
+            ],
+        },
+        {
+            "name": "Jest file",
+            "type": "pwa-node",
+            "request": "launch",
+            "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/jest",
+            "args": [
+                "${fileBasenameNoExtension}",
+                "--runInBand",
+                "--watch",
+                "--coverage=false",
+                "--no-cache"
+            ],
+            "cwd": "${workspaceRoot}",
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+            "sourceMaps": true,
+            "windows": {
+                "program": "${workspaceFolder}/node_modules/jest/bin/jest",
+                "name": "Launch Program",
+                "type": "pwa-node",
+                "request": "launch"
+            }
+        }
     ]
 }
