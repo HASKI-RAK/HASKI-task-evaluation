@@ -3,37 +3,41 @@
 /* eslint-disable immutable/no-this */
 import { WebSocket } from 'ws'
 
-import { LGraphNode, LiteGraph } from './litegraph-extensions'
+import { LGraph, LGraphNode, LiteGraph } from './litegraph-extensions'
 import { PromptMessageType } from './types/NodeLinkMessage'
 import { OpenAiApiResponse, OpenAiModel } from './types/OpenAiApi'
 
 // record with all models
-// const models = [
-//   {
-//     name: 'zephir',
-//     path: 'D:\\Development\\python\\text-generation-webui-main\\models\\zephir-7b-beta'
-//   },
-//   {
-//     name: 'zephir-7b-beta',
-//     path: 'D:\\Development\\python\\text-generation-webui-main\\models\\zephir-7b-beta'
-//   },
-//   {
-//     name: 'SUS-Chat-34B',
-//     path: 'SUS-Chat-34B'
-//   }
-// ]
+const models = [
+  {
+    name: 'zephir',
+    path: 'D:\\Development\\python\\text-generation-webui-main\\models\\zephir-7b-beta'
+  },
+  {
+    name: 'zephir-7b-beta',
+    path: 'D:\\Development\\python\\text-generation-webui-main\\models\\zephir-7b-beta'
+  },
+  {
+    name: 'SUS-Chat-34B',
+    path: 'SUS-Chat-34B'
+  },
+  {
+    name: 'Wizard-Vicuna-30B-Uncensored',
+    path: 'Wizard-Vicuna-30B-Uncensored'
+  }
+]
 
 /**
  * Language Model node
  */
 export class LLMNode extends LGraphNode {
   env: Record<string, unknown>
-  models: { [key: string]: string }
+  widget_llm: any
 
   constructor() {
     super()
     // https://platform.openai.com/docs/api-reference/chat/create
-    this.models = {}
+    // this.models = ['Wizard-Vicuna-30B-Uncensored']
     // both inputs are optional. if message is not set, messages will be used
     this.addIn('message')
     // both inputs are optional
@@ -110,16 +114,15 @@ export class LLMNode extends LGraphNode {
       },
       { min: 0, max: 2, step: 0.1, precision: 1 }
     )
-    this.addWidget(
+    this.widget_llm = this.addWidget(
       'combo',
       'model',
-      this.properties.model ?? this.models[0],
+      this.properties.model ?? models[0].name,
       (value, widget, node) => {
-        node.properties.model =
-          this.models[Object.keys(this.models)[value]] ?? this.models[0]
+        node.properties.model = models.find((model) => model.name === value)?.path ?? ''
       },
       {
-        values: Object.keys(this.models)
+        values: models.map((model) => model.name)
       }
     )
     this.serialize_widgets = true
@@ -151,17 +154,33 @@ export class LLMNode extends LGraphNode {
     this.ws = _ws
   }
 
-  init(_env: Record<string, unknown>): void {
+  onAdded(_: LGraph): void {
+    // this.initModels(['Wizard-Vicuna-30B-Uncensored'])
+  }
+
+  init(_env: Record<string, unknown>) {
     this.env = _env
-    this.fetchModels(this.env.MODEL_WORKER_URL + '/v1/models').then((models) => {
-      this.models = models
+    this.fetchModels(
+      (this.env.MODEL_WORKER_URL ?? 'http://localhost:8000') + '/v1/models'
+    ).then((models) => {
+      // this.initModels(models)
     })
   }
 
-  async fetchModels(endpoint: string): Promise<{ [key: string]: string }> {
+  // initModels(models: string[]) {
+  //   this.models = models
+  //   this.widget_llm.options = {
+  //     values: Object.keys(this.models)
+  //   }
+  // }
+
+  async fetchModels(endpoint: string): Promise<string[]> {
     try {
       // Fetch the data from the specified endpoint
-      const response = await fetch(endpoint)
+
+      const response = await fetch(endpoint, {
+        method: 'GET'
+      })
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
@@ -172,22 +191,13 @@ export class LLMNode extends LGraphNode {
         throw new Error('Invalid data format')
       }
 
-      // Process the data to create a key-value list
-      const result = data.data.reduce(
-        (acc: { [key: string]: string }, model: OpenAiModel) => {
-          const key = `${model.owned_by}/${model.id}`
-          // Assuming the unique identifier for selection is the model id itself
-          const value = model.id
-          acc[key] = value
-          return acc
-        },
-        {}
-      )
+      // Extract model IDs from the data
+      const modelIds = data.data.map((model: OpenAiModel) => model.id)
 
-      return result
+      return modelIds
     } catch (error) {
       console.error('Failed to fetch models:', error)
-      return {}
+      return []
     }
   }
 
@@ -197,7 +207,9 @@ export class LLMNode extends LGraphNode {
     const message = this.getInputData<PromptMessageType | undefined>(0)
     const messages = this.getInputData<PromptMessageType[] | undefined>(1)
     const input = {
-      model: this.properties.model,
+      model:
+        models.find((model) => model.name === this.properties.model)?.path ??
+        models[0].path,
       messages: message ? [message] : messages,
       max_tokens: this.properties.max_tokens,
       temperature: this.properties.temperature,
