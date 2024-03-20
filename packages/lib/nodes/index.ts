@@ -4,8 +4,10 @@ import { ConcatObject } from './ConcatObject'
 import { ConcatString } from './ConcatString'
 import { CosineSimilarity } from './CosineSimilarity'
 import { DocumentLoader } from './DocumentLoader'
+import { ExtractNumberNode } from './ExtractNumberNode'
 import { LiteGraph } from './litegraph-extensions'
 import { LLMNode } from './LLMNode'
+import { MathOperationNode } from './MathOperationNode'
 import { MaxInputChars } from './MaxInputChars'
 import { MyAddNode } from './MyAddNode'
 import { NumberNode } from './NumberNode'
@@ -40,6 +42,8 @@ LiteGraph.registerNodeType(CleanNode.getPath(), CleanNode) // Preprocessing
 LiteGraph.registerNodeType(DocumentLoader.getPath(), DocumentLoader)
 LiteGraph.registerNodeType(QuestionNode.getPath(), QuestionNode)
 LiteGraph.registerNodeType(SampleSolutionNode.getPath(), SampleSolutionNode)
+LiteGraph.registerNodeType(ExtractNumberNode.getPath(), ExtractNumberNode)
+LiteGraph.registerNodeType(MathOperationNode.getPath(), MathOperationNode)
 
 // LiteGraph.registerNodeType('basic/const', ConstNumber)
 

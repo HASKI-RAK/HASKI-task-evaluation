@@ -10,7 +10,7 @@ import {
 import { SampleSolutionNode } from '@haski/lib/nodes/SampleSolutionNode'
 
 import prisma from '../client'
-import { runLgraph } from './Graph'
+import { addOnNodeAdded, runLgraph } from './Graph'
 import { log } from './server'
 import { RestHandlerMap } from './utils/rest'
 
@@ -39,6 +39,7 @@ export const handlers: RestHandlerMap<ClientBenchmarkPostPayload | undefined> = 
       }
 
       const lgraph = new LiteGraph.LGraph()
+      addOnNodeAdded(lgraph, undefined, true)
       lgraph.configure(JSON.parse(graph.graph))
 
       // Fill in the answer and question

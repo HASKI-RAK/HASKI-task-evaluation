@@ -1,9 +1,10 @@
+/* eslint-disable immutable/no-mutation */
 import { LGraph, LGraphNode, LiteGraph, QuestionNode, sendWs } from '@haski/lib'
 import { WebSocket } from 'ws'
 
 import prisma from '../client'
 import { log } from './server'
-import * as demoGraphJson from './utils/demoGraph.json'
+import * as demoGraphJson from './utils/RunOne.json'
 
 /**
  * Sends a graph from a given path to a WebSocket.
@@ -28,42 +29,8 @@ export async function setupGraphFromPath(
 
   // This is persisted even trough network serialization
   // eslint-disable-next-line immutable/no-mutation
-  lgraph.onNodeAdded = function (node: LGraphNode) {
-    node.setWebSocket?.(ws) // register websocket if node uses it
-    node.init?.(process.env)
-    const onExecute = node.onExecute
-    // eslint-disable-next-line immutable/no-mutation
-    node.onExecute = async function () {
-      log.trace(`Executing node: ${node.title}`)
-      // tell client that we are executing this node
-      sendWs(ws, { eventName: 'nodeExecuting', payload: node.id })
+  addOnNodeAdded(lgraph, ws)
 
-      //! Set node properties
-      // await new Promise((resolve) => setTimeout(resolve, 200))
-      // eslint-disable-next-line immutable/no-mutation
-      node.color = LiteGraph.NODE_DEFAULT_COLOR
-      await onExecute?.call(node).catch((error) => {
-        log.error(error)
-        // TODO set node color to red
-        // eslint-disable-next-line immutable/no-mutation
-        node.color = '#ff0000'
-        sendWs(ws, {
-          eventName: 'nodeError',
-          payload: {
-            nodeId: node.id,
-            error:
-              "Error while executing node: '" +
-              node.title +
-              "' with error: " +
-              JSON.stringify(error.message)
-          }
-        })
-      })
-
-      log.trace(`Executed node: ${node.title}`)
-      sendWs(ws, { eventName: 'nodeExecuted', payload: node.id })
-    }
-  }
   if (loaded_graph) {
     lgraph.configure(JSON.parse(loaded_graph.graph))
     log.debug('Loaded graph from DB for route: ', pathname)
@@ -77,6 +44,52 @@ export async function setupGraphFromPath(
     test.clear()
     return test
     return testGraph(lgraph, ws)
+  }
+}
+
+export function addOnNodeAdded(
+  lgraph: LGraph,
+  ws?: WebSocket,
+  benchmark: boolean = false
+) {
+  lgraph.onNodeAdded = function (node: LGraphNode) {
+    if (!benchmark && ws) node.setWebSocket?.(ws) // register websocket if node uses it
+    node.init?.(process.env)
+    const onExecute = node.onExecute
+    // eslint-disable-next-line immutable/no-mutation
+    node.onExecute = async function () {
+      log.trace(`Executing node: ${node.title}`)
+      // tell client that we are executing this node
+      if (!benchmark && ws) sendWs(ws, { eventName: 'nodeExecuting', payload: node.id })
+
+      //! Set node properties
+      // await new Promise((resolve) => setTimeout(resolve, 200))
+      // eslint-disable-next-line immutable/no-mutation
+      node.color = LiteGraph.NODE_DEFAULT_COLOR
+      await onExecute?.call(node).catch((error) => {
+        log.error(error)
+        // TODO set node color to red
+        // eslint-disable-next-line immutable/no-mutation
+        node.color = '#ff0000'
+        if (!benchmark && ws) {
+          sendWs(ws, {
+            eventName: 'nodeError',
+            payload: {
+              nodeId: node.id,
+              error:
+                "Error while executing node: '" +
+                node.title +
+                "' with error: " +
+                JSON.stringify(error.message)
+            }
+          })
+        }
+      })
+      if (!benchmark && ws) {
+        log.trace(`Executed node: ${node.title}`)
+        sendWs(ws, { eventName: 'nodeExecuted', payload: node.id })
+      }
+    }
   }
 }
 

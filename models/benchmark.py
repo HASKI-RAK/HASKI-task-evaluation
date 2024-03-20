@@ -22,7 +22,17 @@ parser.add_argument(
     type=str,
     help="Name of the run to be stored in the results pickle",
 )
+parser.add_argument(
+    "--path",
+    type=str,
+    required=True,
+    help="Path to the graph to be used for the benchmark",
+)
 args = parser.parse_args()
+
+if args.path is None:
+    print("Path to the graph is not provided")
+    exit(1)
 
 
 def print_results(results):
@@ -120,7 +130,7 @@ else:
 
         # Prepare the JSON payload
         payload = {
-            "path": "/ws/editor/haski.de/2/3",
+            "path": args.path,
             "data": {"question": question, "realAnswer": real_answer, "answer": answer},
         }
 
