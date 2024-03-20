@@ -3,8 +3,9 @@
 /* eslint-disable immutable/no-this */
 import { WebSocket } from 'ws'
 
-import { LGraphNode, LiteGraph } from './litegraph-extensions'
+import { LGraph, LGraphNode, LiteGraph } from './litegraph-extensions'
 import { PromptMessageType } from './types/NodeLinkMessage'
+import { OpenAiApiResponse, OpenAiModel } from './types/OpenAiApi'
 
 // record with all models
 const models = [
@@ -21,8 +22,8 @@ const models = [
     path: 'SUS-Chat-34B'
   },
   {
-    name: 'juanako-7b-UNA',
-    path: 'juanako-7b-UNA'
+    name: 'Wizard-Vicuna-30B-Uncensored',
+    path: 'Wizard-Vicuna-30B-Uncensored'
   }
 ]
 
@@ -31,10 +32,12 @@ const models = [
  */
 export class LLMNode extends LGraphNode {
   env: Record<string, unknown>
+  widget_llm: any
+
   constructor() {
     super()
     // https://platform.openai.com/docs/api-reference/chat/create
-
+    // this.models = ['Wizard-Vicuna-30B-Uncensored']
     // both inputs are optional. if message is not set, messages will be used
     this.addIn('message')
     // both inputs are optional
@@ -111,7 +114,7 @@ export class LLMNode extends LGraphNode {
       },
       { min: 0, max: 2, step: 0.1, precision: 1 }
     )
-    this.addWidget(
+    this.widget_llm = this.addWidget(
       'combo',
       'model',
       this.properties.model ?? models[0].name,
@@ -151,8 +154,51 @@ export class LLMNode extends LGraphNode {
     this.ws = _ws
   }
 
-  setEnv(_env: Record<string, unknown>): void {
+  onAdded(_: LGraph): void {
+    // this.initModels(['Wizard-Vicuna-30B-Uncensored'])
+  }
+
+  init(_env: Record<string, unknown>) {
     this.env = _env
+    this.fetchModels(
+      (this.env.MODEL_WORKER_URL ?? 'http://localhost:8000') + '/v1/models'
+    ).then((models) => {
+      // this.initModels(models)
+    })
+  }
+
+  // initModels(models: string[]) {
+  //   this.models = models
+  //   this.widget_llm.options = {
+  //     values: Object.keys(this.models)
+  //   }
+  // }
+
+  async fetchModels(endpoint: string): Promise<string[]> {
+    try {
+      // Fetch the data from the specified endpoint
+
+      const response = await fetch(endpoint, {
+        method: 'GET'
+      })
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+      const data: OpenAiApiResponse = await response.json()
+
+      // Ensure the data format is as expected
+      if (data.object !== 'list' || !Array.isArray(data.data)) {
+        throw new Error('Invalid data format')
+      }
+
+      // Extract model IDs from the data
+      const modelIds = data.data.map((model: OpenAiModel) => model.id)
+
+      return modelIds
+    } catch (error) {
+      console.error('Failed to fetch models:', error)
+      return []
+    }
   }
 
   //name of the function to call when executing

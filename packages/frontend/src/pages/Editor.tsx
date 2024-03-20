@@ -213,6 +213,39 @@ export const Editor = () => {
     []
   )
 
+  const handleDownloadGraph = () => {
+    const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(
+      JSON.stringify(lgraph.serialize())
+    )}`
+    const downloadAnchorNode = document.createElement('a')
+    downloadAnchorNode.setAttribute('href', dataStr)
+    downloadAnchorNode.setAttribute('download', 'graph.json')
+    document.body.appendChild(downloadAnchorNode) // required for firefox
+    downloadAnchorNode.click()
+    downloadAnchorNode.remove()
+  }
+
+  const handleUploadGraph = () => {
+    // const input = document.createElement('input')
+    // input.type = 'file'
+    // input.accept = '.json'
+    // input.onchange = (e) => {
+    //   const file = (e.target as HTMLInputElement).files?.[0]
+    //   if (file) {
+    //     const reader = new FileReader()
+    //     reader.onload = (e) => {
+    //       const contents = e.target?.result
+    //       if (typeof contents === 'string') {
+    //         lgraph.configure(JSON.parse(contents))
+    //         lgraph.setDirtyCanvas(true, true)
+    //       }
+    //     }
+    //     reader.readAsText(file)
+    //   }
+    // }
+    // input.click()
+  }
+
   const connectionStatus = {
     [ReadyState.CONNECTING]: 'Connecting...',
     [ReadyState.OPEN]: 'Open',
@@ -228,6 +261,8 @@ export const Editor = () => {
           handleClickChangeSocketUrl={handleClickChangeSocketUrl}
           handleSaveGraph={handleSaveGraph}
           handleDrawerOpen={handleDrawerOpen}
+          handleDownloadGraph={handleDownloadGraph}
+          handleUploadGraph={handleUploadGraph}
         />
         <Main open={open}>
           <Button

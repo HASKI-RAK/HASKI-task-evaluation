@@ -1,3 +1,4 @@
+import { DownloadForOffline, UploadFile } from '@mui/icons-material'
 import MenuIcon from '@mui/icons-material/Menu'
 import ReplayIcon from '@mui/icons-material/Replay'
 import SaveIcon from '@mui/icons-material/Save'
@@ -14,6 +15,8 @@ interface AppBarProps extends MuiAppBarProps {
   handleDrawerOpen?: () => void
   handleSaveGraph?: () => void
   handleClickChangeSocketUrl?: () => void
+  handleDownloadGraph?: () => void
+  handleUploadGraph?: () => void
 }
 
 const AppBarStyled = styled(MuiAppBar, {
@@ -62,6 +65,28 @@ export const AppBar = (props: AppBarProps) => {
             onClick={props.handleClickChangeSocketUrl}
           >
             <ReplayIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Upload graph">
+          <IconButton
+            onClick={props.handleUploadGraph}
+            aria-label="upload"
+            aria-controls="menu-appbar"
+            aria-haspopup="true"
+            color="inherit"
+          >
+            <UploadFile />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Download graph">
+          <IconButton
+            onClick={props.handleDownloadGraph}
+            aria-label="download"
+            aria-controls="menu-appbar"
+            aria-haspopup="true"
+            color="inherit"
+          >
+            <DownloadForOffline />
           </IconButton>
         </Tooltip>
         <Tooltip title="Save graph">
