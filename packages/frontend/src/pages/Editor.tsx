@@ -213,6 +213,18 @@ export const Editor = () => {
     []
   )
 
+  const handleDownloadGraph = () => {
+    const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(
+      JSON.stringify(lgraph.serialize())
+    )}`
+    const downloadAnchorNode = document.createElement('a')
+    downloadAnchorNode.setAttribute('href', dataStr)
+    downloadAnchorNode.setAttribute('download', 'graph.json')
+    document.body.appendChild(downloadAnchorNode) // required for firefox
+    downloadAnchorNode.click()
+    downloadAnchorNode.remove()
+  }
+
   const connectionStatus = {
     [ReadyState.CONNECTING]: 'Connecting...',
     [ReadyState.OPEN]: 'Open',
@@ -228,6 +240,7 @@ export const Editor = () => {
           handleClickChangeSocketUrl={handleClickChangeSocketUrl}
           handleSaveGraph={handleSaveGraph}
           handleDrawerOpen={handleDrawerOpen}
+          handleDownloadGraph={handleDownloadGraph}
         />
         <Main open={open}>
           <Button
