@@ -9,6 +9,17 @@ import stemmer from './utils/PorterStemmer'
  * * It is used in the frontend to limit the amount of characters a user can input
  */
 export class CleanNode extends LGraphNode {
+  properties: {
+    value: string
+    trim: boolean
+    space: boolean
+    doubleSpace: boolean
+    dot: boolean
+    comma: boolean
+    lower: boolean
+    upper: boolean
+    stem: boolean
+  }
   constructor() {
     super()
     this.properties = {
@@ -73,7 +84,7 @@ export class CleanNode extends LGraphNode {
       this.properties.value = this.properties.value.replace(/\s/g, '')
     }
     if (this.properties.doubleSpace) {
-      this.properties.value = this.properties.value.replace(/\s\s/g, /\s/g)
+      this.properties.value = this.properties.value.replace(/\s\s/g, ' ')
     }
     if (this.properties.dot) {
       this.properties.value = this.properties.value.replace(/\./g, '')

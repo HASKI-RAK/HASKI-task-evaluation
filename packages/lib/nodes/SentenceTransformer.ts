@@ -15,9 +15,7 @@ export class SentenceTransformer extends LGraphNode {
     // https://platform.openai.com/docs/api-reference/chat/create
 
     this.addIn('string')
-    this.addIn('string')
 
-    this.addOut('[number]')
     this.addOut('[number]')
     this.properties = {
       value: -1
@@ -64,26 +62,11 @@ export class SentenceTransformer extends LGraphNode {
       throw new Error('Network response was not ok')
     }
 
-    const response_two = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        sentence: this.getInputData(1)
-      })
-    })
-    if (!response_two.ok) {
-      throw new Error('Network response was not ok')
-    }
-
     // get response
     const embedding_one = await response_one.json()
-    const embedding_two = await response_two.json()
 
     //send output to the output
     this.setOutputData(0, embedding_one)
-    this.setOutputData(1, embedding_two)
   }
 
   //register in the system

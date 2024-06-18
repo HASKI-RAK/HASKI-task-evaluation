@@ -88,9 +88,36 @@ server.on('upgrade', function upgrade(request, socket, head) {
   // Announce that we are going to handle this request
   log.trace('Handling request for ', pathname)
 
-  wss1.handleUpgrade(request, socket, head, function done(ws) {
-    wss1.emit('connection', ws, request)
-  })
+  if (pathname?.startsWith('/ws')) {
+    //TODO: check path
+    wss1.handleUpgrade(request, socket, head, function done(ws) {
+      wss1.emit('connection', ws, request)
+    })
+  } else if (pathname === '/bar') {
+    wss2.handleUpgrade(request, socket, head, function done(ws) {
+      wss2.emit('connection', ws, request)
+    })
+  } else if (pathname === '/v1/chat/completions') {
+    // send mock model response
+    socket.write(
+      JSON.stringify({
+        id: 'mock',
+        model: 'mock',
+        created: new Date().toISOString(),
+        choices: [
+          {
+            text: 'mock',
+            index: 0,
+            logprobs: null,
+            finish_reason: 'length'
+          }
+        ]
+      })
+    )
+  } else {
+    socket.destroy()
+    log.warn('Invalid path')
+  }
 })
 
 /**

@@ -80,6 +80,7 @@ export const Editor = () => {
   const [outputs, setOutputs] = useState<
     Record<string, ServerEventPayload['output']> | undefined
   >(undefined)
+  const path = window.location.pathname
   const [maxInputChars, setMaxInputChars] = useState<number>(300)
   const lgraph = useMemo(() => new LiteGraph.LGraph(), [])
   const [socketUrl, setSocketUrl] = useState(

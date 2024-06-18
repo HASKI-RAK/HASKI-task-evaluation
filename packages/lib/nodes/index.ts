@@ -1,3 +1,4 @@
+/* eslint-disable immutable/no-mutation */
 import { AnswerInputNode } from './AnswerInputNode'
 import { CleanNode } from './CleanNode'
 import { ConcatObject } from './ConcatObject'
@@ -17,7 +18,10 @@ import { PromptMessage } from './PromptMessage'
 import { QuestionNode } from './QuestionNode'
 import { SampleSolutionNode } from './SampleSolutionNode'
 import { SentenceTransformer } from './SentenceTransformer'
+import { StringArrayToString } from './StringArrayToString'
+import { StringsToArray } from './StringToArray'
 import { Textfield } from './Textfield'
+import { TFIDF } from './TF-IDF'
 import { Watch } from './Watch'
 
 // Reset the registered types (standard nodes)
@@ -44,8 +48,14 @@ LiteGraph.registerNodeType(QuestionNode.getPath(), QuestionNode)
 LiteGraph.registerNodeType(SampleSolutionNode.getPath(), SampleSolutionNode)
 LiteGraph.registerNodeType(ExtractNumberNode.getPath(), ExtractNumberNode)
 LiteGraph.registerNodeType(MathOperationNode.getPath(), MathOperationNode)
+LiteGraph.registerNodeType(TFIDF.getPath(), TFIDF)
+LiteGraph.registerNodeType(StringsToArray.getPath(), StringsToArray)
+LiteGraph.registerNodeType(StringArrayToString.getPath(), StringArrayToString)
 
 // LiteGraph.registerNodeType('basic/const', ConstNumber)
+// Styling
+LiteGraph.NODE_DEFAULT_BGCOLOR = '#272727'
+LiteGraph.NODE_DEFAULT_SHAPE = 'round'
 
 export {
   AnswerInputNode,

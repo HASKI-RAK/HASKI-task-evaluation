@@ -4,8 +4,8 @@
   margin: 0;
   padding: 0;
 
-  background-color: #333;
-  color: #eee;
+  background-color: #4d4d4d; /* Dark gray */
+  color: #e6e6e6; /* Soft white */
   font: 14px Tahoma;
 
   position: relative;

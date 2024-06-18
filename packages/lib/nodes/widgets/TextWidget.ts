@@ -64,52 +64,52 @@ export class TextWidget implements IWidget {
     const nodeLeft = transform.e * transform.d
     const nodeTop = transform.f * transform.d + 20
 
-    // insert html text field above canvas if it doesn't exist
-    if (!document.getElementById('textWidget' + node.id)) {
-      const html = document.createElement('input') as HTMLInputElement
-      // give it a unique identifier
-      html.id = 'textWidget' + node.id
-      // placeholder text
-      html.placeholder = 'Enter text'
+    // // insert html text field above canvas if it doesn't exist
+    // if (!document.getElementById('textWidget' + node.id)) {
+    //   const html = document.createElement('input') as HTMLInputElement
+    //   // give it a unique identifier
+    //   html.id = 'textWidget' + node.id
+    //   // placeholder text
+    //   html.placeholder = 'Enter text'
 
-      // label input form field
-      html.name = 'textWidget' + node.id
-      // set the value
-      html.value = node.properties.value
+    //   // label input form field
+    //   html.name = 'textWidget' + node.id
+    //   // set the value
+    //   html.value = node.properties.value
 
-      html.type = 'text'
-      html.style.position = 'absolute'
-      html.style.left = `${nodeLeft}px`
-      html.style.top = `${nodeTop}px`
-      html.style.width = `${width}px`
-      html.style.height = `${height}px`
-      html.style.border = 'none'
-      html.style.padding = '0px'
-      html.style.margin = '0px'
-      html.style.outline = 'none'
-      html.style.zIndex = '30'
-      html.style.textAlign = 'left'
-      html.style.font = '14px Arial'
-      html.style.color = 'white'
-      html.style.backgroundColor = 'red'
-      html.style.opacity = '0.75'
-      html.style.overflow = 'hidden'
-      html.style.resize = 'none'
-      html.onchange = () => {
-        node.properties.value = html.value
-      }
-      document.body.appendChild(html)
-    } else {
-      // if it does exist, update the value
-      const html = document.getElementById('textWidget' + node.id) as HTMLInputElement
-      html.style.left = `${nodeLeft}px`
-      html.style.top = `${nodeTop}px`
-      html.style.width = `${width}px`
-      html.style.height = `${height}px`
-      // if (html) {
-      //   html.value = node.properties.value
-      // }
-    }
+    //   html.type = 'text'
+    //   html.style.position = 'absolute'
+    //   html.style.left = `${nodeLeft}px`
+    //   html.style.top = `${nodeTop}px`
+    //   html.style.width = `${width}px`
+    //   html.style.height = `${height}px`
+    //   html.style.border = 'none'
+    //   html.style.padding = '0px'
+    //   html.style.margin = '0px'
+    //   html.style.outline = 'none'
+    //   html.style.zIndex = '30'
+    //   html.style.textAlign = 'left'
+    //   html.style.font = '14px Arial'
+    //   html.style.color = 'white'
+    //   html.style.backgroundColor = 'red'
+    //   html.style.opacity = '0.75'
+    //   html.style.overflow = 'hidden'
+    //   html.style.resize = 'none'
+    //   html.onchange = () => {
+    //     node.properties.value = html.value
+    //   }
+    //   document.body.appendChild(html)
+    // } else {
+    //   // if it does exist, update the value
+    //   const html = document.getElementById('textWidget' + node.id) as HTMLInputElement
+    //   html.style.left = `${nodeLeft}px`
+    //   html.style.top = `${nodeTop}px`
+    //   html.style.width = `${width}px`
+    //   html.style.height = `${height}px`
+    //   // if (html) {
+    //   //   html.value = node.properties.value
+    //   // }
+    // }
 
     // draw rect behind text
     ctx.fillStyle = '#222'
