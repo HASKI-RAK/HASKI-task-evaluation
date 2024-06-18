@@ -84,7 +84,7 @@ export const Editor = () => {
   const [maxInputChars, setMaxInputChars] = useState<number>(300)
   const lgraph = useMemo(() => new LiteGraph.LGraph(), [])
   const [socketUrl, setSocketUrl] = useState(
-    getConfig().API_WS ?? 'ws://localhost:5000' + window.location.pathname
+    getConfig().API_WS ?? 'ws://localhost:5000/' + path.slice(1) // window.location.pathname
   )
   const [size, setSize] = useState({
     width: window.outerWidth,
