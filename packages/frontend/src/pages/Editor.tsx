@@ -1,4 +1,5 @@
 import {
+  ClientPayload,
   handleWsRequest,
   LGraph,
   LiteGraph,
@@ -130,9 +131,9 @@ export const Editor = () => {
   }
 
   const handleSaveGraph = () => {
-    sendJsonMessage({
+    sendJsonMessage<ClientPayload>({
       eventName: 'saveGraph',
-      payload: lgraph.serialize()
+      payload: lgraph.serialize<SerializedGraph>()
     })
   }
 
@@ -197,7 +198,7 @@ export const Editor = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleSubmit = (answer: string) => {
     // TODO: Add type to json
-    sendJsonMessage({
+    sendJsonMessage<ClientPayload>({
       eventName: 'runGraph',
       payload: {
         answer: answer,
@@ -206,13 +207,12 @@ export const Editor = () => {
     })
   }
 
-  const handleClickChangeSocketUrl = useCallback(
-    () =>
-      setSocketUrl(
-        getConfig().API_WS ?? 'ws://localhost:5000' + window.location.pathname
-      ),
-    []
-  )
+  const handleClickChangeSocketUrl = useCallback(() => {
+    const newUrl = prompt('Enter new socket url', socketUrl)
+    if (newUrl) {
+      setSocketUrl(newUrl)
+    }
+  }, [socketUrl])
 
   const handleDownloadGraph = () => {
     const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(
@@ -247,6 +247,17 @@ export const Editor = () => {
     // input.click()
   }
 
+  /**
+   * Loads a new workflow from the server. Does not save the current graph nor does it run it.
+   * @param workflow - the ID of the workflow to load
+   */
+  const handleWorkflowChange = (workflow: string) => {
+    sendJsonMessage<ClientPayload>({
+      eventName: 'loadGraph',
+      payload: workflow
+    })
+  }
+
   const connectionStatus = {
     [ReadyState.CONNECTING]: 'Connecting...',
     [ReadyState.OPEN]: 'Open',
@@ -264,6 +275,7 @@ export const Editor = () => {
           handleDrawerOpen={handleDrawerOpen}
           handleDownloadGraph={handleDownloadGraph}
           handleUploadGraph={handleUploadGraph}
+          handleWorkflowChange={handleWorkflowChange}
         />
         <Main open={open}>
           <Button

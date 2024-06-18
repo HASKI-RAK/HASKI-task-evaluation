@@ -39,7 +39,9 @@ export type ServerEventPayload = {
 export type ServerBenchmarkPostPayload = (string | number | string[])[]
 
 export type ClientEventPayload = {
-  saveGraph: SerializedGraph
+  saveGraph: SerializedGraph // saves a graph
+  loadGraph: string // loads a graph by id (unique string identifier)
+  // runs a graph
   runGraph: {
     answer: string
     graph: SerializedGraph
@@ -64,6 +66,8 @@ export type ClientEvent<K extends keyof ClientEventPayload, P = ClientEventPaylo
   eventName: K
   payload: P
 }
+
+export type ClientPayload = ClientEvent<keyof ClientEventPayload>
 
 export type WebSocketEvent<E extends ServerEventPayload | ClientEventPayload> = {
   eventName: keyof E

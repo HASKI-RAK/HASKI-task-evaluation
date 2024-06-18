@@ -31,7 +31,11 @@ wss1.on('connection', async function connection(ws: WebSocket, request) {
     const parsed: WebSocketEvent<ClientEventPayload> = JSON.parse(message.toString())
     handleWsRequest<ClientEventPayload>(parsed, {
       runGraph: (payload) => runGraph(payload, ws, lgraph),
-      saveGraph: async (payload) => saveGraph(payload, lgraph, request, ws)
+      saveGraph: async (payload) => saveGraph(payload, lgraph, request, ws),
+      loadGraph(payload) {
+        log.debug('Loading graph from path: ', payload)
+        setupGraphFromPath(ws, payload)
+      }
     })
       .then((handled) => {
         if (!handled) {

@@ -17,6 +17,7 @@ interface AppBarProps extends MuiAppBarProps {
   handleClickChangeSocketUrl?: () => void
   handleDownloadGraph?: () => void
   handleUploadGraph?: () => void
+  handleWorkflowChange?: (workflow: string) => void
 }
 
 const AppBarStyled = styled(MuiAppBar, {
@@ -38,7 +39,7 @@ const AppBarStyled = styled(MuiAppBar, {
 
 export const AppBar = (props: AppBarProps) => {
   const location = useLocation()
-  const [worflow, setWorkflow] = useState<string[]>([])
+  const [workflow, setWorkflow] = useState<string[]>([])
 
   useEffect(() => {
     setWorkflow([location.pathname])
@@ -49,8 +50,12 @@ export const AppBar = (props: AppBarProps) => {
         <Typography variant="h6" noWrap sx={{ flexGrow: 1 }} component="div">
           Task Editor
         </Typography>
-        <Select value={worflow[0]} sx={{ minWidth: 200 }}>
-          {Object.entries(worflow).map(([key, value]) => (
+        <Select
+          value={workflow[0]}
+          sx={{ minWidth: 200 }}
+          onChange={(e) => props.handleWorkflowChange?.(e.target.value as string)}
+        >
+          {Object.entries(workflow).map(([key, value]) => (
             <MenuItem key={key} value={key}>
               {value}
             </MenuItem>
