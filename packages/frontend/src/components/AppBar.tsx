@@ -2,15 +2,27 @@ import { DownloadForOffline, UploadFile } from '@mui/icons-material'
 import MenuIcon from '@mui/icons-material/Menu'
 import ReplayIcon from '@mui/icons-material/Replay'
 import SaveIcon from '@mui/icons-material/Save'
-import { IconButton, MenuItem, Select, styled, Toolbar, Typography } from '@mui/material'
+import {
+  FormControl,
+  IconButton,
+  MenuItem,
+  Select,
+  Stack,
+  styled,
+  Toolbar,
+  Typography
+} from '@mui/material'
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar'
 import Tooltip from '@mui/material/Tooltip'
 import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { drawerWidth } from '@/pages/Editor'
+import { getConfig } from '@/utils/config'
+import { GraphSchema, LGraph } from '@haski/lib'
 
 interface AppBarProps extends MuiAppBarProps {
+  currentPath?: string
   open?: boolean
   handleDrawerOpen?: () => void
   handleSaveGraph?: () => void
@@ -39,28 +51,50 @@ const AppBarStyled = styled(MuiAppBar, {
 
 export const AppBar = (props: AppBarProps) => {
   const location = useLocation()
-  const [workflow, setWorkflow] = useState<string[]>([])
+  const [workflows, setWorkflows] = useState<GraphSchema[]>([])
+  const [selectedWorkflow, setSelectedWorkflow] = useState<GraphSchema>()
+
+  const workflowChange = (workflow: string) => {
+    setSelectedWorkflow(workflows.find((graph) => graph.path === workflow))
+    props.handleWorkflowChange?.(workflow)
+  }
 
   useEffect(() => {
-    setWorkflow([location.pathname])
-  }, [location])
+    fetch((getConfig().API ?? 'http://localhost:5000/') + 'v1/graphs')
+      .then((res) => res.json())
+      .then((graphs: Array<GraphSchema>) => {
+        setWorkflows(graphs)
+        // set the selected workflow
+        setSelectedWorkflow(
+          graphs.find((graph) => graph.path === props.currentPath) || graphs[0]
+        )
+      })
+  }, [location.pathname])
+
   return (
     <AppBarStyled position="fixed" open={props.open}>
       <Toolbar>
         <Typography variant="h6" noWrap sx={{ flexGrow: 1 }} component="div">
           Task Editor
         </Typography>
-        <Select
-          value={workflow[0]}
-          sx={{ minWidth: 200 }}
-          onChange={(e) => props.handleWorkflowChange?.(e.target.value as string)}
-        >
-          {Object.entries(workflow).map(([key, value]) => (
-            <MenuItem key={key} value={key}>
-              {value}
-            </MenuItem>
-          ))}
-        </Select>
+        <FormControl>
+          <Stack direction="column" padding={1} spacing={1}>
+            <Typography variant="body1">Workflow:</Typography>
+            <Select
+              value={selectedWorkflow?.path || ''}
+              sx={{ minWidth: 200 }}
+              onChange={(e) => workflowChange(e.target.value)}
+            >
+              {workflows.map((workflow) => (
+                <MenuItem key={workflow.id} value={workflow.path}>
+                  {
+                    workflow.path // actual name of the graph from db
+                  }
+                </MenuItem>
+              ))}
+            </Select>
+          </Stack>
+        </FormControl>
         <Tooltip title="Reconnect to websocket">
           <IconButton
             aria-label="change socket url"

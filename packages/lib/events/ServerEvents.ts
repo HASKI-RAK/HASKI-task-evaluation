@@ -39,7 +39,11 @@ export type ServerEventPayload = {
 export type ServerBenchmarkPostPayload = (string | number | string[])[]
 
 export type ClientEventPayload = {
-  saveGraph: SerializedGraph // saves a graph
+  // saves a graph
+  saveGraph: {
+    graph: SerializedGraph
+    name?: string // when no name is given, use the current location.pathname
+  }
   loadGraph: string // loads a graph by id (unique string identifier)
   // runs a graph
   runGraph: {

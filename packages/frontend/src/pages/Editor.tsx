@@ -29,6 +29,7 @@ import { AppBar } from '@/components/AppBar'
 import Canvas from '@/components/Canvas'
 import TaskView from '@/components/TaskView'
 import { getConfig } from '@/utils/config'
+import { useLocation } from 'react-router-dom'
 
 export const drawerWidth = 500
 
@@ -82,10 +83,11 @@ export const Editor = () => {
     Record<string, ServerEventPayload['output']> | undefined
   >(undefined)
   const path = window.location.pathname
+  const [selectedGraph, setSelectedGraph] = useState<string>(path)
   const [maxInputChars, setMaxInputChars] = useState<number>(300)
   const lgraph = useMemo(() => new LiteGraph.LGraph(), [])
   const [socketUrl, setSocketUrl] = useState(
-    getConfig().API_WS ?? 'ws://localhost:5000/' + path.slice(1) // window.location.pathname
+    (getConfig().WS ?? 'ws://localhost:5000/') + path.slice(1) // window.location.pathname
   )
   const [size, setSize] = useState({
     width: window.outerWidth,
@@ -131,9 +133,14 @@ export const Editor = () => {
   }
 
   const handleSaveGraph = () => {
+    // prompt user
+    const name = prompt('Enter graph name', path) ?? undefined
     sendJsonMessage<ClientPayload>({
       eventName: 'saveGraph',
-      payload: lgraph.serialize<SerializedGraph>()
+      payload: {
+        graph: lgraph.serialize<SerializedGraph>(),
+        name // when no name is given, use the current location.pathname
+      }
     })
   }
 
@@ -252,6 +259,7 @@ export const Editor = () => {
    * @param workflow - the ID of the workflow to load
    */
   const handleWorkflowChange = (workflow: string) => {
+    setSelectedGraph(workflow)
     sendJsonMessage<ClientPayload>({
       eventName: 'loadGraph',
       payload: workflow
@@ -270,6 +278,7 @@ export const Editor = () => {
       <Box sx={{ display: 'flex' }}>
         <AppBar
           open={open}
+          currentPath={selectedGraph}
           handleClickChangeSocketUrl={handleClickChangeSocketUrl}
           handleSaveGraph={handleSaveGraph}
           handleDrawerOpen={handleDrawerOpen}

@@ -66,5 +66,17 @@ export const handlers: RestHandlerMap<ClientBenchmarkPostPayload | undefined> = 
         response.end()
       })
     }
+  },
+  GET: {
+    '/v1/graphs': async (_, response) => {
+      // getting all available graphs
+      const graphs = await prisma.graph.findMany()
+      response.writeHead(200, {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      })
+      response.write(JSON.stringify(graphs))
+      response.end()
+    }
   }
 }

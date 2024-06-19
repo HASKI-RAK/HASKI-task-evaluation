@@ -46,9 +46,9 @@ export async function saveGraph(
   ws: WebSocket
 ): Promise<void> {
   log.debug('event: saveGraph')
-  lgraph.configure(payload)
-  const { pathname } = parse(request.url ?? '', true)
-  await prismaGraphCreateOrUpdate(prisma, pathname, lgraph)
+  lgraph.configure(payload.graph)
+  const name = payload.name ?? parse(request.url ?? '', true).pathname
+  await prismaGraphCreateOrUpdate(prisma, name, lgraph)
   sendWs(ws, {
     eventName: 'graphSaved',
     payload: lgraph.serialize<SerializedGraph>()

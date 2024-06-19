@@ -7,7 +7,7 @@ import { WebSocket, WebSocketServer } from 'ws'
 
 import prisma from '../client'
 import { setupGraphFromPath } from './Graph'
-import { handlers } from './handlers'
+import { handlers } from './requestHandlers'
 import { handleRestRequest, HttpMethod, RestRequest } from './utils/rest'
 import { runGraph, saveGraph } from './WebsocketOperations'
 
@@ -76,12 +76,15 @@ server.on('request', (request, response) => {
       }
       handleRestRequest(request, response, restRequest, handlers)
     })
-  } else {
+  } else if (request.method === 'GET' || request.method === 'DELETE') {
     const restRequest: RestRequest<undefined> = {
       method,
       route
     }
     handleRestRequest(request, response, restRequest, handlers)
+  } else {
+    response.writeHead(405)
+    response.end()
   }
 })
 /**
