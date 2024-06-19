@@ -19,7 +19,7 @@ import { useLocation } from 'react-router-dom'
 
 import { drawerWidth } from '@/pages/Editor'
 import { getConfig } from '@/utils/config'
-import { GraphSchema, LGraph } from '@haski/lib'
+import { GraphSchema } from '@haski/lib'
 
 interface AppBarProps extends MuiAppBarProps {
   currentPath?: string

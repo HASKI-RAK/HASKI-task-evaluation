@@ -29,7 +29,6 @@ import { AppBar } from '@/components/AppBar'
 import Canvas from '@/components/Canvas'
 import TaskView from '@/components/TaskView'
 import { getConfig } from '@/utils/config'
-import { useLocation } from 'react-router-dom'
 
 export const drawerWidth = 500
 
