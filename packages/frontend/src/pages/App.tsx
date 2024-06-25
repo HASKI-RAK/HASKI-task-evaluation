@@ -20,20 +20,24 @@ const ColorModeContext = createContext({ toggleColorMode: () => {} })
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route path="/" element={<Editor />}>
+    <Route>
       {/* /ke.moodle/2/2 */}
-      <Route path="ws/editor/:domain/:courseId/:elementId" element={<Editor />} />
+      <Route
+        path="ws/editor/:domain/:courseId/:elementId"
+        element={
+          <ErrorBoundary>
+            <Editor />
+          </ErrorBoundary>
+        }
+      />
       {/* <Route path="dashboard" element={<Dashboard />} /> */}
       {/* ... etc. */}
+      <Route path="*" element={<div>Not found</div>} />
     </Route>
   )
 )
 export const BasicApp = () => {
-  return (
-    <ErrorBoundary>
-      <RouterProvider router={router} />
-    </ErrorBoundary>
-  )
+  return <RouterProvider router={router} />
 }
 
 export const App = () => {
