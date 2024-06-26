@@ -11,9 +11,10 @@
   "scripts": {
     "dev": "yarn workspaces foreach -i --parallel --verbose --all run dev",
     "lint": "yarn workspaces foreach --parallel --all run lint",
-    "test": "yarn workspaces foreach --parallel --all run jest"
+    "test": "yarn workspaces foreach --parallel --all run jest",
+    "build": "yarn workspaces foreach --parallel --all run build"
   },
   "pre-commit": "lint",
   "license": "MIT",
-  "packageManager": "yarn@4.0.2"
+  "packageManager": "yarn@4.3.1"
 }

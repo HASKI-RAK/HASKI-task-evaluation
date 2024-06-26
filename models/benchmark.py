@@ -47,9 +47,12 @@ def perform_analysis(input_file, results: dict):
 
     # Extract scores from the Excel file and the results
     excel_scores = df["score"].values
+    escel_correct = df["correct"].values
     result_scores = np.array(
-        [results[0][_id] for _id in df["id"]]
+        [results[_id][1] for _id in df["id"]]
     )  # no backward compatibility
+    # when score 3<= then correct is 1, otherwise 0
+    result_correct = np.array([1 if score >= 3 else 0 for score in result_scores])
 
     # Calculate metrics
     mse = mean_squared_error(excel_scores, result_scores)
@@ -57,11 +60,20 @@ def perform_analysis(input_file, results: dict):
     mae = mean_absolute_error(excel_scores, result_scores)
     r2 = r2_score(excel_scores, result_scores)
 
+    mse_correct = mean_squared_error(escel_correct, result_correct)
+    rmse_correct = np.sqrt(mse_correct)
+    mae_correct = mean_absolute_error(escel_correct, result_correct)
+    r2_correct = r2_score(escel_correct, result_correct)
+
     result_metrics = {
         "mse": mse,
         "rmse": rmse,
         "mae": mae,
         "r2": r2,
+        "mse_correct": mse_correct,
+        "rmse_correct": rmse_correct,
+        "mae_correct": mae_correct,
+        "r2_correct": r2_correct,
     }
 
     # Print the metrics
@@ -70,6 +82,10 @@ def perform_analysis(input_file, results: dict):
     print(f"Root Mean Squared Error (RMSE): {rmse}")
     print(f"Mean Absolute Error (MAE): {mae}")
     print(f"R-squared (R²): {r2}")
+    print(f"Mean Squared Error (MSE) for correct: {mse_correct}")
+    print(f"Root Mean Squared Error (RMSE) for correct: {rmse_correct}")
+    print(f"Mean Absolute Error (MAE) for correct: {mae_correct}")
+    print(f"R-squared (R²) for correct: {r2_correct}")
 
     print("0 hypothesis: The model is not better than the baseline (random vlaues)")
     baseline = rng.uniform(0, 5, len(excel_scores))
@@ -78,23 +94,42 @@ def perform_analysis(input_file, results: dict):
     mae = mean_absolute_error(excel_scores, baseline)
     r2 = r2_score(excel_scores, baseline)
 
+    mse_correct = mean_squared_error(
+        escel_correct, rng.integers(0, 2, len(excel_scores))
+    )
+    rmse_correct = np.sqrt(mse_correct)
+    mae_correct = mean_absolute_error(
+        escel_correct, rng.integers(0, 2, len(excel_scores))
+    )
+    r2_correct = r2_score(escel_correct, rng.integers(0, 2, len(excel_scores)))
+
     baseline_metrics = {
         "mse": mse,
         "rmse": rmse,
         "mae": mae,
         "r2": r2,
+        "mse_correct": mse_correct,
+        "rmse_correct": rmse_correct,
+        "mae_correct": mae_correct,
+        "r2_correct": r2_correct,
     }
     print(f"Mean Squared Error (MSE): {mse}")
     print(f"Root Mean Squared Error (RMSE): {rmse}")
     print(f"Mean Absolute Error (MAE): {mae}")
     print(f"R-squared (R²): {r2}")
+    print(f"Mean Squared Error (MSE) for correct: {mse_correct}")
+    print(f"Root Mean Squared Error (RMSE) for correct: {rmse_correct}")
+    print(f"Mean Absolute Error (MAE) for correct: {mae_correct}")
 
     # Save the results in a xlsx file with the timestamp
     df = pd.DataFrame(
         {
             "excel_scores": excel_scores,
+            "excel_correct": escel_correct,
             "result_scores": result_scores,
+            "result_correct": result_correct,
             "baseline_scores": baseline,
+            "baseline_correct": rng.integers(0, 2, len(excel_scores)),
             "result_metrics": [result_metrics] * len(excel_scores),
             "baseline_metrics": [baseline_metrics] * len(excel_scores),
         }
@@ -122,7 +157,7 @@ else:
 
     # Dictionary to store the results
     results: dict = {}
-
+    length = len(df)
     # Iterate over each row in the dataset
     for index, row in df.iterrows():
         _id = row["id"]
@@ -144,6 +179,9 @@ else:
 
         # Store the result in the dictionary. result is a tuple [score,text]
         results[_id] = result
+        print(f"ID: {_id}, Score: {result[0]}, Text: {result[1]}\n")
+        print(f"Progress: {index+1}/{length}")
+    print("Benchmark finished")
 
     # Save the results as a pickle dump
     with open("results.pkl", "wb") as file:
