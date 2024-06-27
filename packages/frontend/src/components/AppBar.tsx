@@ -1,4 +1,4 @@
-/* eslint-disable simple-import-sort/imports */
+import { GraphSchema } from '@haski/lib'
 import { DownloadForOffline, UploadFile } from '@mui/icons-material'
 import MenuIcon from '@mui/icons-material/Menu'
 import ReplayIcon from '@mui/icons-material/Replay'
@@ -20,7 +20,6 @@ import { useLocation } from 'react-router-dom'
 
 import { drawerWidth } from '@/pages/Editor'
 import { getConfig } from '@/utils/config'
-import { GraphSchema } from '@haski/lib'
 
 interface AppBarProps extends MuiAppBarProps {
   currentPath?: string
