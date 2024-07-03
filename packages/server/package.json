@@ -1,5 +1,5 @@
 {
-  "name": "@hask/server",
+  "name": "@haski/ta-server",
   "version": "1.0.0",
   "description": "task assessment app acting as websocket and first contact",
   "main": "dist/index.js",
@@ -39,7 +39,7 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "@haski/lib": "*",
+    "@haski/ta-lib": "workspace:*",
     "@prisma/client": "^5.5.2",
     "pg-promise": "^11.5.4",
     "prisma": "^5.5.2",

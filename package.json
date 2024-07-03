@@ -4,7 +4,6 @@
   "author": {
     "name": "David Fischer"
   },
-  "private": true,
   "workspaces": [
     "packages/*"
   ],
