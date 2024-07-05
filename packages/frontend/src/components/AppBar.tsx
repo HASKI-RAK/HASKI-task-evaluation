@@ -1,4 +1,4 @@
-import { GraphSchema } from '@haski/lib'
+import { GraphSchema } from '@haski/ta-lib'
 import { DownloadForOffline, UploadFile } from '@mui/icons-material'
 import MenuIcon from '@mui/icons-material/Menu'
 import ReplayIcon from '@mui/icons-material/Replay'

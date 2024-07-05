@@ -1,5 +1,5 @@
 /* eslint-disable immutable/no-mutation */
-import { ClientEventPayload, handleWsRequest, WebSocketEvent } from '@haski/lib'
+import { ClientEventPayload, handleWsRequest, WebSocketEvent } from '@haski/ta-lib'
 import { createServer } from 'http'
 import { ILogObj, Logger } from 'tslog'
 import { parse } from 'url'

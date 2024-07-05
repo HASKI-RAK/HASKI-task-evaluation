@@ -2,7 +2,7 @@
 /* eslint-disable immutable/no-let */
 // FILEPATH: /c:/Development/HASKI-task-evaluation/packages/server/tests/WebsocketOperations.test.ts
 
-import { AnswerInputNode, ClientEventPayload, LGraph } from '@haski/lib'
+import { AnswerInputNode, ClientEventPayload, LGraph } from '@haski/ta-lib'
 import { IncomingMessage } from 'http'
 import { WebSocket } from 'ws'
 

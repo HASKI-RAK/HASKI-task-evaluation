@@ -6,7 +6,7 @@ import {
   SerializedGraph,
   ServerEventPayload,
   WebSocketEvent
-} from '@haski/lib'
+} from '@haski/ta-lib'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
@@ -27,6 +27,7 @@ import useWebSocket, { ReadyState } from 'react-use-websocket'
 import Snackbar from '@/common/SnackBar'
 import { AppBar } from '@/components/AppBar'
 import Canvas from '@/components/Canvas'
+import CircularProgressWithLabel from '@/components/CircularProgressWithLabel'
 import TaskView from '@/components/TaskView'
 import { getConfig } from '@/utils/config'
 
@@ -84,6 +85,7 @@ export const Editor = () => {
   const path = window.location.pathname
   const [selectedGraph, setSelectedGraph] = useState<string>(path)
   const [maxInputChars, setMaxInputChars] = useState<number>(300)
+  const [processingPercentage, setProcessingPercentage] = useState<number>(0)
   const lgraph = useMemo(() => new LiteGraph.LGraph(), [])
   const [socketUrl, setSocketUrl] = useState(
     (getConfig().WS ?? 'ws://localhost:5000/') + path.slice(1) // window.location.pathname
@@ -151,6 +153,7 @@ export const Editor = () => {
         !handleWsRequest<ServerEventPayload>(wsEvent, {
           graphFinished: (payload) => {
             console.log('Graph finished: ', payload)
+            setProcessingPercentage(0)
             lgraph.configure(payload)
             lgraph.setDirtyCanvas(true, true)
           },
@@ -184,6 +187,9 @@ export const Editor = () => {
           },
           maxInputChars(maxChars) {
             setMaxInputChars(maxChars)
+          },
+          processingPercentageUpdate(payload) {
+            setProcessingPercentage(payload)
           }
         })
       ) {
@@ -341,6 +347,9 @@ export const Editor = () => {
             </Typography>
           </DrawerHeader>
           <Divider />
+          {processingPercentage > 0 && processingPercentage < 100 && (
+            <CircularProgressWithLabel value={processingPercentage} />
+          )}
           <TaskView
             question={question}
             onSubmit={(answer) => handleSubmit(answer)}

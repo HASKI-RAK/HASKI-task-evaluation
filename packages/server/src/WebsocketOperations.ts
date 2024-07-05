@@ -5,7 +5,7 @@ import {
   LGraph,
   sendWs,
   SerializedGraph
-} from '@haski/lib'
+} from '@haski/ta-lib'
 import { IncomingMessage } from 'http'
 import { parse } from 'url'
 import { WebSocket } from 'ws'
@@ -28,7 +28,12 @@ export function runGraph(
     node.properties.value = payload.answer
   })
   // RUN GRAPH ITERATION
-  runLgraph(lgraph).then(() => {
+  runLgraph(lgraph, (percentage) =>
+    sendWs(ws, {
+      eventName: 'processingPercentageUpdate',
+      payload: percentage * 100
+    })
+  ).then(() => {
     log.debug('Finished running graph')
     sendWs(ws, {
       eventName: 'graphFinished',

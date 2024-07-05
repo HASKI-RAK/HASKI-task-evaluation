@@ -1,5 +1,5 @@
 /* eslint-disable immutable/no-mutation */
-import { LGraph, LGraphNode, LiteGraph, QuestionNode, sendWs } from '@haski/lib'
+import { LGraph, LGraphNode, LiteGraph, QuestionNode, sendWs } from '@haski/ta-lib'
 import { WebSocket } from 'ws'
 
 import prisma from '../client'
@@ -118,14 +118,20 @@ function testGraph(lgraph: LGraph, ws: WebSocket) {
  * @async
  * @param lgraph - graph to run
  */
-export async function runLgraph(lgraph: LGraph, onlyOnExecute = false) {
+export async function runLgraph(
+  lgraph: LGraph,
+  updateProggresCb?: (progress: number) => void,
+  onlyOnExecute = false
+) {
   const execorder = lgraph.computeExecutionOrder<LGraphNode[]>(onlyOnExecute, true)
-  for (const node of execorder) {
+  execorder.forEach(async (node, index) => {
     try {
       await node.onExecute?.()
+
+      updateProggresCb?.(index / execorder.length)
     } catch (error) {
       log.error(error)
       // TODO reset node green states
     }
-  }
+  })
 }

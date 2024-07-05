@@ -3,7 +3,7 @@
 /* eslint-disable immutable/no-let */
 /* eslint-disable immutable/no-mutation */
 /* eslint-disable immutable/no-this */
-import { LGraphCanvas, Vector2 } from '@haski/lib'
+import { LGraphCanvas, Vector2 } from '@haski/ta-lib'
 
 import { LGraphNode } from './litegraph-extensions'
 import { TextWidget } from './widgets/TextWidget'

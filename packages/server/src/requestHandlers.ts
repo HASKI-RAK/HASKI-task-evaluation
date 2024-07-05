@@ -6,8 +6,8 @@ import {
   OutputNode,
   QuestionNode,
   ServerBenchmarkPostPayload
-} from '@haski/lib'
-import { SampleSolutionNode } from '@haski/lib/nodes/SampleSolutionNode'
+} from '@haski/ta-lib'
+import { SampleSolutionNode } from '@haski/ta-lib/nodes/SampleSolutionNode'
 
 import prisma from '../client'
 import { addOnNodeAdded, runLgraph } from './Graph'
