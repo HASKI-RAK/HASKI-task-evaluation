@@ -1,0 +1,11 @@
+{
+  "name": "@haski/lti",
+  "version": "1.0.0",
+  "description": "Learning Tools Interoperability (LTI) implementation for typescript and node",
+  "author": "David Fischer",
+  "license": "MIT",
+  "packageManager": "yarn@4.0.2",
+  "devDependencies": {
+    "typescript": "^5.5.3"
+  }
+}

@@ -17,3 +17,5 @@ models/.flaskenv
 .vscode/settings.json
 *.xlsx
 models/*.pkl
+package.tgz
+models/RunOne.json

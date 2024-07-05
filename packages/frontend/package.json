@@ -1,5 +1,5 @@
 {
-  "name": "@hask/frontend",
+  "name": "@haski/ta-frontend",
   "version": "1.0.0",
   "author": {
     "name": "David Fischer"
@@ -19,7 +19,7 @@
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@fontsource/roboto": "^5.0.8",
-    "@haski/lib": "file:../lib",
+    "@haski/ta-lib": "workspace:*",
     "@mui/icons-material": "^5.14.16",
     "@mui/material": "^5.14.16",
     "react": "^18.2.0",

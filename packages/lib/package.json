@@ -1,6 +1,6 @@
 {
-  "name": "@haski/lib",
-  "version": "1.0.1",
+  "name": "@haski/ta-lib",
+  "version": "1.0.0",
   "description": "library for holding nodes, event and shared core features in the task assessment",
   "main": "index.ts",
   "author": "David Fischer",
