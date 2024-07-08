@@ -9,7 +9,7 @@ import {
 } from '@haski/ta-lib'
 import { SampleSolutionNode } from '@haski/ta-lib/nodes/SampleSolutionNode'
 
-import prisma from '../client'
+import prisma from './client'
 import { addOnNodeAdded, runLgraph } from './Graph'
 import { log } from './server'
 import { RestHandlerMap } from './utils/rest'

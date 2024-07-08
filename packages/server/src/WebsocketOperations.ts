@@ -10,7 +10,7 @@ import { IncomingMessage } from 'http'
 import { parse } from 'url'
 import { WebSocket } from 'ws'
 
-import prisma from '../client'
+import prisma from './client'
 import { runLgraph, sendQuestion } from './Graph'
 import { log } from './server'
 import { prismaGraphCreateOrUpdate } from './utils/prismaOperations'

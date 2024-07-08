@@ -2,7 +2,7 @@
 import { LGraph, LGraphNode, LiteGraph, QuestionNode, sendWs } from '@haski/ta-lib'
 import { WebSocket } from 'ws'
 
-import prisma from '../client'
+import prisma from './client'
 import { log } from './server'
 import * as demoGraphJson from './utils/RunOne.json'
 
