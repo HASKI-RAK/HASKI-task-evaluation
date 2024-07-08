@@ -3,7 +3,7 @@ import {
   ServerEvent,
   ServerEventPayload,
   WebSocketEvent
-} from '@haski/lib'
+} from '@haski/ta-lib'
 import { WebSocket } from 'ws'
 /**
  * Send a message to the client on an established WebSocket connection

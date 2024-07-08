@@ -33,7 +33,8 @@ export type ServerEventPayload = {
     nodeId: number
     error: string
   }
-  question: string
+  question: string // question from the question node
+  processingPercentageUpdate: number // displays in the frontend as a progress bar from 0 to 100. Server calculates the percentage of the graph that has been processed
 }
 
 export type ServerBenchmarkPostPayload = (string | number | string[])[]

@@ -1,4 +1,4 @@
-import { LGraph, LGraphCanvas } from '@haski/lib'
+import { LGraph, LGraphCanvas } from '@haski/ta-lib'
 import { useEffect, useRef, useState } from 'react'
 
 type CanvasProps = {

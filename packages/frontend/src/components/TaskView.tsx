@@ -1,4 +1,4 @@
-import { ServerEventPayload } from '@haski/lib'
+import { ServerEventPayload } from '@haski/ta-lib'
 import { Button, FormControl, Stack, TextField, Typography } from '@mui/material'
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress'
 import { styled } from '@mui/material/styles'

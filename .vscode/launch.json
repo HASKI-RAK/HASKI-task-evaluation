@@ -1,63 +1,71 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-    "version": "0.2.0",
-    "configurations": [
-        {"name":"Python Debugger: Current File","type":"debugpy","request":"launch","program":"${file}","console":"integratedTerminal"},
-        {
-            "name": "Launch server.ts",
-            "type": "node",
-            "cwd": "${workspaceFolder}/packages/server",
-            "request": "launch",
-            "runtimeArgs": [
-                "-r",
-                "ts-node/register"
-            ],
-            "args": [
-                "${workspaceFolder}/packages/server/src/server.ts",
-            ]
-        },
-        // args: "./scientsbank.xlsx","--run_name", "llm_only_wizzard_uncensored_full_v2" ,"--path" ,"/ws/editor/haski.de/2/4"  
-        {
-            "name": "Python Debugger: Current File with Arguments",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${file}",
-            "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}/models",
-            "args": [
-                "d:\\Development\\HASKI\\HASKI-task-evaluation\\models\\scientsbank.xlsx",
-                "--run_name",
-                "llm_only_wizzard_uncensored_full_v2",
-                "--path",
-                "/ws/editor/haski.de/2/4",
-                "--load",
-                "--analyze",
-            ],
-        },
-        {
-            "name": "Jest file",
-            "type": "pwa-node",
-            "request": "launch",
-            "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/jest",
-            "args": [
-                "${fileBasenameNoExtension}",
-                "--runInBand",
-                "--watch",
-                "--coverage=false",
-                "--no-cache"
-            ],
-            "cwd": "${workspaceRoot}",
-            "console": "integratedTerminal",
-            "internalConsoleOptions": "neverOpen",
-            "sourceMaps": true,
-            "windows": {
-                "program": "${workspaceFolder}/node_modules/jest/bin/jest",
-                "name": "Launch Program",
-                "type": "pwa-node",
-                "request": "launch"
-            }
-        }
-    ]
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch Chrome Task Assessment",
+      "request": "launch",
+      "type": "chrome",
+      "url": "http://localhost:5173/ws/editor",
+      "webRoot": "${workspaceFolder}/packages/frontend/src"
+    },
+    {
+      "name": "Python Debugger: Current File",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Launch server.ts",
+      "type": "node",
+      "cwd": "${workspaceFolder}/packages/server",
+      "request": "launch",
+      "runtimeArgs": ["-r", "ts-node/register"],
+      "args": ["${workspaceFolder}/packages/server/src/server.ts"]
+    },
+    // args: "./scientsbank.xlsx","--run_name", "llm_only_wizzard_uncensored_full_v2" ,"--path" ,"/ws/editor/haski.de/2/4"
+    {
+      "name": "Python Debugger: Current File with Arguments",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}/models",
+      "args": [
+        "d:\\Development\\HASKI\\HASKI-task-evaluation\\models\\scientsbank.xlsx",
+        "--run_name",
+        "llm_only_wizzard_uncensored_full_v2",
+        "--path",
+        "/ws/editor/haski.de/2/4",
+        "--load",
+        "--analyze"
+      ]
+    },
+    {
+      "name": "Jest file",
+      "type": "pwa-node",
+      "request": "launch",
+      "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/jest",
+      "args": [
+        "${fileBasenameNoExtension}",
+        "--runInBand",
+        "--watch",
+        "--coverage=false",
+        "--no-cache"
+      ],
+      "cwd": "${workspaceRoot}",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "sourceMaps": true,
+      "windows": {
+        "program": "${workspaceFolder}/node_modules/jest/bin/jest",
+        "name": "Launch Program",
+        "type": "pwa-node",
+        "request": "launch"
+      }
+    }
+  ]
 }
