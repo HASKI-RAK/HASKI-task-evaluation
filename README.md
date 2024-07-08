@@ -4,6 +4,10 @@
 
 This repository provides an app for automated task evaluation. Using an intuitive node graph interface, users can create and configure tasks, which are then evaluated by a by the system. The system consults worker units if necessary. The worker units are models hosted using the openAPI standard.
 
+Following articles have been published concerning this project:
+
+- [Enhancing NLP-Based Educational Assessment: A Node-Based Graph Approach for Analyzing Freeform Student Texts](https://ieeexplore.ieee.org/document/10569607)
+
 ---
 
 This mono repository, named `@haski/task-evaluation`, is designed to encompass a server, a frontend Progressive Web Application (PWA) developed in React, and a shared library package.
