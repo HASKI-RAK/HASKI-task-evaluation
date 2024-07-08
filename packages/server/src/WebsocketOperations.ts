@@ -28,12 +28,13 @@ export function runGraph(
     node.properties.value = payload.answer
   })
   // RUN GRAPH ITERATION
-  runLgraph(lgraph, (percentage) =>
+  runLgraph(lgraph, (percentage) => {
+    // only send every 10%
     sendWs(ws, {
       eventName: 'processingPercentageUpdate',
-      payload: percentage * 100
+      payload: Number(percentage.toFixed(2)) * 100
     })
-  ).then(() => {
+  }).then(() => {
     log.debug('Finished running graph')
     sendWs(ws, {
       eventName: 'graphFinished',

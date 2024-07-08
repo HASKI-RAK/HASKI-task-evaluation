@@ -127,7 +127,6 @@ export async function runLgraph(
   execorder.forEach(async (node, index) => {
     try {
       await node.onExecute?.()
-
       updateProggresCb?.(index / execorder.length)
     } catch (error) {
       log.error(error)
