@@ -1,6 +1,7 @@
 /* eslint-disable immutable/no-mutation */
 import {
   AnswerInputNode,
+  assertIs,
   ClientBenchmarkPostPayload,
   LiteGraph,
   OutputNode,
@@ -13,9 +14,15 @@ import prisma from './client'
 import { addOnNodeAdded, runLgraph } from './Graph'
 import { log } from './server'
 import { RestHandlerMap } from './utils/rest'
+import { ToolRegistrationRequest } from '@haski/lti';
+
+
+const toolRegistrationTruthiness = (payload: any) => {
+  return typeof payload === 'object' && payload !== null && 'lti_message_hint' in payload && 'lti_deployment_id' in payload && 'lti_version' in payload && 'lti_message_type' in payload
+}
 
 // Define your REST handlers
-export const handlers: RestHandlerMap<ClientBenchmarkPostPayload | undefined> = {
+export const handlers: RestHandlerMap<ClientBenchmarkPostPayload | ToolRegistrationRequest | undefined> = {
   POST: {
     '/v1/benchmark': async (_, response, payload) => {
       if (!payload) {
@@ -65,7 +72,14 @@ export const handlers: RestHandlerMap<ClientBenchmarkPostPayload | undefined> = 
         response.write(JSON.stringify(output))
         response.end()
       })
-    }
+    },
+    'v1/lti/register': async (_, response, payload) => {
+      // sanity check for payload type tool registration request
+      if (assertIs<ToolRegistrationRequest>(payload, toolRegistrationTruthiness)) {
+        // register the tool
+      }
+
+      // register the tool
   },
   GET: {
     '/v1/graphs': async (_, response) => {

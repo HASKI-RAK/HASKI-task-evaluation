@@ -10,7 +10,7 @@ import { runGraph, saveGraph } from './WebsocketOperations'
 
 const addListeners = async (wss: wssType, server: serverType) => {
   /**
-   * * Handle websocket when on valid path
+   **  Handle websocket connections on websocket server
    */
   wss.on('connection', async function connection(ws: WebSocket, request) {
     const timeItStart = Date.now()
@@ -49,8 +49,9 @@ const addListeners = async (wss: wssType, server: serverType) => {
     const timeItEnd = Date.now()
     log.info('Time it took to setup graph: ', timeItEnd - timeItStart + 'ms')
   })
+
   /**
-   ** Handle get, post, put, delete requests
+   ** Handle REST requests on http server
    */
   server.on('request', (request, response) => {
     const { pathname } = parse(request.url ?? '', true)
