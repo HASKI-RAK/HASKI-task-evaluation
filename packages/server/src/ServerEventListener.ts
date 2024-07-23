@@ -58,6 +58,7 @@ const addListeners = async (wss: wssType, server: serverType) => {
     const method = request.method as HttpMethod
     const route = pathname ?? '/'
 
+    
     if (request.method === 'POST' || request.method === 'PUT') {
       // Parse the request body as needed
       // For example, if the payload is JSON:
@@ -78,8 +79,19 @@ const addListeners = async (wss: wssType, server: serverType) => {
         route
       }
       handleRestRequest(request, response, restRequest, handlers)
+    }
+    // Handle options request
+    else if (request.method === 'OPTIONS') {
+      response.setHeader('Access-Control-Allow-Origin', '*')
+      response.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE')
+      response.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+      response.writeHead(200)
+      response.end()
     } else {
+      // cors
+      response.setHeader('Access-Control-Allow-Origin', '*')
       response.writeHead(405)
+      response.write('Method not allowed')
       response.end()
     }
   })
