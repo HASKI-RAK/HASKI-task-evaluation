@@ -13,7 +13,7 @@ export const LtiRegister = () => {
     ) {
       // send request to registration endpoint
       fetch(
-        'http://localhost:5000/v1/lti/register?' + searchParams.toString(),
+        import.meta.env.VITE_BACKEND_URL + '?' + searchParams.toString(),
 
         {
           method: 'GET'
