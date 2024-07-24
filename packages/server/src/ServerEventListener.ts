@@ -3,7 +3,7 @@ import { parse } from 'url'
 import { WebSocket } from 'ws'
 
 import { setupGraphFromPath } from './Graph'
-import { handlers } from './RequestHandlers'
+import { handlers } from './handlers/RequestHandlers'
 import { log, serverType, wssType } from './server'
 import { handleRestRequest, HttpMethod, RestRequest } from './utils/rest'
 import { runGraph, saveGraph } from './WebsocketOperations'
@@ -58,7 +58,6 @@ const addListeners = async (wss: wssType, server: serverType) => {
     const method = request.method as HttpMethod
     const route = pathname ?? '/'
 
-    
     if (request.method === 'POST' || request.method === 'PUT') {
       // Parse the request body as needed
       // For example, if the payload is JSON:

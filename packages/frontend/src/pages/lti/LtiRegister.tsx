@@ -1,8 +1,9 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
 export const LtiRegister = () => {
   const [searchParams] = useSearchParams()
+  const [error, setError] = useState<string | null>(null)
   useEffect(() => {
     // check if searchparams has openid_configuration and registration_token
     // if so, send a request to the registration endpoint,
@@ -11,9 +12,11 @@ export const LtiRegister = () => {
       searchParams.get('openid_configuration') &&
       searchParams.get('registration_token')
     ) {
+      console.log('registering tool...', searchParams.toString())
+      console.log(import.meta.env.VITE_LTI_REGISTER)
       // send request to registration endpoint
       fetch(
-        import.meta.env.VITE_BACKEND_URL + '?' + searchParams.toString(),
+        import.meta.env.VITE_LTI_REGISTER + '?' + searchParams.toString(),
 
         {
           method: 'GET'
@@ -24,24 +27,29 @@ export const LtiRegister = () => {
         .then((response) => {
           if (!response.ok) {
             throw new Error('Could not register tool: ' + response.statusText)
-          }
-          return response.json()
-        })
-        .then((data) => {
-          console.log(data)
-        })
-        .finally(() => {
+          } else;
           ;(window.opener || window.parent).postMessage(
             { subject: 'org.imsglobal.lti.close' },
             '*'
           )
+        })
+        .catch((error) => {
+          console.error('Error registering tool: ', error)
+          setError(error.message)
         })
     }
   })
 
   return (
     <div>
-      <h1>Please wait while we register your tool...</h1>
+      {error ? (
+        <h1>
+          Registration failed with error: {error}. Check the console for more information.
+        </h1>
+      ) : (
+        <h1>Please wait while we register your tool...</h1>
+      )}
+      {error && <p>{error}</p>}
     </div>
   )
 }

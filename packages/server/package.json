@@ -39,11 +39,11 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "@haski/ta-lib": "workspace:*",
     "@haski/lti": "workspace:*",
-    "@prisma/client": "^5.5.2",
+    "@haski/ta-lib": "workspace:*",
+    "@prisma/client": "^5.17.0",
     "pg-promise": "^11.5.4",
-    "prisma": "^5.5.2",
+    "prisma": "^5.17.0",
     "tslog": "^4.9.2",
     "ws": "^8.14.2"
   }

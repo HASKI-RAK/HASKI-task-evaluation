@@ -1,9 +1,5 @@
+/* eslint-disable simple-import-sort/imports */
 /* eslint-disable immutable/no-mutation */
-import {
-  handleToolRegistration,
-  isPayloadToolRegistrationValid,
-  ToolRegistrationRequest
-} from '@haski/lti'
 import {
   AnswerInputNode,
   assertIs,
@@ -15,11 +11,12 @@ import {
 } from '@haski/ta-lib'
 import { SampleSolutionNode } from '@haski/ta-lib/nodes/SampleSolutionNode'
 
-import prisma from './client'
-import { addOnNodeAdded, runLgraph } from './Graph'
-import { log } from './server'
-import { RestHandlerMap } from './utils/rest'
-import { isPayloadClientBenchmarkValid } from './utils/typeGuards'
+import prisma from '../client'
+import { addOnNodeAdded, runLgraph } from '../Graph'
+import { log } from '../server'
+import { RestHandlerMap } from '../utils/rest'
+import { isPayloadClientBenchmarkValid } from '../utils/typeGuards'
+import { handleLtiToolRegistration, ToolRegistrationRequest } from './handleLti'
 
 // Define your REST handlers
 // always sanity check the payload before using it
@@ -71,18 +68,6 @@ export const handlers: RestHandlerMap<
         response.write(JSON.stringify(output))
         response.end()
       })
-    },
-    '/v1/lti/register': async (_, response, payload) => {
-      try {
-        assertIs(payload, isPayloadToolRegistrationValid)
-
-        // register the tool
-        const registrationResult = handleToolRegistration(payload)
-        log.debug('Tool registration response: ', registrationResult)
-      } catch (e) {
-        response.writeHead(400)
-        response.end('Invalid Tool Registration Request')
-      }
     }
   },
   GET: {
@@ -96,37 +81,8 @@ export const handlers: RestHandlerMap<
       response.write(JSON.stringify(graphs))
       response.end()
     },
-    '/v1/lti/register': async (request, response) => {
-      try {
-        // get parameters from the request
-        const params = new URLSearchParams(request.url?.split('?')[1])
-        const openid_configuration = params.get('openid_configuration') // https://www.imsglobal.org/spec/lti-dr/v1p0#openid-configuration
-        const registration_token = params.get('registration_token')
-        log.debug('openid_configuration: ', openid_configuration)
-        // visit with get request openID configuration endpoint to retreieve registration endpoint:
-        const registration_endpoint = await getRegistrationEndpoint(
-          openid_configuration,
-          registration_token
-        )
-        response.writeHead(registration_endpoint.status, {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
-        })
-        // send post status: (window.opener || window.parent).postMessage({subject:'org.imsglobal.lti.close'}, '*')
-
-        response.end(registration_endpoint.statusText)
-        // assertIs(payload, isPayloadToolRegistrationValid)
-        // register the tool
-        // const registrationResult = handleToolRegistration(payload)
-        // log.debug('Tool registration response: ', registrationResult)
-      } catch (e) {
-        response.writeHead(400, {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
-        })
-        response.end('Invalid Tool Registration Request')
-      }
-    },
+    '/v1/lti/register': async (request, response) =>
+      handleLtiToolRegistration(request, response),
     '/v1/lti/login': async (request, response) => {
       try {
         // get parameters from the request
@@ -162,47 +118,6 @@ export const handlers: RestHandlerMap<
       response.write(JSON.stringify(jwks))
       response.end()
     }
-  }
-}
-
-const getRegistrationEndpoint = async (
-  openid_configuration: string | null,
-  registration_token: string | null
-) => {
-  // visit with get request openID configuration endpoint to retreieve registration endpoint:
-  if (openid_configuration) {
-    const registration_endpoint = await fetch(openid_configuration)
-    const registration_endpoint_json = await registration_endpoint.json()
-    const registration_endpoint_url = registration_endpoint_json.registration_endpoint
-    // visit registration_endpoint with post request to register the tool
-    const registration_response = await fetch(registration_endpoint_url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${registration_token}`
-      },
-      body: JSON.stringify({
-        application_type: 'web',
-        grant_types: ['client_credentials', 'implicit'],
-        response_types: ['id_token'],
-        client_name: 'Haski',
-        'client_name#de': 'HASKI',
-        redirect_uris: ['http://localhost:5000'],
-        initiate_login_uri: 'http://localhost:5000/v1/lti/login',
-        jwks_uri: 'http://localhost:5000/.well-known/jwks',
-        token_endpoint_auth_method: 'private_key_jwt',
-        scope: 'https://purl.imsglobal.org/spec/lti-ags/scope/score',
-        'https://purl.imsglobal.org/spec/lti-tool-configuration': {
-          domain: 'http://localhost:5000',
-          description: 'Haski',
-          target_link_uri: 'http://localhost:5000',
-          claims: ['iss', 'sub', 'name', 'given_name', 'family_name', 'email']
-        }
-      })
-    })
-    return registration_response
-  } else {
-    throw new Error('Invalid OpenID Configuration')
   }
 }
 

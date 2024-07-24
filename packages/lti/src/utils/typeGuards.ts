@@ -1,4 +1,8 @@
-import { ToolRegistrationRequest } from '@haski/lti'
+import {
+  OpenIdConfigJson,
+  SuccessfulToolRegistrationResponse,
+  ToolRegistrationRequest
+} from '@haski/lti'
 export const isPayloadToolRegistrationValid = (
   payload: unknown
 ): payload is ToolRegistrationRequest => {
@@ -10,4 +14,31 @@ export const isPayloadToolRegistrationValid = (
     'redirect_uris' in payload &&
     'jwks_uri' in payload
   )
+}
+
+export function isSuccessfulToolRegistrationResponse(
+  payload: any
+): payload is SuccessfulToolRegistrationResponse {
+  if (typeof payload !== 'object' || payload === null) return false
+  const requiredFields = [
+    'client_id',
+    'response_types',
+    'jwks_uri',
+    'initiate_login_uri',
+    'grant_types',
+    'redirect_uris',
+    'application_type',
+    'token_endpoint_auth_method',
+    'client_name',
+    'https://purl.imsglobal.org/spec/lti-tool-configuration'
+  ]
+  return requiredFields.every((field) => field in payload)
+}
+export function isOpenIdConfigJson(payload: any): payload is OpenIdConfigJson {
+  if (typeof payload !== 'object' || payload === null) return false
+  const requiredFields = [
+    'issuer',
+    'https://purl.imsglobal.org/spec/lti-platform-configuration'
+  ]
+  return requiredFields.every((field) => field in payload)
 }
