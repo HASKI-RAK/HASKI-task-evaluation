@@ -17,7 +17,7 @@ describe('Graph', () => {
   const send = jest.fn()
 
   beforeEach(() => {
-    ws = new WebSocket('ws://localhost:8080')
+    ws = new WebSocket('ws://anotherfakedomain.org:8080')
     jest.spyOn(ws, 'send').mockImplementation(send)
     request = new IncomingMessage({} as any)
   })

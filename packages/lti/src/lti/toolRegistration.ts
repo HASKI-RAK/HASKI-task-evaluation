@@ -57,6 +57,15 @@ export interface OpenIdConfigJson {
   }
 }
 
+export interface LtiLaunchRequest {
+  iss: string
+  target_link_uri: string
+  login_hint: string
+  lti_message_hint: string
+  client_id: string
+  lti_deployment_id: string
+}
+
 // Dummy storage for registered tools
 
 export async function handleToolRegistration(
@@ -115,18 +124,21 @@ const getRegistrationEndpoint = async (
         application_type: 'web',
         grant_types: ['client_credentials', 'implicit'],
         response_types: ['id_token'],
-        client_name: 'Haski',
-        'client_name#de': 'HASKI',
-        redirect_uris: ['http://localhost:5000'],
-        initiate_login_uri: 'http://localhost:5000/v1/lti/login',
-        jwks_uri: 'http://localhost:5000/.well-known/jwks',
+        client_name: 'Task Assessment',
+        'client_name#de': 'Aufgabenbewertung',
+        redirect_uris: [
+          'http://anotherfakedomain.org:5000',
+          'http://anotherfakedomain.org:5173/ws/editor/lol/1/2'
+        ], // testen ob das so geht oder auch ohne url am ende
+        initiate_login_uri: 'http://anotherfakedomain.org:5000/v1/lti/login',
+        jwks_uri: 'http://anotherfakedomain.org:5000/.well-known/jwks',
         token_endpoint_auth_method: 'private_key_jwt',
         scope: 'https://purl.imsglobal.org/spec/lti-ags/scope/score',
         'https://purl.imsglobal.org/spec/lti-tool-configuration': {
-          domain: 'http://localhost:5000',
-          description: 'Haski',
-          target_link_uri: 'http://localhost:5000',
-          claims: ['iss', 'sub', 'name', 'given_name', 'family_name', 'email']
+          domain: 'http://anotherfakedomain.org:5000',
+          description: 'Automated short answer assessment',
+          target_link_uri: 'http://anotherfakedomain.org:5000/v1/lti/login',
+          claims: ['iss', 'sub', 'name']
         }
       })
     })

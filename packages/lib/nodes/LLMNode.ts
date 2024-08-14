@@ -161,7 +161,7 @@ export class LLMNode extends LGraphNode {
   init(_env: Record<string, unknown>) {
     this.env = _env
     this.fetchModels(
-      (this.env.MODEL_WORKER_URL ?? 'http://localhost:8000') + '/v1/models'
+      (this.env.MODEL_WORKER_URL ?? 'http://anotherfakedomain.org:8000') + '/v1/models'
     ).then((models) => {
       // this.initModels(models)
     })
@@ -227,7 +227,8 @@ export class LLMNode extends LGraphNode {
     // fetch from server
     console.log(this.env.MODEL_WORKER_URL)
     const response = await fetch(
-      (this.env.MODEL_WORKER_URL ?? 'http://localhost:8000') + '/v1/chat/completions',
+      (this.env.MODEL_WORKER_URL ?? 'http://anotherfakedomain.org:8000') +
+        '/v1/chat/completions',
       {
         method: 'POST',
         headers: {

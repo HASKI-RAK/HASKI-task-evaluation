@@ -46,7 +46,8 @@ export class SentenceTransformer extends LGraphNode {
     // fetch from server
     console.log(this.env.SIMILARITY_WORKER_URL)
     const url =
-      (this.env.SIMILARITY_WORKER_URL ?? 'http://localhost:8002') + '/sentence_embedding'
+      (this.env.SIMILARITY_WORKER_URL ?? 'http://anotherfakedomain.org:8002') +
+      '/sentence_embedding'
     console.log('URL: ', url)
 
     const response_one = await fetch(url, {

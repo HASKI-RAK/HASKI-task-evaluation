@@ -8,7 +8,7 @@ import addListeners from './ServerEventListener'
 
 // Init
 export const log: Logger<ILogObj> = new Logger()
-const server = createServer()
+export const server = createServer()
 export type serverType = ReturnType<typeof createServer>
 const wss = new WebSocketServer({ noServer: true })
 export type wssType = WebSocketServer

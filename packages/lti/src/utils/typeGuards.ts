@@ -1,4 +1,5 @@
 import {
+  LtiLaunchRequest,
   OpenIdConfigJson,
   SuccessfulToolRegistrationResponse,
   ToolRegistrationRequest
@@ -16,8 +17,23 @@ export const isPayloadToolRegistrationValid = (
   )
 }
 
+export const isPayloadLtiLaunchValid = (
+  payload: unknown
+): payload is LtiLaunchRequest => {
+  return (
+    typeof payload === 'object' &&
+    payload !== null &&
+    'iss' in payload &&
+    'target_link_uri' in payload &&
+    'login_hint' in payload &&
+    'lti_message_hint' in payload &&
+    'client_id' in payload &&
+    'lti_deployment_id' in payload
+  )
+}
+
 export function isSuccessfulToolRegistrationResponse(
-  payload: any
+  payload: unknown
 ): payload is SuccessfulToolRegistrationResponse {
   if (typeof payload !== 'object' || payload === null) return false
   const requiredFields = [
@@ -34,7 +50,7 @@ export function isSuccessfulToolRegistrationResponse(
   ]
   return requiredFields.every((field) => field in payload)
 }
-export function isOpenIdConfigJson(payload: any): payload is OpenIdConfigJson {
+export function isOpenIdConfigJson(payload: unknown): payload is OpenIdConfigJson {
   if (typeof payload !== 'object' || payload === null) return false
   const requiredFields = [
     'issuer',

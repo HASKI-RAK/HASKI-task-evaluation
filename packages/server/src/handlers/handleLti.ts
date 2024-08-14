@@ -3,7 +3,9 @@ import prisma from '../client'
 import {
   handleToolRegistration,
   isOpenIdConfigJson,
+  isPayloadLtiLaunchValid,
   isSuccessfulToolRegistrationResponse,
+  LtiLaunchRequest,
   ToolRegistrationRequest
 } from '@haski/lti'
 import { IncomingMessage, ServerResponse } from 'http'
@@ -75,6 +77,41 @@ const savePlatformCallback = async (
     .catch((e) => {
       log.error(e)
     })
+}
+
+export const extractLtiLaunchRequest = (
+  params: URLSearchParams
+): LtiLaunchRequest | null => {
+  const iss = params.get('iss')
+  const target_link_uri = params.get('target_link_uri')
+  const login_hint = params.get('login_hint')
+  const lti_message_hint = params.get('lti_message_hint')
+  const client_id = params.get('client_id')
+  const lti_deployment_id = params.get('lti_deployment_id')
+
+  if (
+    iss &&
+    target_link_uri &&
+    login_hint &&
+    lti_message_hint &&
+    client_id &&
+    lti_deployment_id
+  ) {
+    const payload = {
+      iss,
+      target_link_uri,
+      login_hint,
+      lti_message_hint,
+      client_id,
+      lti_deployment_id
+    }
+
+    if (isPayloadLtiLaunchValid(payload)) {
+      return payload
+    }
+  }
+
+  return null
 }
 
 export type { ToolRegistrationRequest }

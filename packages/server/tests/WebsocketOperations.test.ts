@@ -6,10 +6,10 @@ import { AnswerInputNode, ClientEventPayload, LGraph } from '@haski/ta-lib'
 import { IncomingMessage } from 'http'
 import { WebSocket } from 'ws'
 
-import { saveGraph } from '../src/Graph'
-import { server } from '../src/server'
+import { server } from '@/server'
+
 import * as demoGraphJson from '../src/utils/demoGraph.json'
-import { runGraph } from '../src/WebsocketOperations'
+import { runGraph, saveGraph } from '../src/WebsocketOperations'
 
 jest.mock('ws')
 jest.mock('../src/utils/prismaOperations')
@@ -39,7 +39,7 @@ describe('runGraph', () => {
     }
     node = new AnswerInputNode()
     lgraph = new LGraph()
-    ws = new WebSocket('ws://localhost:8080')
+    ws = new WebSocket('ws://anotherfakedomain.org:8080')
     jest.spyOn(ws, 'send').mockImplementation(send)
 
     jest.spyOn(lgraph, 'findNodesByClass').mockReturnValue([node])

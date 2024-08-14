@@ -5,7 +5,13 @@ import { WebSocket } from 'ws'
 import { setupGraphFromPath } from './Graph'
 import { handlers } from './handlers/RequestHandlers'
 import { log, serverType, wssType } from './server'
-import { handleRestRequest, HttpMethod, RestRequest } from './utils/rest'
+import {
+  handleRestRequest,
+  handleRestRequestWithFormData,
+  handleRestRequestWithPayload,
+  HttpMethod,
+  RestRequest
+} from './utils/rest'
 import { runGraph, saveGraph } from './WebsocketOperations'
 
 const addListeners = async (wss: wssType, server: serverType) => {
@@ -60,18 +66,22 @@ const addListeners = async (wss: wssType, server: serverType) => {
 
     if (request.method === 'POST' || request.method === 'PUT') {
       // Parse the request body as needed
-      // For example, if the payload is JSON:
-      const requestBody: Buffer[] = []
-      request.on('data', (chunk) => requestBody.push(chunk))
-      request.on('end', () => {
-        const payload = JSON.parse(Buffer.concat(requestBody).toString())
-        const restRequest: RestRequest<typeof payload> = {
-          method,
-          route,
-          payload
-        }
-        handleRestRequest(request, response, restRequest, handlers)
-      })
+      //switch based on content type
+      switch (request.headers['content-type']) {
+        case 'application/json':
+          handleRestRequestWithPayload(request, method, route, response)
+          break
+        case 'application/x-www-form-urlencoded':
+          handleRestRequestWithFormData(request, method, route, response)
+          break
+        case 'multipart/form-data':
+          handleRestRequestWithFormData(request, method, route, response)
+          break
+        default:
+          response.writeHead(400)
+          response.end('Invalid content type')
+          break
+      }
     } else if (request.method === 'GET' || request.method === 'DELETE') {
       const restRequest: RestRequest<undefined> = {
         method,

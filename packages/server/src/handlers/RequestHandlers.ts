@@ -17,11 +17,12 @@ import { log } from '../server'
 import { RestHandlerMap } from '../utils/rest'
 import { isPayloadClientBenchmarkValid } from '../utils/typeGuards'
 import { handleLtiToolRegistration, ToolRegistrationRequest } from './handleLti'
+import { isPayloadLtiLaunchValid, LtiLaunchRequest } from '@haski/lti'
 
 // Define your REST handlers
 // always sanity check the payload before using it
 export const handlers: RestHandlerMap<
-  ClientBenchmarkPostPayload | ToolRegistrationRequest | undefined
+  ClientBenchmarkPostPayload | ToolRegistrationRequest | LtiLaunchRequest | undefined
 > = {
   POST: {
     '/v1/benchmark': async (_, response, payload) => {
@@ -68,6 +69,28 @@ export const handlers: RestHandlerMap<
         response.write(JSON.stringify(output))
         response.end()
       })
+    },
+    '/v1/lti/login': async (_, response, payload) => {
+      assertIs(payload, isPayloadLtiLaunchValid)
+      try {
+        // visit with get request openID configuration endpoint to retreieve registration endpoint:
+        // const launch_response = await launchTool(id_token, state)
+        // log.debug('Launch response: ', launch_response)
+        // response.writeHead(launch_response.status)
+        // response.end(launch_response.statusText)
+
+        // redirect to the tool frontend
+        response.writeHead(302, {
+          Location: 'http://anotherfakedomain.org:5173/ws/editor/lol/1/2'
+        })
+        response.end()
+      } catch (e) {
+        response.writeHead(400, {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        })
+        response.end('Invalid Tool Launch Request')
+      }
     }
   },
   GET: {
@@ -83,26 +106,7 @@ export const handlers: RestHandlerMap<
     },
     '/v1/lti/register': async (request, response) =>
       handleLtiToolRegistration(request, response),
-    '/v1/lti/login': async (request, response) => {
-      try {
-        // get parameters from the request
-        const params = new URLSearchParams(request.url?.split('?')[1])
-        const id_token = params.get('id_token')
-        const state = params.get('state')
 
-        // visit with get request openID configuration endpoint to retreieve registration endpoint:
-        const launch_response = await launchTool(id_token, state)
-        log.debug('Launch response: ', launch_response)
-        response.writeHead(launch_response.status)
-        response.end(launch_response.statusText)
-      } catch (e) {
-        response.writeHead(400, {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
-        })
-        response.end('Invalid Tool Launch Request')
-      }
-    },
     '.well-known/jwks': async (_, response) => {
       const jwks = {
         kty: 'RSA',
@@ -118,16 +122,5 @@ export const handlers: RestHandlerMap<
       response.write(JSON.stringify(jwks))
       response.end()
     }
-  }
-}
-
-const launchTool = async (id_token: string | null, state: string | null) => {
-  // visit with get request openID configuration endpoint to retreieve registration endpoint:
-  if (id_token) {
-    // const decoded = jwt.decode(id_token, { complete: true })
-    // log.debug('decoded: ', decoded)
-    return { status: 200, statusText: 'OK' }
-  } else {
-    throw new Error('Invalid ID Token')
   }
 }
