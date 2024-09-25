@@ -2,6 +2,8 @@
 
 import { IncomingMessage, ServerResponse } from 'http'
 
+import config from '../config.json'
+
 export interface ToolRegistrationRequest {
   client_id: string
   initiate_login_uri: string
@@ -126,10 +128,7 @@ const getRegistrationEndpoint = async (
         response_types: ['id_token'],
         client_name: 'Task Assessment',
         'client_name#de': 'Aufgabenbewertung',
-        redirect_uris: [
-          'http://anotherfakedomain.org:5000',
-          'http://anotherfakedomain.org:5173/ws/editor/lol/1/2'
-        ], // testen ob das so geht oder auch ohne url am ende
+        redirect_uris: [...config.redirect_urls], // testen ob das so geht oder auch ohne url am ende
         initiate_login_uri: 'http://anotherfakedomain.org:5000/v1/lti/login',
         jwks_uri: 'http://anotherfakedomain.org:5000/.well-known/jwks',
         token_endpoint_auth_method: 'private_key_jwt',
