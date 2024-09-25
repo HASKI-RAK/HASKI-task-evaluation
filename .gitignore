@@ -19,3 +19,4 @@ models/.flaskenv
 models/*.pkl
 package.tgz
 models/RunOne.json
+.editorconfig
