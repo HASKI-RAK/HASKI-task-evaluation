@@ -87,15 +87,14 @@ export async function handleToolRegistration(
       openid_configuration,
       registration_token
     )
-    const toolRegistrationResponseBody: SuccessfulToolRegistrationResponse =
-      await registrationResponse.json()
     // write platform registration to database
-    savePlatformCallback(toolRegistrationResponseBody, openIdConfigJson).then(() => {
+    savePlatformCallback(registrationResponse, openIdConfigJson).then(() => {
+      // write ok
       response.writeHead(200, {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*'
       })
-      response.end(JSON.stringify(toolRegistrationResponseBody))
+      response.end(JSON.stringify(registrationResponse))
     })
   } catch (error) {
     response.writeHead(400, {
@@ -113,15 +112,22 @@ const getRegistrationEndpoint = async (
   // visit with get request openID configuration endpoint to retreieve registration endpoint:
   if (openid_configuration) {
     const registration_endpoint = await fetch(openid_configuration)
+    // https://www.imsglobal.org/spec/lti-dr/v1p0#openid-configuration
     const registration_endpoint_json = await registration_endpoint.json()
-    const registration_endpoint_url = registration_endpoint_json.registration_endpoint
+    const open_id_registration_endpoint_url =
+      registration_endpoint_json.registration_endpoint
+
+    //TODO: check harmfull input
+
     // visit registration_endpoint with post request to register the tool
-    const registration_response = await fetch(registration_endpoint_url, {
+    // https://www.imsglobal.org/spec/lti-dr/v1p0#lti-open-id-connect-dynamic-registration-protocol
+    const registration_response = await fetch(open_id_registration_endpoint_url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${registration_token}`
       },
+      // https://www.imsglobal.org/spec/lti-dr/v1p0#openid-configuration-0
       body: JSON.stringify({
         application_type: 'web',
         grant_types: ['client_credentials', 'implicit'],
@@ -129,17 +135,42 @@ const getRegistrationEndpoint = async (
         client_name: 'Task Assessment',
         'client_name#de': 'Aufgabenbewertung',
         redirect_uris: [...config.redirect_urls], // testen ob das so geht oder auch ohne url am ende
-        initiate_login_uri: 'http://anotherfakedomain.org:5000/v1/lti/login',
-        jwks_uri: 'http://anotherfakedomain.org:5000/.well-known/jwks',
+        policy_uri: 'http://localhost:5000/policy',
+        'policy_uri#de': 'http://localhost:5000/policy',
+        initiate_login_uri: config.initiate_login_uri,
+        jwks_uri: 'http://localhost:5000/.well-known/jwks',
         token_endpoint_auth_method: 'private_key_jwt',
-        scope: 'https://purl.imsglobal.org/spec/lti-ags/scope/score',
+        scope:
+          'https://purl.imsglobal.org/spec/lti-ags/scope/score https://purl.imsglobal.org/spec/lti-nrps/scope/contextmembership.readonly',
         'https://purl.imsglobal.org/spec/lti-tool-configuration': {
-          domain: 'http://anotherfakedomain.org:5000',
+          // https://www.imsglobal.org/spec/lti-dr/v1p0#lti-configuration-0
+          domain: 'http://localhost:5000',
           description: 'Automated short answer assessment',
-          target_link_uri: 'http://anotherfakedomain.org:5000/v1/lti/login',
-          claims: ['iss', 'sub', 'name']
+          target_link_uri: 'http://localhost:5000/v1/lti/login', //TODO: set to frontend url
+          claims: ['iss', 'sub', 'name', 'given_name'], // 	An array of claims indicating which information this tool desire to be included in each idtoken
+          messages: [
+            {
+              type: 'LtiDeepLinkingRequest',
+              target_link_uri: 'http://localhost:5173/lti/deeplink',
+              label:
+                'Select the graph template for this exercise. Also enter the question for the exercise.',
+              'label#de':
+                'Wählen Sie die Graphenvorlage für diese Übung aus. Geben Sie zudem die Frage für die Übung ein.',
+              custom_parameters: {
+                botanical_set: '12943,49023,50013'
+              },
+              placements: ['ContentArea'],
+              supported_types: ['ltiResourceLink']
+            }
+          ]
         }
       })
+    }).then((response) => {
+      if (!response.ok) {
+        throw new Error('Could not register tool: ' + response.statusText)
+      } else {
+        return response.json()
+      }
     })
     return {
       registrationResponse: registration_response,

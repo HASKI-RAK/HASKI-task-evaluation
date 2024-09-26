@@ -81,7 +81,7 @@ export const handlers: RestHandlerMap<
 
         // redirect to the tool frontend
         response.writeHead(302, {
-          Location: 'http://anotherfakedomain.org:5173/ws/editor/lol/1/2'
+          Location: 'http://localhost:5173/ws/editor/lol/1/2'
         })
         response.end()
       } catch (e) {
@@ -107,7 +107,7 @@ export const handlers: RestHandlerMap<
     '/v1/lti/register': async (request, response) =>
       handleLtiToolRegistration(request, response),
 
-    '.well-known/jwks': async (_, response) => {
+    '/.well-known/jwks': async (_, response) => {
       const jwks = {
         kty: 'RSA',
         e: 'AQAB',
@@ -120,6 +120,14 @@ export const handlers: RestHandlerMap<
         'Access-Control-Allow-Origin': '*'
       })
       response.write(JSON.stringify(jwks))
+      response.end()
+    },
+    '/policy': async (_, response) => {
+      response.writeHead(200, {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      })
+      response.write(JSON.stringify({ policy: 'here could be your policy' }))
       response.end()
     }
   }

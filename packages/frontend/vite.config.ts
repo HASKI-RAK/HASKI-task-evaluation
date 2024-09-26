@@ -64,5 +64,17 @@ export default defineConfig({
   build: {
     sourcemap: process.env.SOURCE_MAP === 'true'
   },
-  plugins: [tsconfigPaths(), react(), VitePWA(manifestForPlugin)]
+  optimizeDeps: {
+    include: ['@emotion/react', '@emotion/styled', '@mui/material/Tooltip']
+  },
+  plugins: [
+    tsconfigPaths(),
+    react({
+      jsxImportSource: '@emotion/react',
+      babel: {
+        plugins: ['@emotion/babel-plugin']
+      }
+    }),
+    VitePWA(manifestForPlugin)
+  ]
 })

@@ -20,3 +20,4 @@ models/*.pkl
 package.tgz
 models/RunOne.json
 .editorconfig
+**/migrations/

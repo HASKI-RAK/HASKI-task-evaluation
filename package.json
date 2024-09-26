@@ -9,6 +9,7 @@
   ],
   "scripts": {
     "dev": "yarn workspaces foreach -i --parallel --verbose --all run dev",
+    "setup": "yarn workspace @haski/ta-server run prisma generate",
     "lint": "yarn workspaces foreach --parallel --all run lint",
     "test": "yarn workspaces foreach --parallel --all run jest",
     "build": "yarn workspaces foreach --parallel --all run build"

@@ -88,7 +88,7 @@ export const Editor = () => {
   const [processingPercentage, setProcessingPercentage] = useState<number>(0)
   const lgraph = useMemo(() => new LiteGraph.LGraph(), [])
   const [socketUrl, setSocketUrl] = useState(
-    (getConfig().WS ?? 'ws://anotherfakedomain.org:5000/') + path.slice(1) // window.location.pathname
+    (getConfig().WS ?? 'ws://localhost:5000/') + path.slice(1) // window.location.pathname
   )
   const [size, setSize] = useState({
     width: window.outerWidth,
