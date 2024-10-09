@@ -42,24 +42,6 @@ export class NumberNode extends LGraphNode {
 
   //name of the function to call when executing
   async onExecute() {
-    const body = {
-      model: 'gpt-3.5-turbo',
-      messages: [
-        {
-          role: 'system',
-          content: 'Hello, how can I help you today?'
-        }
-      ],
-      max_tokens: 50,
-      temperature: 0.5,
-      top_p: 1,
-      top_k: 40,
-      presence_penalty: 0,
-      repetition_penalty: 1,
-      repetition_penalty_range: 1,
-      guidance_scale: 0
-    }
-
     this.setOutputData(0, this.properties.value)
   }
 
