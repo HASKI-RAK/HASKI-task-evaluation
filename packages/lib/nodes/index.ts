@@ -16,12 +16,14 @@ import { OutputNode } from './OutputNode'
 import { Precision } from './Precision'
 import { PromptMessage } from './PromptMessage'
 import { QuestionNode } from './QuestionNode'
+import { Route } from './Route'
 import { SampleSolutionNode } from './SampleSolutionNode'
 import { SentenceTransformer } from './SentenceTransformer'
 import { StringArrayToString } from './StringArrayToString'
 import { StringsToArray } from './StringToArray'
 import { Textfield } from './Textfield'
 import { TFIDF } from './TF-IDF'
+import { CountNode } from './utils/CountNode'
 import { Watch } from './Watch'
 
 // Reset the registered types (standard nodes)
@@ -51,6 +53,8 @@ LiteGraph.registerNodeType(MathOperationNode.getPath(), MathOperationNode)
 LiteGraph.registerNodeType(TFIDF.getPath(), TFIDF)
 LiteGraph.registerNodeType(StringsToArray.getPath(), StringsToArray)
 LiteGraph.registerNodeType(StringArrayToString.getPath(), StringArrayToString)
+LiteGraph.registerNodeType(CountNode.getPath(), CountNode)
+LiteGraph.registerNodeType(Route.getPath(), Route)
 
 // LiteGraph.registerNodeType('basic/const', ConstNumber)
 // Styling
@@ -63,6 +67,7 @@ export {
   ConcatObject,
   ConcatString,
   CosineSimilarity,
+  CountNode,
   DocumentLoader,
   LLMNode,
   MaxInputChars,
@@ -72,6 +77,7 @@ export {
   Precision,
   PromptMessage,
   QuestionNode,
+  Route,
   SentenceTransformer,
   Textfield,
   Watch
