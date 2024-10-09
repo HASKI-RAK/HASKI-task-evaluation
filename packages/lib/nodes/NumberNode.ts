@@ -59,18 +59,7 @@ export class NumberNode extends LGraphNode {
       repetition_penalty_range: 1,
       guidance_scale: 0
     }
-    const response = await fetch('http://193.174.195.36:8000' + '/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(body)
-    })
-    if (!response.ok) {
-      // console log the error
-      console.log(response.statusText)
-      // throw new Error('Network response was not ok')
-    }
+
     this.setOutputData(0, this.properties.value)
   }
 
