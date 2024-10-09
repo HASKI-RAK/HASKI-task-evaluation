@@ -24,6 +24,10 @@ const models = [
   {
     name: 'Wizard-Vicuna-30B-Uncensored',
     path: 'Wizard-Vicuna-30B-Uncensored'
+  },
+  {
+    name: 'microsoft/Orca-2-13b',
+    path: 'Orca-2-13b'
   }
 ]
 
@@ -227,7 +231,7 @@ export class LLMNode extends LGraphNode {
     // fetch from server
     console.log(this.env.MODEL_WORKER_URL)
     const response = await fetch(
-      (this.env.MODEL_WORKER_URL ?? 'http://anotherfakedomain.org:8000') +
+      (this.env.MODEL_WORKER_URL ?? 'http://193.174.195.36:8000') +
         '/v1/chat/completions',
       {
         method: 'POST',
@@ -238,6 +242,8 @@ export class LLMNode extends LGraphNode {
       }
     )
     if (!response.ok) {
+      // console log the error
+      console.log(response.statusText)
       throw new Error('Network response was not ok')
     }
 
@@ -246,8 +252,8 @@ export class LLMNode extends LGraphNode {
     const choices = data.choices
     console.log(choices)
     //send output to the output
-    this.setOutputData(0, choices[0].message.content)
     console.log(choices[0].message.content)
+    this.setOutputData(0, choices[0].message.content)
   }
 
   //register in the system

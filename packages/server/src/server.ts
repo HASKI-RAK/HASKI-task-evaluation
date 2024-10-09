@@ -1,17 +1,22 @@
 /* eslint-disable immutable/no-mutation */
+// import dotenv
+import dotenv from 'dotenv'
 import { createServer } from 'http'
 import { ILogObj, Logger } from 'tslog'
 import { WebSocketServer } from 'ws'
 
 import prisma from './client'
 import addListeners from './ServerEventListener'
-
 // Init
 export const log: Logger<ILogObj> = new Logger()
 export const server = createServer()
 export type serverType = ReturnType<typeof createServer>
 const wss = new WebSocketServer({ noServer: true })
 export type wssType = WebSocketServer
+
+dotenv.config()
+// print env vars
+log.info('Environment variables: ', process.env.NODE_ENV, process.env.DATABASE_URL)
 
 // Add listeners
 addListeners(wss, server)

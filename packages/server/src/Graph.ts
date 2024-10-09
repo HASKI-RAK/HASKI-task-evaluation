@@ -124,7 +124,7 @@ export async function runLgraph(
   onlyOnExecute = false
 ) {
   const execorder = lgraph.computeExecutionOrder<LGraphNode[]>(onlyOnExecute, true)
-  execorder.forEach(async (node, index) => {
+  for (const [index, node] of execorder.entries()) {
     try {
       await node.onExecute?.()
       updateProggresCb?.(index / execorder.length)
@@ -132,5 +132,5 @@ export async function runLgraph(
       log.error(error)
       // TODO reset node green states
     }
-  })
+  }
 }

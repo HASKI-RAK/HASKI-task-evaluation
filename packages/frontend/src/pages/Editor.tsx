@@ -149,56 +149,57 @@ export const Editor = () => {
     if (lastMessage !== null) {
       const wsEvent: WebSocketEvent<ServerEventPayload> = JSON.parse(lastMessage.data)
       //* Handle events from server
-      if (
-        !handleWsRequest<ServerEventPayload>(wsEvent, {
-          graphFinished: (payload) => {
-            console.log('Graph finished: ', payload)
-            setProcessingPercentage(0)
-            lgraph.configure(payload)
-            lgraph.setDirtyCanvas(true, true)
-          },
-          question(payload) {
-            setQuestion(payload)
-          },
-          nodeExecuting: (nodeId) => handleNodeExecuting(lgraph, nodeId),
-          nodeExecuted: (nodeId) => handleNodeExecuted(lgraph, nodeId),
-          graphSaved: () => {
-            setSnackbar({
-              message: 'Graph saved',
-              severity: 'success',
-              open: true
-            })
-          },
-          output(output) {
-            // check if output is already in outputs, if not add it, otherwise update it
-            setOutputs((prev) => {
-              if (prev === undefined) return { [output.uniqueId]: output }
-              return { ...prev, [output.uniqueId]: output }
-            })
-            console.log('Output: ', output)
-          },
-          nodeError(payload) {
-            console.warn('Node error: ', payload)
-            setSnackbar({
-              message: payload.error,
-              severity: 'error',
-              open: true
-            })
-          },
-          maxInputChars(maxChars) {
-            setMaxInputChars(maxChars)
-          },
-          processingPercentageUpdate(payload) {
-            setProcessingPercentage(payload)
-          }
-        })
-      ) {
-        setSnackbar({
-          message: 'No handler for this event',
-          severity: 'error',
-          open: true
-        })
-      }
+      handleWsRequest<ServerEventPayload>(wsEvent, {
+        graphFinished: (payload) => {
+          console.log('Graph finished: ', payload)
+          setProcessingPercentage(0)
+          lgraph.configure(payload)
+          lgraph.setDirtyCanvas(true, true)
+        },
+        question(payload) {
+          setQuestion(payload)
+        },
+        nodeExecuting: (nodeId) => handleNodeExecuting(lgraph, nodeId),
+        nodeExecuted: (nodeId) => handleNodeExecuted(lgraph, nodeId),
+        graphSaved: () => {
+          setSnackbar({
+            message: 'Graph saved',
+            severity: 'success',
+            open: true
+          })
+        },
+        output(output) {
+          // check if output is already in outputs, if not add it, otherwise update it
+          console.log('Outputs: ', outputs)
+          setOutputs((prev) => {
+            if (prev === undefined) return { [output.uniqueId]: output }
+            return { ...prev, [output.uniqueId]: output }
+          })
+          console.log('Output: ', output)
+        },
+        nodeError(payload) {
+          console.warn('Node error: ', payload)
+          setSnackbar({
+            message: payload.error,
+            severity: 'error',
+            open: true
+          })
+        },
+        maxInputChars(maxChars) {
+          setMaxInputChars(maxChars)
+        },
+        processingPercentageUpdate(payload) {
+          setProcessingPercentage(payload)
+        }
+      }).then((handled) => {
+        if (!handled) {
+          setSnackbar({
+            message: 'No handler for this event',
+            severity: 'error',
+            open: true
+          })
+        }
+      })
     }
     setOpen(true)
     window.addEventListener('resize', checkSize)

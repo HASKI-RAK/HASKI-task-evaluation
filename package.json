@@ -1,6 +1,7 @@
 {
   "name": "@haski/task-evaluation",
   "version": "1.0.0",
+  "private": true,
   "author": {
     "name": "David Fischer"
   },
