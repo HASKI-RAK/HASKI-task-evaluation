@@ -1,3 +1,4 @@
+/* eslint-disable immutable/no-mutation */
 import {
   ClientPayload,
   handleWsRequest,
@@ -82,6 +83,8 @@ export const Editor = () => {
   const [outputs, setOutputs] = useState<
     Record<string, ServerEventPayload['output']> | undefined
   >(undefined)
+  const memoizedOutputs = useMemo(() => outputs, [outputs])
+
   const path = window.location.pathname
   const [selectedGraph, setSelectedGraph] = useState<string>(path)
   const [maxInputChars, setMaxInputChars] = useState<number>(300)
@@ -135,7 +138,8 @@ export const Editor = () => {
 
   const handleSaveGraph = () => {
     // prompt user
-    const name = prompt('Enter graph name', path) ?? undefined
+    const name = prompt('Enter graph name', path)
+    if (!name) return
     sendJsonMessage<ClientPayload>({
       eventName: 'saveGraph',
       payload: {
@@ -209,7 +213,7 @@ export const Editor = () => {
   }, [lastMessage])
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleSubmit = (answer: string) => {
+  const handleSubmit = useCallback((answer: string) => {
     // TODO: Add type to json
     sendJsonMessage<ClientPayload>({
       eventName: 'runGraph',
@@ -218,7 +222,7 @@ export const Editor = () => {
         graph: lgraph.serialize<SerializedGraph>()
       }
     })
-  }
+  }, [])
 
   const handleClickChangeSocketUrl = useCallback(() => {
     const newUrl = prompt('Enter new socket url', socketUrl)
@@ -240,24 +244,24 @@ export const Editor = () => {
   }
 
   const handleUploadGraph = () => {
-    // const input = document.createElement('input')
-    // input.type = 'file'
-    // input.accept = '.json'
-    // input.onchange = (e) => {
-    //   const file = (e.target as HTMLInputElement).files?.[0]
-    //   if (file) {
-    //     const reader = new FileReader()
-    //     reader.onload = (e) => {
-    //       const contents = e.target?.result
-    //       if (typeof contents === 'string') {
-    //         lgraph.configure(JSON.parse(contents))
-    //         lgraph.setDirtyCanvas(true, true)
-    //       }
-    //     }
-    //     reader.readAsText(file)
-    //   }
-    // }
-    // input.click()
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = '.json'
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0]
+      if (file) {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          const contents = e.target?.result
+          if (typeof contents === 'string') {
+            lgraph.configure(JSON.parse(contents))
+            lgraph.setDirtyCanvas(true, true)
+          }
+        }
+        reader.readAsText(file)
+      }
+    }
+    input.click()
   }
 
   /**
@@ -353,8 +357,8 @@ export const Editor = () => {
           )}
           <TaskView
             question={question}
-            onSubmit={(answer) => handleSubmit(answer)}
-            outputs={outputs}
+            onSubmit={handleSubmit}
+            outputs={memoizedOutputs}
             maxInputChars={maxInputChars}
           />
         </Drawer>

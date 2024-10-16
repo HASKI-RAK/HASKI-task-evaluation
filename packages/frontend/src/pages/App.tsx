@@ -17,6 +17,7 @@ import {
 import ErrorBoundary from '@/components/ErrorBoundary'
 import Editor from '@/pages/Editor'
 import { LtiRegister } from './lti/LtiRegister'
+import StudentView from './StudentView'
 
 const ColorModeContext = createContext({ toggleColorMode: () => {} })
 const router = createBrowserRouter(
@@ -28,6 +29,14 @@ const router = createBrowserRouter(
         element={
           <ErrorBoundary>
             <Editor />
+          </ErrorBoundary>
+        }
+      />
+      <Route
+        path="ws/student/:domain/:courseId/:elementId"
+        element={
+          <ErrorBoundary>
+            <StudentView />
           </ErrorBoundary>
         }
       />

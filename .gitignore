@@ -20,4 +20,5 @@ models/*.pkl
 package.tgz
 models/RunOne.json
 .editorconfig
-**/migrations/
+**/migrations/.editorconfig
+packages/server/prisma/migrations/**/migration.sql
