@@ -6,6 +6,7 @@ import { ConcatString } from './ConcatString'
 import { CosineSimilarity } from './CosineSimilarity'
 import { DocumentLoader } from './DocumentLoader'
 import { ExtractNumberNode } from './ExtractNumberNode'
+import { ImageNode } from './ImageNode'
 import { LiteGraph } from './litegraph-extensions'
 import { LLMNode } from './LLMNode'
 import { MathOperationNode } from './MathOperationNode'
@@ -55,6 +56,7 @@ LiteGraph.registerNodeType(StringsToArray.getPath(), StringsToArray)
 LiteGraph.registerNodeType(StringArrayToString.getPath(), StringArrayToString)
 LiteGraph.registerNodeType(CountNode.getPath(), CountNode)
 LiteGraph.registerNodeType(Route.getPath(), Route)
+LiteGraph.registerNodeType(ImageNode.getPath(), ImageNode)
 
 // LiteGraph.registerNodeType('basic/const', ConstNumber)
 // Styling

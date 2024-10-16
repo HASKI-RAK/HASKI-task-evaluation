@@ -32,13 +32,15 @@ const BorderLinearProgress = styled(LinearProgress, {
 const TaskView = ({
   onSubmit,
   outputs,
-  maxInputChars = 300,
-  question
+  question,
+  questionImage,
+  maxInputChars = 300
 }: {
   onSubmit: (answer: string) => void
   outputs?: Record<string, ServerEventPayload['output']>
-  maxInputChars?: number
   question: string
+  questionImage?: string
+  maxInputChars?: number
 }) => {
   const [error, setError] = useState<string | null>(null)
   const [answer, setAnswer] = useState<string>('')
@@ -87,6 +89,16 @@ const TaskView = ({
   return (
     <Stack spacing={2} margin={2}>
       <Typography variant="h4">Aufgabe:</Typography>
+      {questionImage && (
+        <img
+          src={questionImage}
+          alt="Question"
+          style={{
+            maxWidth: '100%',
+            height: 'auto'
+          }}
+        />
+      )}
       <Typography
         style={{
           maxWidth: '60rem' // Set a maximum width
@@ -105,17 +117,19 @@ const TaskView = ({
           <Stack spacing={2}>
             <TextField
               id="outlined-multiline-static"
-              label="Answer"
+              label="Antwort"
               multiline
               error={!!error}
               helperText={error}
               rows={6}
-              placeholder="Write your answer here"
+              placeholder="Gib hier deine Antwort ein..."
               onChange={handleSetAnswer}
             />
-            <Button variant="contained" type="submit" onClick={() => handleSubmit()}>
-              Submit
-            </Button>
+            <Stack direction="row" spacing={2}>
+              <Button variant="contained" type="submit" onClick={() => handleSubmit()}>
+                Absenden
+              </Button>
+            </Stack>
             {/* Map over all outputs and display them */}
             {outputs &&
               Object.values(outputs).map((out) => {

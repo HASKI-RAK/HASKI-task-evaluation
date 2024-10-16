@@ -13,7 +13,6 @@ import prisma from './client'
 import { addOnNodeAdded, runLgraph } from './Graph'
 import { log } from './server'
 import { RestHandlerMap } from './utils/rest'
-
 // Define your REST handlers
 export const handlers: RestHandlerMap<ClientBenchmarkPostPayload | undefined> = {
   POST: {

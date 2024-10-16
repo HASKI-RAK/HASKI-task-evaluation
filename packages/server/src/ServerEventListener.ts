@@ -13,7 +13,6 @@ import {
   RestRequest
 } from './utils/rest'
 import { runGraph, saveGraph } from './WebsocketOperations'
-
 const addListeners = async (wss: wssType, server: serverType) => {
   /**
    **  Handle websocket connections on websocket server
@@ -23,6 +22,7 @@ const addListeners = async (wss: wssType, server: serverType) => {
     ws.on('error', (err) => {
       log.error('Websocket error: ', err)
     }) // TODO: Expand error handling
+    log.info('Websocket connection established')
     const lgraph = await setupGraphFromPath(ws, request.url ?? '')
 
     // ! Register custom events

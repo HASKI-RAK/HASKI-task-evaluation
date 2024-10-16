@@ -2,13 +2,13 @@
 // import dotenv
 import dotenv from 'dotenv'
 import { createServer } from 'http'
-import { ILogObj, Logger } from 'tslog'
 import { WebSocketServer } from 'ws'
 
 import prisma from './client'
 import addListeners from './ServerEventListener'
+import Logger from './utils/Logger'
 // Init
-export const log: Logger<ILogObj> = new Logger()
+const log = Logger.getInstance().log
 export const server = createServer()
 export type serverType = ReturnType<typeof createServer>
 const wss = new WebSocketServer({ noServer: true })
@@ -38,3 +38,5 @@ main().catch(async (e) => {
   await prisma.$disconnect()
   process.exit(1)
 })
+
+export { log }

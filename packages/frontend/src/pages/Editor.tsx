@@ -88,6 +88,7 @@ export const Editor = () => {
   const path = window.location.pathname
   const [selectedGraph, setSelectedGraph] = useState<string>(path)
   const [maxInputChars, setMaxInputChars] = useState<number>(300)
+  const [image, setImage] = useState<string | undefined>()
   const [processingPercentage, setProcessingPercentage] = useState<number>(0)
   const lgraph = useMemo(() => new LiteGraph.LGraph(), [])
   const [socketUrl, setSocketUrl] = useState(
@@ -194,6 +195,9 @@ export const Editor = () => {
         },
         processingPercentageUpdate(payload) {
           setProcessingPercentage(payload)
+        },
+        questionImage: function (imageBase64: string): void | Promise<void> {
+          setImage(imageBase64)
         }
       }).then((handled) => {
         if (!handled) {
@@ -357,6 +361,7 @@ export const Editor = () => {
           )}
           <TaskView
             question={question}
+            questionImage={image}
             onSubmit={handleSubmit}
             outputs={memoizedOutputs}
             maxInputChars={maxInputChars}

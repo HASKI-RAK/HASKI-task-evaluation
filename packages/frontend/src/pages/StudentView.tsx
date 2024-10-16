@@ -36,7 +36,7 @@ export const StudentView = () => {
     Record<string, ServerEventPayload['output']> | undefined
   >(undefined)
   const memoizedOutputs = useMemo(() => outputs, [outputs])
-
+  const [image, setImage] = useState<string>('')
   const [maxInputChars, setMaxInputChars] = useState<number>(300)
   const [processingPercentage, setProcessingPercentage] = useState<number>(0)
   const lgraph = useMemo(() => new LiteGraph.LGraph(), [])
@@ -99,7 +99,10 @@ export const StudentView = () => {
         },
         // We don't have handlers for these events
         nodeExecuting: function (): void | Promise<void> {},
-        nodeExecuted: function (): void | Promise<void> {}
+        nodeExecuted: function (): void | Promise<void> {},
+        questionImage: function (base64Image: string): void | Promise<void> {
+          setImage(base64Image)
+        }
       }).then((handled) => {
         if (!handled) {
           setSnackbar({
@@ -166,6 +169,7 @@ export const StudentView = () => {
         <Stack direction="column" spacing={2}>
           <TaskView
             question={question}
+            questionImage={image}
             onSubmit={handleAnswerSubmit}
             outputs={memoizedOutputs}
             maxInputChars={maxInputChars}
