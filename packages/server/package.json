@@ -42,6 +42,7 @@
     "@haski/lti": "workspace:*",
     "@haski/ta-lib": "workspace:*",
     "@prisma/client": "^5.17.0",
+    "dotenv": "^16.4.5",
     "pg-promise": "^11.5.4",
     "prisma": "^5.17.0",
     "tslog": "^4.9.2",
