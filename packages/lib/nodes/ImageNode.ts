@@ -32,7 +32,7 @@ export class ImageNode extends LGraphNode {
     this.ws = _ws
   }
 
-  init(_env: Record<string, unknown>): void {
+  async init(_env: Record<string, unknown>) {
     this.env = _env
   }
 

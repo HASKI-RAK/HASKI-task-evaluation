@@ -133,7 +133,7 @@ export abstract class LGraphNode extends LGN implements ILGraphNode, WebSocketNo
   }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   setWebSocket?(_ws: WebSocket): void
-  init?(env: Record<string, unknown>): void
+  init?(env: Record<string, unknown>): Promise<void>
 }
 
 export default LGraphNode

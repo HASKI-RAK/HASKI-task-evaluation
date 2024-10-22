@@ -3,33 +3,33 @@
 /* eslint-disable immutable/no-this */
 import { WebSocket } from 'ws'
 
-import { LGraph, LGraphNode, LiteGraph } from './litegraph-extensions'
+import { LGraphNode, LiteGraph } from './litegraph-extensions'
 import { PromptMessageType } from './types/NodeLinkMessage'
 import { OpenAiApiResponse, OpenAiModel } from './types/OpenAiApi'
 
 // record with all models
-const models = [
-  {
-    name: 'zephir',
-    path: 'D:\\Development\\python\\text-generation-webui-main\\models\\zephir-7b-beta'
-  },
-  {
-    name: 'zephir-7b-beta',
-    path: 'D:\\Development\\python\\text-generation-webui-main\\models\\zephir-7b-beta'
-  },
-  {
-    name: 'SUS-Chat-34B',
-    path: 'SUS-Chat-34B'
-  },
-  {
-    name: 'Wizard-Vicuna-30B-Uncensored',
-    path: 'Wizard-Vicuna-30B-Uncensored'
-  },
-  {
-    name: 'microsoft/Orca-2-13b',
-    path: 'Orca-2-13b'
-  }
-]
+// const models = [
+//   {
+//     name: 'zephir',
+//     path: 'D:\\Development\\python\\text-generation-webui-main\\models\\zephir-7b-beta'
+//   },
+//   {
+//     name: 'zephir-7b-beta',
+//     path: 'D:\\Development\\python\\text-generation-webui-main\\models\\zephir-7b-beta'
+//   },
+//   {
+//     name: 'SUS-Chat-34B',
+//     path: 'SUS-Chat-34B'
+//   },
+//   {
+//     name: 'Wizard-Vicuna-30B-Uncensored',
+//     path: 'Wizard-Vicuna-30B-Uncensored'
+//   },
+//   {
+//     name: 'microsoft/Orca-2-13b',
+//     path: 'Orca-2-13b'
+//   }
+// ]
 
 /**
  * Language Model node
@@ -37,6 +37,7 @@ const models = [
 export class LLMNode extends LGraphNode {
   env: Record<string, unknown>
   widget_llm: any
+  models: string[] = []
 
   constructor() {
     super()
@@ -121,12 +122,12 @@ export class LLMNode extends LGraphNode {
     this.widget_llm = this.addWidget(
       'combo',
       'model',
-      this.properties.model ?? models[0].name,
+      this.properties.model ?? this.models[0],
       (value, widget, node) => {
-        node.properties.model = models.find((model) => model.name === value)?.path ?? ''
+        node.properties.model = value
       },
       {
-        values: models.map((model) => model.name)
+        values: this.models
       }
     )
     this.serialize_widgets = true
@@ -158,25 +159,31 @@ export class LLMNode extends LGraphNode {
     this.ws = _ws
   }
 
-  onAdded(_: LGraph): void {
-    // this.initModels(['Wizard-Vicuna-30B-Uncensored'])
-  }
-
-  init(_env: Record<string, unknown>) {
-    this.env = _env
-    this.fetchModels(
-      (this.env.MODEL_WORKER_URL ?? 'http://localhost:8000') + '/v1/models'
-    ).then((models) => {
-      // this.initModels(models)
-    })
-  }
-
-  // initModels(models: string[]) {
-  //   this.models = models
-  //   this.widget_llm.options = {
-  //     values: Object.keys(this.models)
-  //   }
+  // onAdded(_: LGraph): void {
+  //   // this.initModels(['Wizard-Vicuna-30B-Uncensored'])
   // }
+
+  async init(_env: Record<string, unknown>) {
+    this.env = _env
+    try {
+      const models = await this.fetchModels(
+        (this.env.MODEL_WORKER_URL ?? 'http://193.174.195.36:8000') + '/v1/models'
+      )
+      this.initModels(models)
+    } catch (error) {
+      console.error('Failed to fetch models:', error)
+    }
+  }
+
+  initModels(models: string[]) {
+    this.models = models
+    this.widget_llm.options = { values: this.models }
+    // check if old model is still available, otherwise set to first model
+    if (!this.models.includes(this.properties.model)) {
+      this.properties.model = this.models[0]
+      this.widget_llm.value = this.models[0]
+    }
+  }
 
   async fetchModels(endpoint: string): Promise<string[]> {
     try {
@@ -211,9 +218,7 @@ export class LLMNode extends LGraphNode {
     const message = this.getInputData<PromptMessageType | undefined>(0)
     const messages = this.getInputData<PromptMessageType[] | undefined>(1)
     const input = {
-      model:
-        models.find((model) => model.name === this.properties.model)?.path ??
-        models[0].path,
+      model: this.properties.model,
       messages: message ? [message] : messages,
       max_tokens: this.properties.max_tokens,
       temperature: this.properties.temperature,

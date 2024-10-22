@@ -33,6 +33,9 @@ export async function setupGraphFromPath(
   addOnNodeAdded(lgraph, ws)
   if (loaded_graph) {
     lgraph.configure(JSON.parse(loaded_graph.graph))
+    const execorder = lgraph.computeExecutionOrder<LGraphNode[]>(false, true)
+    for (const [, node] of execorder.entries()) await node.init?.(process.env)
+
     sendWs(ws, { eventName: 'graphFinished', payload: lgraph.serialize() })
 
     sendQuestion(lgraph, ws)
@@ -54,7 +57,7 @@ export function addOnNodeAdded(
 ) {
   lgraph.onNodeAdded = function (node: LGraphNode) {
     if (!benchmark && ws) node.setWebSocket?.(ws) // register websocket if node uses it
-    node.init?.(process.env)
+
     const onExecute = node.onExecute
     // eslint-disable-next-line immutable/no-mutation
     node.onExecute = async function () {
