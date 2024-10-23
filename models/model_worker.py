@@ -1,10 +1,12 @@
 from sentence_transformers import SentenceTransformer
 import flask
 import werkzeug
+import dotenv
 
 # import cors:
 from flask_cors import CORS
 
+dotenv.load_dotenv()
 # model = SentenceTransformer("all-MiniLM-L6-v2")
 model = SentenceTransformer(
     "sentence-transformers/all-mpnet-base-v2"
@@ -36,4 +38,5 @@ def cosine_similarity():
     return flask.jsonify(result)
 
 
-app.run(debug=False, port=8002)
+if __name__ == "__main__":
+    app.run(debug=False, port=8002, host="0.0.0.0")

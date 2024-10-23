@@ -16,7 +16,13 @@ export type wssType = WebSocketServer
 
 dotenv.config()
 // print env vars
-log.info('Environment variables: ', process.env.NODE_ENV, process.env.DATABASE_URL)
+log.info(
+  'Environment variables: ',
+  process.env.NODE_ENV,
+  process.env.DATABASE_URL,
+  process.env.MODEL_WORKER_URL,
+  process.env.SIMILARITY_WORKER_URL
+)
 
 // Add listeners
 addListeners(wss, server)

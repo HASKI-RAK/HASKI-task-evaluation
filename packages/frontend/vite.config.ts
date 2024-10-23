@@ -57,7 +57,10 @@ const manifestForPlugin: Partial<VitePWAOptions> = {
   },
   selfDestroying: selfDestroying
 }
-console.log('process.env.SOURCE_MAP', process.env.SOURCE_MAP)
+
+// Log all env variables
+console.log('Env variables:', process.env)
+
 // https://vitejs.dev/config/
 export default defineConfig({
   base: './',

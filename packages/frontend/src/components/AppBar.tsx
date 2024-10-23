@@ -60,7 +60,7 @@ export const AppBar = (props: AppBarProps) => {
   }
 
   useEffect(() => {
-    fetch((getConfig().API ?? 'http://localhost:5000/') + 'v1/graphs')
+    fetch(getConfig().API + 'v1/graphs')
       .then((res) => res.json())
       .then((graphs: Array<GraphSchema>) => {
         setWorkflows(graphs)

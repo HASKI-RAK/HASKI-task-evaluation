@@ -41,8 +41,7 @@ export const StudentView = () => {
   const [processingPercentage, setProcessingPercentage] = useState<number>(0)
   const lgraph = useMemo(() => new LiteGraph.LGraph(), [])
   const [socketUrl] = useState(
-    (getConfig().WS ?? 'ws://localhost:5000/') +
-      `ws/student/${domain}/${courseId}/${elementId}`
+    getConfig().WS + `ws/student/${domain}/${courseId}/${elementId}`
   )
   const { sendJsonMessage, lastMessage, readyState } = useWebSocket(socketUrl)
 
