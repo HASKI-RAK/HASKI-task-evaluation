@@ -11,7 +11,7 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { GraphHandlerService } from './graph-handler.service';
+import { GraphHandlerService } from './graph-handler.service.js';
 
 // Resolve allowed CORS origins for Socket.IO from env, fallback to production frontend
 const allowedSocketOrigins = (

@@ -8,17 +8,17 @@ import {
   SerializedGraph,
 } from '@haski/ta-lib';
 
-import { GraphHandlerService } from './graph-handler.service';
-import { GraphService } from 'src/graph/graph.service';
-import { XapiService } from '../xapi.service';
-import * as GraphCore from 'src/core/Graph';
-import { emitEvent } from 'utils/socket-emitter';
+import { GraphHandlerService } from './graph-handler.service.js';
+import { GraphService } from '../graph/graph.service.js';
+import { XapiService } from '../xapi.service.js';
+import * as GraphCore from '../core/Graph.js';
+import { emitEvent } from '../../utils/socket-emitter.js';
 
-jest.mock('utils/socket-emitter', () => ({
+jest.mock('../../utils/socket-emitter.js', () => ({
   emitEvent: jest.fn(),
 }));
 
-jest.mock('src/core/Graph', () => ({
+jest.mock('../core/Graph.js', () => ({
   executeLgraph: jest.fn(),
 }));
 

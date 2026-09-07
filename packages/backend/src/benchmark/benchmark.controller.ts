@@ -1,5 +1,5 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { BenchmarkService } from './benchmark.service';
+import { BenchmarkService } from './benchmark.service.js';
 
 @Controller('benchmark')
 export class BenchmarkController {

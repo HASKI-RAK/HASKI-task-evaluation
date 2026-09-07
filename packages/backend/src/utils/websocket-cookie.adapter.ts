@@ -1,6 +1,6 @@
 import { IoAdapter } from '@nestjs/platform-socket.io';
 import { Server, ServerOptions, Socket } from 'socket.io';
-import { LtiCookie } from './LtiCookie';
+import { LtiCookie } from './LtiCookie.js';
 import { Logger } from '@nestjs/common';
 
 export class WebSocketCookieAdapter extends IoAdapter {

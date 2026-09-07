@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { GraphService } from './graph.service';
-import { PrismaService } from '../prisma.service';
+import { GraphService } from './graph.service.js';
+import { PrismaService } from '../prisma.service.js';
 import { LGraph } from '@haski/ta-lib';
 
 describe('GraphService', () => {

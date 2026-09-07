@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { performance } from 'perf_hooks';
-import { PrismaService } from '../prisma.service';
+import { PrismaService } from '../prisma.service.js';
 
 type ComponentStatus = 'up' | 'down';
 

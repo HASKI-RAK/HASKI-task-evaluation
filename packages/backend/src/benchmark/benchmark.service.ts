@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma.service';
+import { PrismaService } from '../prisma.service.js';
 import {
   AnswerInputNode,
   LiteGraph,
@@ -8,7 +8,7 @@ import {
   SampleSolutionNode,
 } from '@haski/ta-lib';
 // import { addOnNodeAdded, runLgraph } from './Graph'; //TODO: migrate from old codebase
-import { executeLgraph } from 'src/core/Graph';
+import { executeLgraph } from '../core/Graph.js';
 
 @Injectable()
 export class BenchmarkService {

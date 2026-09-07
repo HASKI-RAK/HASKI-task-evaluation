@@ -1,5 +1,23 @@
 import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
-import XAPI from '@xapi/xapi';
+import * as XAPIModule from '@xapi/xapi';
+
+// `@xapi/xapi` ships CJS with ESM-style typings (`export default`), which
+// TypeScript's `nodenext` resolver surfaces as the module namespace rather
+// than the class constructor. The default export is the class at runtime.
+type XAPIInstance = {
+  sendStatement(params: Record<string, unknown>): Promise<unknown>;
+};
+
+type XAPIClass = {
+  new (config: {
+    endpoint: string;
+    auth?: string;
+    version?: string;
+  }): XAPIInstance;
+  toBasicAuth(username: string, password: string): string;
+};
+
+const XAPI = XAPIModule.default as unknown as XAPIClass;
 
 // XAPI
 export const xAPI = new XAPI({

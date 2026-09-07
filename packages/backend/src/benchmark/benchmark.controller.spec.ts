@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { BenchmarkController } from './benchmark.controller';
-import { BenchmarkService } from './benchmark.service';
+import { BenchmarkController } from './benchmark.controller.js';
+import { BenchmarkService } from './benchmark.service.js';
 
 describe('BenchmarkController', () => {
   let benchmarkController: BenchmarkController;

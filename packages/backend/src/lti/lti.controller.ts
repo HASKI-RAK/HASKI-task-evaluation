@@ -9,9 +9,9 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { LtiBasicLaunchRequest } from '@haski/lti';
-import { LtiService } from './lti.service';
-import { LtiBasicLaunchValidationPipe } from './pipes/lti-validation.pipe';
-import { LtiCookie } from 'src/utils/LtiCookie';
+import { LtiService } from './lti.service.js';
+import { LtiBasicLaunchValidationPipe } from './pipes/lti-validation.pipe.js';
+import { LtiCookie } from '../utils/LtiCookie.js';
 
 @Controller('lti')
 export class LtiController {

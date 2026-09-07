@@ -13,11 +13,11 @@ import {
   QuestionNode,
 } from '@haski/ta-lib';
 import { Socket } from 'socket.io';
-import { emitEvent } from 'utils/socket-emitter';
-import { GraphService } from 'src/graph/graph.service';
-import { executeLgraph } from 'src/core/Graph';
-import { XapiService } from '../xapi.service';
-import { LtiCookie } from '../utils/LtiCookie';
+import { emitEvent } from '../../utils/socket-emitter.js';
+import { GraphService } from '../graph/graph.service.js';
+import { executeLgraph } from '../core/Graph.js';
+import { XapiService } from '../xapi.service.js';
+import { LtiCookie } from '../utils/LtiCookie.js';
 
 @Injectable()
 export class GraphHandlerService {

@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { GraphGateway } from './graph.gateway';
-import { GraphHandlerService } from './graph-handler.service';
-import { GraphService } from 'src/graph/graph.service';
+import { GraphGateway } from './graph.gateway.js';
+import { GraphHandlerService } from './graph-handler.service.js';
+import { GraphService } from '../graph/graph.service.js';
 
 describe('GraphGateway', () => {
   let gateway: GraphGateway;

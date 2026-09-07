@@ -1,18 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { GraphHandlerService } from './graph-handler.service';
-import { GraphService } from 'src/graph/graph.service';
+import { GraphHandlerService } from './graph-handler.service.js';
+import { GraphService } from '../graph/graph.service.js';
 import { Socket } from 'socket.io';
 import { Logger } from '@nestjs/common';
 import { LGraph, AnswerInputNode, SerializedGraph } from '@haski/ta-lib';
-import { emitEvent } from 'utils/socket-emitter';
-import * as GraphCore from 'src/core/Graph';
-import { XapiService } from '../xapi.service';
+import { emitEvent } from '../../utils/socket-emitter.js';
+import * as GraphCore from '../core/Graph.js';
+import { XapiService } from '../xapi.service.js';
 
-jest.mock('utils/socket-emitter', () => ({
+jest.mock('../../utils/socket-emitter.js', () => ({
   emitEvent: jest.fn(),
 }));
 
-jest.mock('src/core/Graph', () => ({
+jest.mock('../core/Graph.js', () => ({
   executeLgraph: jest.fn(),
 }));
 

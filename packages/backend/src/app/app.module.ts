@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
-import { GraphModule } from '../graphgateway/graph.module';
-import { PrismaService } from '../prisma.service';
-import { GraphController } from '../graph/graph.controller';
-import { GraphService } from '../graph/graph.service';
-import { BenchmarkController } from '../benchmark/benchmark.controller';
-import { BenchmarkService } from '../benchmark/benchmark.service';
-import { LtiController } from '../lti/lti.controller';
-import { LtiService } from '../lti/lti.service';
-import { XapiService } from '../xapi.service';
-import { HealthController } from '../health/health.controller';
-import { HealthService } from '../health/health.service';
+import { GraphModule } from '../graphgateway/graph.module.js';
+import { PrismaService } from '../prisma.service.js';
+import { GraphController } from '../graph/graph.controller.js';
+import { GraphService } from '../graph/graph.service.js';
+import { BenchmarkController } from '../benchmark/benchmark.controller.js';
+import { BenchmarkService } from '../benchmark/benchmark.service.js';
+import { LtiController } from '../lti/lti.controller.js';
+import { LtiService } from '../lti/lti.service.js';
+import { XapiService } from '../xapi.service.js';
+import { HealthController } from '../health/health.controller.js';
+import { HealthService } from '../health/health.service.js';
 
 @Module({
   imports: [GraphModule],

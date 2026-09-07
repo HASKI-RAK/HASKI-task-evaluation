@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { BenchmarkService } from './benchmark.service';
-import { PrismaService } from '../prisma.service';
+import { BenchmarkService } from './benchmark.service.js';
+import { PrismaService } from '../prisma.service.js';
 import {
   LiteGraph,
   QuestionNode,
@@ -9,9 +9,9 @@ import {
   LGraphNode,
   SampleSolutionNode,
 } from '@haski/ta-lib';
-import { executeLgraph } from 'src/core/Graph';
+import { executeLgraph } from '../core/Graph.js';
 
-jest.mock('src/core/Graph', () => ({
+jest.mock('../core/Graph.js', () => ({
   executeLgraph: jest.fn(),
 }));
 

@@ -1,9 +1,9 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
-import { PrismaService } from '../prisma.service';
-import { HealthController } from './health.controller';
-import { HealthService } from './health.service';
+import { PrismaService } from '../prisma.service.js';
+import { HealthController } from './health.controller.js';
+import { HealthService } from './health.service.js';
 
 describe('[HASKI-REQ-0030] HealthController', () => {
   let app: INestApplication;

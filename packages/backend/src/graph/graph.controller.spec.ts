@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { GraphController } from './graph.controller';
-import { GraphService } from './graph.service';
+import { GraphController } from './graph.controller.js';
+import { GraphService } from './graph.service.js';
 import { Response } from 'express';
 import { HttpStatus } from '@nestjs/common';
 

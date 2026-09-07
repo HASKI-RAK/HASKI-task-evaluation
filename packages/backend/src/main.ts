@@ -1,7 +1,8 @@
+import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app/app.module';
-import * as dotenv from 'dotenv';
-import { WebSocketCookieAdapter } from './utils/websocket-cookie.adapter';
+import { AppModule } from './app/app.module.js';
+import dotenv from 'dotenv';
+import { WebSocketCookieAdapter } from './utils/websocket-cookie.adapter.js';
 
 dotenv.config();
 async function bootstrap() {

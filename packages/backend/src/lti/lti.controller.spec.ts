@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { LtiController } from './lti.controller';
-import { LtiService } from './lti.service';
+import { LtiController } from './lti.controller.js';
+import { LtiService } from './lti.service.js';
 import { LtiBasicLaunchRequest } from '@haski/lti';
 import { Response, Request } from 'express';
 import { BadRequestException } from '@nestjs/common';

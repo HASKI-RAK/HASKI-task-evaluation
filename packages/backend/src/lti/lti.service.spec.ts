@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { LtiService } from './lti.service';
+import { LtiService } from './lti.service.js';
 import { LtiBasicLaunchRequest } from '@haski/lti';
 
 describe('LtiService', () => {
