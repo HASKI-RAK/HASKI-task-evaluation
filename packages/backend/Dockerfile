@@ -37,15 +37,16 @@ COPY packages/backend/package.json ./packages/backend/
 
 RUN yarn install
 
-# Copy compiled output and prisma schema/migrations
+# Copy compiled output and prisma schema/migrations/config
 COPY --from=build /app/packages/lib/dist ./packages/lib/dist
 COPY --from=build /app/packages/lti/dist ./packages/lti/dist
 COPY --from=build /app/packages/backend/dist ./packages/backend/dist
 COPY --from=build /app/packages/backend/prisma ./packages/backend/prisma
+COPY --from=build /app/packages/backend/prisma.config.ts ./packages/backend/prisma.config.ts
 
 WORKDIR /app/packages/backend
 
 EXPOSE 5000
 
-# Generate prisma client, apply migrations, then start the server
-CMD ["sh", "-c", "yarn prisma generate && yarn prisma migrate deploy && node dist/main.js"]
+# Apply migrations, then start the server (prisma client is already compiled into dist)
+CMD ["sh", "-c", "yarn prisma migrate deploy && node dist/src/main.js"]
