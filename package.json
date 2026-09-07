@@ -10,16 +10,12 @@
   ],
   "scripts": {
     "dev": "yarn workspaces foreach -i --parallel --verbose --all run dev",
-    "setup": "yarn workspace @haski/ta-server setup",
+    "setup": "yarn workspace backend setup",
     "lint": "yarn workspaces foreach --parallel --all run lint",
-    "test": "yarn workspaces foreach --parallel --all run jest",
+    "test": "yarn workspace backend test",
     "build": "yarn workspaces foreach --parallel --all run build",
     "test:report": "yarn workspace backend test:report"
   },
-  "pre-commit": "lint",
   "license": "MIT",
-  "packageManager": "yarn@4.7.0",
-  "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^8.29.0"
-  }
+  "packageManager": "yarn@4.7.0"
 }

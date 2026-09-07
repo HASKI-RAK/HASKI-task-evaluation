@@ -58,14 +58,12 @@ export function useServerEvents({
 
   const handleNodeExecuting = (lgraph: LGraph, nodeId: number) => {
     if (lgraph.getNodeById(nodeId) === null) return
-    // eslint-disable-next-line immutable/no-mutation
     lgraph.getNodeById(nodeId)!.color = '#88FF00'
     lgraph.setDirtyCanvas(true, true)
   }
 
   const handleNodeExecuted = (lgraph: LGraph, nodeId: number) => {
     if (lgraph.getNodeById(nodeId) === null) return
-    // eslint-disable-next-line immutable/no-mutation
     lgraph.getNodeById(nodeId)!.color = '#FFFFFF00'
     lgraph.setDirtyCanvas(true, true)
   }

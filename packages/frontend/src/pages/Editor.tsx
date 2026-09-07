@@ -1,4 +1,3 @@
-/* eslint-disable immutable/no-mutation */
 import { LiteGraph } from '@haski/ta-lib'
 import { LGraph } from '@haski/ta-lib'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'

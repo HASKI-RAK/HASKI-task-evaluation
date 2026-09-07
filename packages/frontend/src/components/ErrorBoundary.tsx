@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable immutable/no-this */
 import { Box, Button, Typography } from '@mui/material'
 import { Component, ErrorInfo, ReactNode } from 'react'
 

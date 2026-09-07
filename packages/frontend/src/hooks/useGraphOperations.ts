@@ -1,4 +1,3 @@
-/* eslint-disable immutable/no-mutation */
 import { LGraph } from 'litegraph.js'
 import { useCallback } from 'react'
 

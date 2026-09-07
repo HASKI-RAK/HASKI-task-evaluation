@@ -62,23 +62,30 @@ const manifestForPlugin: Partial<VitePWAOptions> = {
 export default defineConfig({
   base: './',
   build: {
-    sourcemap: process.env.SOURCE_MAP === 'true'
+    sourcemap: process.env.SOURCE_MAP === 'true',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          react: ['react', 'react-dom', 'react-router-dom', 'react-rewards'],
+          mui: ['@mui/material', '@mui/icons-material', '@emotion/react', '@emotion/styled'],
+          litegraph: ['litegraph.js'],
+          socket: ['socket.io-client', 'react-use-websocket']
+        }
+      }
+    }
   },
   server: {
     host: '0.0.0.0',
     port: 5173,
     strictPort: true,
-    headers: {
-      'Access-Control-Allow-Origin': 'https://nodegrade.haski.app'
-    },
     cors: true,
-    hmr: {
-      host: 'nodegrade.haski.app'
-    },
+    // Only override the HMR host when explicitly configured (e.g. remote dev).
+    // Otherwise Vite falls back to localhost so HMR works out of the box.
+    hmr: process.env.VITE_HMR_HOST ? { host: process.env.VITE_HMR_HOST } : undefined,
     proxy: {
       // Configure a proxy to route API requests through Vite server
       '/api': {
-        target: process.env.VITE_API_URL || 'https://nodegrade-backend.haski.app',
+        target: process.env.VITE_API_URL || 'http://localhost:5000',
         changeOrigin: true,
         secure: false, // This is the key setting that disables certificate validation
         rewrite: (path) => path.replace(/^\/api/, '')

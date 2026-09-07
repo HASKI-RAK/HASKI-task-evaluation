@@ -19,8 +19,8 @@ Created and maintained by David Fischer.
 
 ### Prerequisites
 
-- Node.js
-- Yarn (Version 4.0.2 or later)
+- Node.js 18 or later
+- Yarn 4 (or Corepack)
 
 ### Installation
 
@@ -34,14 +34,13 @@ Created and maintained by David Fischer.
    ```bash
    yarn install
    ```
-3. Create a `.env` file in the `packages/server` directory and add the following content:
+3. Create a `.env` file in the `packages/backend` directory and add the following content:
    ```bash
    DATABASE_URL="postgresql://USERNAME:PASSWORD@localhost:5432/DATABASENAME?schema=public"
    ```
    Replace the connection string with your own database connection string.
-4. Run prisma migrations:
+4. Generate the Prisma client and apply the migrations:
    ```bash
-   cd packages/server
    yarn setup
    ```
 

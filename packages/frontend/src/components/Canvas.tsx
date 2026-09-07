@@ -1,4 +1,3 @@
-/* eslint-disable immutable/no-mutation */
 import { LGraph } from '@haski/ta-lib'
 import { LGraphCanvas } from 'litegraph.js'
 import { useEffect, useRef } from 'react'

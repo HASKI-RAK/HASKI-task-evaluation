@@ -19,14 +19,6 @@
       "console": "integratedTerminal"
     },
     {
-      "name": "Launch server.ts",
-      "type": "node",
-      "cwd": "${workspaceFolder}/packages/server",
-      "request": "launch",
-      "runtimeArgs": ["-r", "ts-node/register"],
-      "args": ["${workspaceFolder}/packages/server/src/server.ts"]
-    },
-    {
       "type": "node",
       "request": "launch",
       "name": "Debug Nest Framework",
