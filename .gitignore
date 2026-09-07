@@ -28,3 +28,4 @@ packages/backend/prisma/migrations/20250331190625_init/migration.sql
 packages/backend/prisma/migrations/migration_lock.toml
 packages/frontend/**/*.js
 reports/
+.serena/
