@@ -32,6 +32,8 @@ import { TextWidget } from './widgets/TextWidget'
  * 4. Connect the output to other nodes that accept string input
  */
 export class Textfield extends LGraphNode {
+  private readonly textWidget: TextWidget
+
   /**
    * Initializes a new Textfield node with default configuration
    *
@@ -45,7 +47,8 @@ export class Textfield extends LGraphNode {
     super()
     this.addOut('string')
     this.properties = { precision: 1, value: 'Enter your text' }
-    this.addCustomWidget<TextWidget>(new TextWidget())
+    this.textWidget = new TextWidget()
+    this.addCustomWidget<TextWidget>(this.textWidget)
     this.size = [200, 100]
     this.title = 'Textfield'
   }
@@ -101,22 +104,11 @@ export class Textfield extends LGraphNode {
     }
     event.preventDefault()
 
-    // Calculate screen coordinates for inline input
     const canvas = graphCanvas.canvas
-    const rect = canvas.getBoundingClientRect()
-    const transform = graphCanvas.ds
-
-    // Convert node position to screen coordinates
-    const screenX =
-      rect.left + window.scrollX + this.pos[0] * transform.scale + transform.offset[0]
-    const screenY =
-      rect.top +
-      window.scrollY +
-      (this.pos[1] + 30) * transform.scale +
-      transform.offset[1]
+    const inputId = `textWidget${this.id}`
 
     // Prevent duplicate input
-    if (document.getElementById('inlineTextInput')) {
+    if (document.getElementById(inputId)) {
       return
     }
 
@@ -124,52 +116,83 @@ export class Textfield extends LGraphNode {
 
     // Create input element
     const input = document.createElement('textarea')
-    input.id = 'inlineTextInput'
+    input.id = inputId
     input.value = this.properties.value
-    input.style.position = 'absolute'
-    input.style.left = `${screenX}px`
-    input.style.top = `${screenY}px`
-    input.style.width = `${(this.size[0] - 20) * transform.scale}px`
-    input.style.height = `${(this.size[1] - 40) * transform.scale}px`
+    input.style.position = 'fixed'
     input.style.zIndex = '1000'
-    input.style.fontSize = '16px'
-    input.style.border = 'none' // No border
-    input.style.padding = '2px'
+    input.style.boxSizing = 'border-box'
+    input.style.border = 'none'
+    input.style.padding = '0px'
     input.style.margin = '0px'
     input.style.outline = 'none'
-    input.style.font = '16px Arial'
+    input.style.fontFamily = 'Arial'
     input.style.color = 'white'
-    //transparent:
-    input.style.backgroundColor = 'rgba(0, 0, 0, 0)' // Semi-transparent background
+    input.style.backgroundColor = 'transparent'
     input.style.borderRadius = '2px'
     input.style.resize = 'none'
-    input.style.lineHeight = '16px'
     input.style.overflow = 'hidden'
 
-    // // Handle input completion
-    input.onblur = () => {
-      input.remove() // Remove input on blur
-      graphCanvas.setDirty(true, true) // Redraw canvas
+    let animationFrameId: number | undefined
+    const updateInputBounds = () => {
+      if (!input.isConnected) {
+        return
+      }
+
+      const rect = canvas.getBoundingClientRect()
+      const widgetY = this.textWidget.lastY ?? 30
+      const [canvasX, canvasY] = graphCanvas.convertOffsetToCanvas([
+        this.pos[0],
+        this.pos[1] + widgetY
+      ])
+      const scaleX = graphCanvas.ds.scale * (rect.width / canvas.width)
+      const scaleY = graphCanvas.ds.scale * (rect.height / canvas.height)
+
+      input.style.left = `${rect.left + canvasX * (rect.width / canvas.width)}px`
+      input.style.top = `${rect.top + canvasY * (rect.height / canvas.height)}px`
+      input.style.width = `${this.size[0] * scaleX}px`
+      input.style.height = `${Math.max(0, this.size[1] - widgetY) * scaleY}px`
+      input.style.fontSize = `${16 * scaleY}px`
+      input.style.lineHeight = `${16 * scaleY}px`
+
+      animationFrameId = window.requestAnimationFrame(updateInputBounds)
     }
 
+    let isFinishing = false
+    const finishEditing = () => {
+      if (isFinishing) {
+        return
+      }
+      isFinishing = true
+      input.onblur = null
+      if (animationFrameId !== undefined) {
+        window.cancelAnimationFrame(animationFrameId)
+        animationFrameId = undefined
+      }
+      if (input.isConnected) {
+        input.remove()
+      }
+      graphCanvas.setDirty(true, true)
+    }
+
+    input.oninput = () => {
+      this.properties.value = input.value
+    }
+    input.onblur = finishEditing
     input.onkeydown = (e: KeyboardEvent) => {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault()
-        // input.blur()
-        this.properties.value = input.value
-        input.remove()
-        graphCanvas.setDirty(true, true) // Redraw canvas
+        finishEditing()
       }
       if (e.key === 'Escape') {
         e.preventDefault()
-        input.remove() // Cancel editing without saving
-        graphCanvas.setDirty(true, true) // Redraw canvas
+        this.properties.value = oldInput
+        finishEditing()
       }
     }
 
     document.body.appendChild(input)
+    updateInputBounds()
     input.focus()
-    // input.select() // Select all text for easy editing
 
     // Trigger redraw to hide canvas text while editing
     graphCanvas.setDirty(true, true)

@@ -27,6 +27,8 @@ export class TextWidget implements IWidget {
   value: string
   /** Y position offset within the node */
   y?: number
+  /** Last Y position used by LiteGraph to draw this widget */
+  lastY?: number
   /** Widget properties containing the actual text value */
   properties: { value: string }
   /** Widget type classification */
@@ -72,6 +74,7 @@ export class TextWidget implements IWidget {
     const lineHeight = 16
     const x = 0
     let y = posY
+    this.lastY = posY
     ctx.save()
 
     // draw rect behind text
@@ -79,10 +82,7 @@ export class TextWidget implements IWidget {
     ctx.fillRect(x, y, width, node.size[1] - y)
 
     // Skip text rendering if currently editing via HTML input
-    if (
-      document.getElementById('inlineTextInput') ||
-      document.getElementById('textWidget' + node.id)
-    ) {
+    if (document.getElementById('textWidget' + node.id)) {
       ctx.restore()
       return
     }
