@@ -104,7 +104,7 @@ describe('GraphHandlerService', () => {
       );
     });
 
-    it('should log an error if graph execution fails', async () => {
+    it('should emit a typed failure if graph execution fails', async () => {
       const mockPayload = {
         graph: stringifiedMockGraph,
         answer: 'testAnswer',
@@ -121,6 +121,38 @@ describe('GraphHandlerService', () => {
       expect(loggerSpy).toHaveBeenCalledWith(
         'Error running graph: ',
         expect.any(Error),
+      );
+      expect(emitEvent).toHaveBeenCalledWith(
+        mockSocket,
+        'graphOperationFailed',
+        {
+          operation: 'run',
+          code: 'run-failed',
+          message: 'The answer could not be evaluated. Please try again.',
+          retryable: true,
+        },
+      );
+    });
+
+    it('should emit a typed failure if graph configuration fails', async () => {
+      jest.mocked(GraphCore.executeLgraph).mockClear();
+      const mockPayload = {
+        graph: 'invalid json',
+        answer: 'testAnswer',
+      };
+
+      await service.handleRunGraph(mockSocket, mockPayload);
+
+      expect(GraphCore.executeLgraph).not.toHaveBeenCalled();
+      expect(emitEvent).toHaveBeenCalledWith(
+        mockSocket,
+        'graphOperationFailed',
+        {
+          operation: 'run',
+          code: 'run-failed',
+          message: 'The answer could not be evaluated. Please try again.',
+          retryable: true,
+        },
       );
     });
   });
@@ -213,19 +245,25 @@ describe('GraphHandlerService', () => {
       );
     });
 
-    it('should emit "graphNotFound" if the graph does not exist', async () => {
+    it('should emit a typed failure if the graph does not exist', async () => {
       const mockPayload = 'nonExistentGraph';
       jest.spyOn(graphService, 'getGraph').mockResolvedValue(null);
 
       await service.handleLoadGraph(mockSocket, mockPayload);
 
-      expect(mockSocket.emit).toHaveBeenCalledWith('graphNotFound', {
-        eventName: 'graphNotFound',
-        payload: `Graph with pathname "nonExistentGraph" not found.`,
-      });
+      expect(emitEvent).toHaveBeenCalledWith(
+        mockSocket,
+        'graphOperationFailed',
+        {
+          operation: 'load',
+          code: 'not-found',
+          message: `Graph with pathname "nonExistentGraph" not found.`,
+          retryable: true,
+        },
+      );
     });
 
-    it('should log an error if loading the graph fails', async () => {
+    it('should emit a typed failure if loading the graph fails', async () => {
       const mockPayload = 'testGraph';
       jest
         .spyOn(graphService, 'getGraph')
@@ -239,6 +277,16 @@ describe('GraphHandlerService', () => {
       expect(loggerSpy).toHaveBeenCalledWith(
         'Error loading graph: ',
         expect.any(Error),
+      );
+      expect(emitEvent).toHaveBeenCalledWith(
+        mockSocket,
+        'graphOperationFailed',
+        {
+          operation: 'load',
+          code: 'load-failed',
+          message: 'The task could not be loaded. Please try again.',
+          retryable: true,
+        },
       );
     });
   });

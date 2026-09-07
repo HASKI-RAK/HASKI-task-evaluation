@@ -1,3 +1,5 @@
+/// <reference types="vitest/config" />
+
 import react from '@vitejs/plugin-react'
 // load .env files
 import { config } from 'dotenv'
@@ -97,6 +99,11 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: ['@emotion/react', '@emotion/styled', '@mui/material/Tooltip']
+  },
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: ['./src/test/setup.ts']
   },
   plugins: [
     react({

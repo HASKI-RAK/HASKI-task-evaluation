@@ -212,35 +212,35 @@ export class GraphHandlerService {
     payload: ClientEventPayload['runGraph'],
   ) {
     this.logger.log(`RunGraph event received from client id: ${client.id}`);
-    const lgraph = new LGraph();
-
-    // Add the node execution handling BEFORE configuring
-    this.addOnNodeAdded(lgraph, client);
-
-    this.logger.debug('Configuring graph from client payload');
-    lgraph.configure(JSON.parse(payload.graph));
-
-    // Hydrate all nodes that were added during configure
-    await this.hydrateExistingNodes(lgraph);
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
-    const nodes = (lgraph as any)._nodes as LGraphNode[];
-    this.logger.debug(`Graph configured with ${nodes.length} nodes`);
-
-    // Start measuring execution time
-    const startTime = Date.now();
-
-    for (const node of lgraph.findNodesByClass<AnswerInputNode>(
-      AnswerInputNode,
-    )) {
-      node.properties.value = payload.answer.substring(0, 1500);
-    }
-    const answer = lgraph
-      .findNodesByClass<AnswerInputNode>(AnswerInputNode)
-      .map((node) => node.properties.value)
-      .join(' ');
-
     try {
+      const lgraph = new LGraph();
+
+      // Add the node execution handling BEFORE configuring
+      this.addOnNodeAdded(lgraph, client);
+
+      this.logger.debug('Configuring graph from client payload');
+      lgraph.configure(JSON.parse(payload.graph));
+
+      // Hydrate all nodes that were added during configure
+      await this.hydrateExistingNodes(lgraph);
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
+      const nodes = (lgraph as any)._nodes as LGraphNode[];
+      this.logger.debug(`Graph configured with ${nodes.length} nodes`);
+
+      // Start measuring execution time
+      const startTime = Date.now();
+
+      for (const node of lgraph.findNodesByClass<AnswerInputNode>(
+        AnswerInputNode,
+      )) {
+        node.properties.value = payload.answer.substring(0, 1500);
+      }
+      const answer = lgraph
+        .findNodesByClass<AnswerInputNode>(AnswerInputNode)
+        .map((node) => node.properties.value)
+        .join(' ');
+
       // Extract LtiCookie data from the client's handshake (guarded for tests)
       const auth = (client as unknown as { handshake?: { auth?: unknown } })
         ?.handshake?.auth as { ltiCookie?: LtiCookie } | undefined;
@@ -416,6 +416,12 @@ export class GraphHandlerService {
       );
     } catch (error) {
       this.logger.error('Error running graph: ', error);
+      emitEvent(client, 'graphOperationFailed', {
+        operation: 'run',
+        code: 'run-failed',
+        message: 'The answer could not be evaluated. Please try again.',
+        retryable: true,
+      });
     }
   }
 
@@ -496,13 +502,21 @@ export class GraphHandlerService {
         emitEvent(client, 'maxInputChars', 1500);
       } else {
         this.logger.warn(`Graph not found with pathname: ${pathname}`);
-        client.emit('graphNotFound', {
-          eventName: 'graphNotFound',
-          payload: `Graph with pathname "${pathname}" not found.`,
+        emitEvent(client, 'graphOperationFailed', {
+          operation: 'load',
+          code: 'not-found',
+          message: `Graph with pathname "${pathname}" not found.`,
+          retryable: true,
         });
       }
     } catch (error) {
       this.logger.error('Error loading graph: ', error);
+      emitEvent(client, 'graphOperationFailed', {
+        operation: 'load',
+        code: 'load-failed',
+        message: 'The task could not be loaded. Please try again.',
+        retryable: true,
+      });
     }
   }
 }

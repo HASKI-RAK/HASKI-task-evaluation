@@ -2,7 +2,7 @@ import { ServerEventPayload } from '@haski/ta-lib'
 import { Alert, Button, FormControl, Stack, TextField, Typography } from '@mui/material'
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress'
 import { styled } from '@mui/material/styles'
-import { memo, useEffect, useState } from 'react'
+import { memo, useState } from 'react'
 
 interface MyThemeComponentProps {
   color?: 'primary' | 'secondary'
@@ -30,26 +30,29 @@ const TaskView = ({
   outputs,
   question,
   questionImage,
-  maxInputChars = 1200
+  maxInputChars = 1200,
+  disabled = false
 }: {
   onSubmit: (answer: string) => void
   outputs?: Record<string, ServerEventPayload['outputSet']>
   question: string
   questionImage?: string
   maxInputChars?: number
+  disabled?: boolean
 }) => {
   const [error, setError] = useState<string | null>(null)
   const [answer, setAnswer] = useState<string>('')
   const handleSetAnswer = (event: React.ChangeEvent<HTMLInputElement>) => {
-    validateAnswer()
-    setAnswer(event.target.value)
+    const nextAnswer = event.target.value
+    setAnswer(nextAnswer)
+    if (error) validateAnswer(nextAnswer)
   }
 
-  const validateAnswer = (): boolean => {
-    if (answer.length < 10) {
+  const validateAnswer = (value: string): boolean => {
+    if (value.trim().length < 10) {
       setError('Answer must be at least 10 characters long')
       return false
-    } else if (answer.length > maxInputChars) {
+    } else if (value.length > maxInputChars) {
       // TODO: find optimal length based on literature
       // to ensure the user doesnt paste a lot of text containing the answer
       setError('Answer must be at most ' + maxInputChars + ' characters long')
@@ -60,27 +63,18 @@ const TaskView = ({
     }
   }
 
-  const keyDownHandlerCtrlEnter = (event: KeyboardEvent): void => {
-    if (event.ctrlKey && event.key === 'Enter') {
-      console.log('ctrl+enter')
-      validateAnswer()
+  const keyDownHandler = (event: React.KeyboardEvent<HTMLDivElement>): void => {
+    if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+      event.preventDefault()
+      handleSubmit()
     }
   }
 
   const handleSubmit = (event?: React.FormEvent<HTMLFormElement>): void => {
     event?.preventDefault()
-    validateAnswer()
+    if (disabled || !validateAnswer(answer)) return
     onSubmit(answer)
   }
-
-  useEffect(() => {
-    console.log('Task view rendered with output: ', outputs ?? 'no output')
-    document.addEventListener('keydown', keyDownHandlerCtrlEnter)
-
-    return () => {
-      document.removeEventListener('keydown', keyDownHandlerCtrlEnter)
-    }
-  }, [outputs])
 
   return (
     <Stack spacing={2} padding={2}>
@@ -121,10 +115,12 @@ const TaskView = ({
               rows={6}
               placeholder="Gib hier deine Antwort ein..."
               onChange={handleSetAnswer}
+              onKeyDown={keyDownHandler}
+              disabled={disabled}
             />
             <Stack direction="row" spacing={2}>
-              <Button variant="contained" type="submit">
-                Absenden
+              <Button variant="contained" type="submit" disabled={disabled}>
+                {disabled ? 'Wird ausgewertet...' : 'Absenden'}
               </Button>
               <Typography variant="caption">
                 Hinweis: Die Auswertung kann bis zu zwei Minuten dauern. Bitte die Seite

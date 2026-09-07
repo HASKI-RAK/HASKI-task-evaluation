@@ -1,5 +1,5 @@
 import { ClientEventPayload, SerializedGraph, ServerEventPayload } from '@haski/ta-lib'
-import { AlertColor, Backdrop, Box, Container, Typography } from '@mui/material'
+import { Alert, Backdrop, Box, Button, CircularProgress, Container } from '@mui/material'
 import { LiteGraph } from 'litegraph.js'
 import { useCallback, useEffect, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
@@ -37,7 +37,13 @@ export const StudentView = () => {
     image,
     maxInputChars,
     processingPercentage,
+    graphState,
+    attemptState,
+    failureMessage,
     snackbar,
+    beginGraphLoad,
+    beginAttempt,
+    failAttempt,
     handleSnackbarClose
   } = useServerEvents({
     socket,
@@ -50,6 +56,7 @@ export const StudentView = () => {
   const handleSubmit = useCallback(
     (answer: string) => {
       try {
+        beginAttempt()
         runGraph({
           answer,
           xapi: {
@@ -68,20 +75,29 @@ export const StudentView = () => {
         })
       } catch (error) {
         console.error('Error running graph:', error)
+        failAttempt(
+          error instanceof Error
+            ? error.message
+            : 'The answer could not be evaluated. Please try again.'
+        )
       }
     },
-    [runGraph, searchParams, domain]
+    [beginAttempt, failAttempt, runGraph, searchParams]
   )
+
+  const handleLoadGraph = useCallback(() => {
+    beginGraphLoad()
+    loadGraph(socketPath)
+  }, [beginGraphLoad, loadGraph, socketPath])
 
   // Load the graph when the connection is established
   useEffect(() => {
     // Only load the graph when the connection is established
     if (connectionStatus === 'Connected') {
       console.log('Loading graph for student view:', socketPath)
-      // Load the graph from the server
-      loadGraph(socketPath)
+      handleLoadGraph()
     }
-  }, [connectionStatus, loadGraph, socketPath])
+  }, [connectionStatus, handleLoadGraph, socketPath])
 
   // Debug outputs
   useEffect(() => {
@@ -92,7 +108,7 @@ export const StudentView = () => {
     <>
       <Backdrop
         sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={processingPercentage > 0 && processingPercentage < 100}
+        open={attemptState === 'running'}
       >
         <CircularProgressWithLabel value={processingPercentage} />
       </Backdrop>
@@ -111,13 +127,35 @@ export const StudentView = () => {
           }}
           padding={2}
         >
-          <TaskView
-            question={question}
-            questionImage={image}
-            onSubmit={handleSubmit}
-            outputs={memoizedOutputs}
-            maxInputChars={maxInputChars}
-          />
+          {connectionStatus !== 'Connected' && (
+            <Alert severity="warning">Connection to the server is unavailable.</Alert>
+          )}
+          {connectionStatus === 'Connected' &&
+            (graphState === 'idle' || graphState === 'loading') && (
+              <CircularProgress aria-label="Loading task" />
+            )}
+          {(graphState === 'not-found' || graphState === 'failed') && (
+            <Alert
+              severity="error"
+              action={
+                <Button color="inherit" size="small" onClick={handleLoadGraph}>
+                  Retry
+                </Button>
+              }
+            >
+              {failureMessage}
+            </Alert>
+          )}
+          {graphState === 'ready' && (
+            <TaskView
+              question={question}
+              questionImage={image}
+              onSubmit={handleSubmit}
+              outputs={memoizedOutputs}
+              maxInputChars={maxInputChars}
+              disabled={attemptState === 'running' || connectionStatus !== 'Connected'}
+            />
+          )}
         </Box>
       </Container>
       <Snackbar

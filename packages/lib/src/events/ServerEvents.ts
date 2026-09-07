@@ -14,6 +14,13 @@ export type SerializedGraph = serializedLGraph<
 
 export type OutputType = 'text' | 'score' | 'classifications'
 
+export type GraphOperationFailure = {
+  operation: 'load' | 'run'
+  code: 'not-found' | 'load-failed' | 'run-failed'
+  message: string
+  retryable: boolean
+}
+
 // type that matches ServerEventName with payload
 export type ServerEventPayload = {
   graphFinished: string //SerializedGraph // graph run finished
@@ -21,6 +28,7 @@ export type ServerEventPayload = {
   nodeExecuted: number // node id
   graphSaved: string //SerializedGraph // graph
   graphLoaded: string //SerializedGraph // after loading a graph
+  graphOperationFailed: GraphOperationFailure
   outputSet: {
     uniqueId: string
     type: OutputType

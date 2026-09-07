@@ -1,7 +1,7 @@
 import { ServerEventPayload } from '@haski/ta-lib'
 import { AlertColor } from '@mui/material'
 import { LGraph } from 'litegraph.js'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Socket } from 'socket.io-client'
 
 type EventHandlerArray<T> = [keyof T, (payload: T[keyof T]) => void | Promise<void>][]
@@ -14,17 +14,26 @@ interface UseServerEventsOptions {
   lgraph: LGraph
 }
 
+export type GraphState = 'idle' | 'loading' | 'ready' | 'not-found' | 'failed'
+export type AttemptState = 'idle' | 'running' | 'completed' | 'failed'
+
 export interface UseServerEventsResult {
   outputs: Record<string, ServerEventPayload['outputSet']> | undefined
   question: string
   image: string | undefined
   maxInputChars: number
   processingPercentage: number
+  graphState: GraphState
+  attemptState: AttemptState
+  failureMessage: string | undefined
   snackbar: {
     message: string
     severity: AlertColor
     open: boolean
   }
+  beginGraphLoad: () => void
+  beginAttempt: () => void
+  failAttempt: (message: string) => void
   handleSnackbarClose: (event: React.SyntheticEvent | Event, reason?: string) => void
 }
 
@@ -39,6 +48,9 @@ export function useServerEvents({
   const [maxInputChars, setMaxInputChars] = useState<number>(700)
   const [image, setImage] = useState<string | undefined>()
   const [processingPercentage, setProcessingPercentage] = useState<number>(0)
+  const [graphState, setGraphState] = useState<GraphState>('idle')
+  const [attemptState, setAttemptState] = useState<AttemptState>('idle')
+  const [failureMessage, setFailureMessage] = useState<string>()
   const [snackbar, setSnackbar] = useState<{
     message: string
     severity: AlertColor
@@ -53,8 +65,32 @@ export function useServerEvents({
     if (reason === 'clickaway') {
       return
     }
-    setSnackbar({ ...snackbar, open: false })
+    setSnackbar((current) => ({ ...current, open: false }))
   }
+
+  const beginGraphLoad = useCallback(() => {
+    setGraphState('loading')
+    setAttemptState('idle')
+    setFailureMessage(undefined)
+    setOutputs(undefined)
+    setQuestion('')
+    setImage(undefined)
+    setProcessingPercentage(0)
+  }, [])
+
+  const beginAttempt = useCallback(() => {
+    setAttemptState('running')
+    setFailureMessage(undefined)
+    setOutputs(undefined)
+    setProcessingPercentage(0)
+  }, [])
+
+  const failAttempt = useCallback((message: string) => {
+    setAttemptState('failed')
+    setFailureMessage(message)
+    setProcessingPercentage(0)
+    setSnackbar({ message, severity: 'error', open: true })
+  }, [])
 
   const handleNodeExecuting = (lgraph: LGraph, nodeId: number) => {
     if (lgraph.getNodeById(nodeId) === null) return
@@ -75,7 +111,8 @@ export function useServerEvents({
     const eventHandlers: EventHandlerMap<ServerEventPayload> = {
       graphFinished(payload) {
         console.log('Graph finished: ', payload)
-        setProcessingPercentage(0)
+        setProcessingPercentage(100)
+        setAttemptState('completed')
         lgraph.configure(JSON.parse(payload))
         lgraph.setDirtyCanvas(true, true)
       },
@@ -127,6 +164,22 @@ export function useServerEvents({
       graphLoaded(payload) {
         lgraph.configure(JSON.parse(payload))
         lgraph.setDirtyCanvas(true, true)
+        setGraphState('ready')
+        setFailureMessage(undefined)
+      },
+      graphOperationFailed(payload) {
+        setFailureMessage(payload.message)
+        if (payload.operation === 'load') {
+          setGraphState(payload.code === 'not-found' ? 'not-found' : 'failed')
+        } else {
+          setAttemptState('failed')
+          setProcessingPercentage(0)
+        }
+        setSnackbar({
+          message: payload.message,
+          severity: 'error',
+          open: true
+        })
       }
     }
 
@@ -136,23 +189,17 @@ export function useServerEvents({
     ) as EventHandlerArray<ServerEventPayload>
 
     for (const [eventName, handler] of eventEntries) {
-      socket.on(eventName, (payload) => {
-        if (handler) {
-          handler(payload)
-        } else {
-          console.error(`No handler for event: ${eventName}`)
-        }
-      })
+      socket.on(eventName, handler)
     }
 
     // Cleanup function
     return () => {
       // Remove all payload event listeners
-      for (const [eventName] of eventEntries) {
-        socket.off(eventName.toString())
+      for (const [eventName, handler] of eventEntries) {
+        socket.off(eventName, handler)
       }
     }
-  }, [socket, lgraph, outputs])
+  }, [socket, lgraph])
 
   return {
     outputs,
@@ -160,7 +207,13 @@ export function useServerEvents({
     image,
     maxInputChars,
     processingPercentage,
+    graphState,
+    attemptState,
+    failureMessage,
     snackbar,
+    beginGraphLoad,
+    beginAttempt,
+    failAttempt,
     handleSnackbarClose
   }
 }
