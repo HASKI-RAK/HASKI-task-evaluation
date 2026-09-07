@@ -9,8 +9,8 @@ type CanvasProps = {
 }
 
 const Canvas = (props: CanvasProps) => {
-  const lcanvas = useRef<LGraphCanvas>()
-  const canvasRef = useRef(null)
+  const lcanvas = useRef<LGraphCanvas | null>(null)
+  const canvasRef = useRef<HTMLCanvasElement | null>(null)
 
   useEffect(() => {
     console.log('Canvas mounted or lgraph updated')

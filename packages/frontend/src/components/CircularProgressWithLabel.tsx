@@ -1,4 +1,4 @@
-import Box from '@mui/material/Box/Box'
+import Box from '@mui/material/Box'
 import CircularProgress, { CircularProgressProps } from '@mui/material/CircularProgress'
 import Typography from '@mui/material/Typography'
 

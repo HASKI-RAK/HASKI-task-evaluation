@@ -1,10 +1,8 @@
-/* eslint-disable immutable/no-mutation */
 import react from '@vitejs/plugin-react'
 // load .env files
 import { config } from 'dotenv'
 import { defineConfig } from 'vite'
 import { VitePWA, VitePWAOptions } from 'vite-plugin-pwa'
-import tsconfigPaths from 'vite-tsconfig-paths'
 
 config()
 const replaceOptions = { __DATE__: new Date().toISOString() }
@@ -61,15 +59,20 @@ const manifestForPlugin: Partial<VitePWAOptions> = {
 // https://vitejs.dev/config/
 export default defineConfig({
   base: './',
+  resolve: {
+    tsconfigPaths: true
+  },
   build: {
     sourcemap: process.env.SOURCE_MAP === 'true',
     rollupOptions: {
       output: {
-        manualChunks: {
-          react: ['react', 'react-dom', 'react-router-dom', 'react-rewards'],
-          mui: ['@mui/material', '@mui/icons-material', '@emotion/react', '@emotion/styled'],
-          litegraph: ['litegraph.js'],
-          socket: ['socket.io-client', 'react-use-websocket']
+        manualChunks(id: string) {
+          if (!id.includes('node_modules')) return undefined
+          if (id.includes('litegraph')) return 'litegraph'
+          if (id.includes('@mui') || id.includes('@emotion')) return 'mui'
+          if (id.includes('react-router') || id.includes('react-rewards') || id.includes('react-dom') || id.includes('/react/')) return 'react'
+          if (id.includes('socket.io') || id.includes('react-use-websocket')) return 'socket'
+          return 'vendor'
         }
       }
     }
@@ -96,7 +99,6 @@ export default defineConfig({
     include: ['@emotion/react', '@emotion/styled', '@mui/material/Tooltip']
   },
   plugins: [
-    tsconfigPaths(),
     react({
       jsxImportSource: '@emotion/react',
       babel: {
