@@ -4,8 +4,10 @@
   "description": "Learning Tools Interoperability (LTI) implementation for typescript and node",
   "author": "David Fischer",
   "license": "MIT",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc --build --verbose"
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.6",

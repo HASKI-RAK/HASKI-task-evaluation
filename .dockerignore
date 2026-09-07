@@ -1,1 +1,10 @@
-./packages/frontend/dist
+.git
+**/node_modules
+**/dist
+**/coverage
+**/.env
+.yarn/cache
+.yarn/install-state.gz
+models
+.serena
+*.log
