@@ -12,10 +12,10 @@
   },
   "dependencies": {
     "litegraph.js": "^0.7.14",
-    "ws": "^8.18.0"
+    "ws": "^8.21.3"
   },
   "devDependencies": {
-    "@types/ws": "^8.5.12",
+    "@types/ws": "^8.18.1",
     "typescript": "^5.9.3"
   }
 }

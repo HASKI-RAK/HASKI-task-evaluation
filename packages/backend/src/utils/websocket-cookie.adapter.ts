@@ -4,7 +4,8 @@ import { LtiCookie } from './LtiCookie.js';
 import { Logger } from '@nestjs/common';
 
 export class WebSocketCookieAdapter extends IoAdapter {
-  private readonly logger = new Logger(WebSocketCookieAdapter.name);
+  // Named to avoid colliding with the `logger` property introduced in the base IoAdapter
+  private readonly adapterLogger = new Logger(WebSocketCookieAdapter.name);
 
   createIOServer(port: number, options?: ServerOptions): Server {
     const server: Server = super.createIOServer(port, options) as Server;
@@ -25,7 +26,7 @@ export class WebSocketCookieAdapter extends IoAdapter {
 
               // Validate the decoded cookie is not too large (prevent DoS attacks)
               if (decodedCookie.length > 10000) {
-                this.logger.warn('LTI cookie too large, rejecting');
+                this.adapterLogger.warn('LTI cookie too large, rejecting');
                 next();
                 return;
               }
@@ -51,20 +52,20 @@ export class WebSocketCookieAdapter extends IoAdapter {
               ) {
                 const ltiCookie = parsedCookie as LtiCookie;
                 socket.handshake.auth.ltiCookie = ltiCookie;
-                this.logger.debug(
+                this.adapterLogger.debug(
                   `LTI cookie parsed for socket: ${ltiCookie.user_id}`,
                 );
               } else {
-                this.logger.warn('Invalid LTI cookie structure');
+                this.adapterLogger.warn('Invalid LTI cookie structure');
               }
             } catch (error) {
-              this.logger.error('Error parsing LTI cookie:', error);
+              this.adapterLogger.error('Error parsing LTI cookie:', error);
             }
           }
         }
         next();
       } catch (error) {
-        this.logger.error('Error in WebSocket middleware:', error);
+        this.adapterLogger.error('Error in WebSocket middleware:', error);
         next();
       }
     });
