@@ -17,5 +17,12 @@
     "test:report": "yarn workspace backend test:report"
   },
   "license": "MIT",
-  "packageManager": "yarn@4.7.0"
+  "packageManager": "yarn@4.7.0",
+  "resolutions": {
+    "tar@^6.1.11": "^7.5.19",
+    "tar@^6.2.1": "^7.5.19",
+    "form-data@^4.0.0": "^4.0.4",
+    "minimist@^1.2.5": "^1.2.8",
+    "@xhmikosr/decompress@^11.1.4": "^10.2.2"
+  }
 }
