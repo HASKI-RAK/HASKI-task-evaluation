@@ -1,5 +1,6 @@
 export * from './events'
 export * from './nodes'
+export * from './nodes/types'
 export * from './utils/typeGuards'
 export * from './web'
 export { LGraphNode, LGraph } from './nodes/litegraph-extensions'
