@@ -3,6 +3,7 @@ import { LGraph } from 'litegraph.js'
 import { useCallback, useEffect, useState } from 'react'
 import { Socket } from 'socket.io-client'
 
+import { attachDebugSocket, detachDebugSocket } from '@/utils/debugBridge'
 import { connectSocket, disconnectSocket, emitEvent, getSocket } from '@/utils/socket'
 
 interface UseSocketOptions {
@@ -31,6 +32,7 @@ export function useSocket({ socketPath, lgraph }: UseSocketOptions): UseSocketRe
     disconnectSocket()
 
     const socketInstance = getSocket(socketPath)
+    attachDebugSocket(socketInstance)
     console.log('Socket instance created:', socketInstance)
     setSocket(socketInstance)
 
@@ -64,6 +66,7 @@ export function useSocket({ socketPath, lgraph }: UseSocketOptions): UseSocketRe
 
     // Cleanup function
     return () => {
+      detachDebugSocket(socketInstance)
       // Remove all event listeners
       socketInstance.off('connect', onConnect)
       socketInstance.off('disconnect', onDisconnect)

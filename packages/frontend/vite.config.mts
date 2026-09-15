@@ -50,7 +50,7 @@ const manifestForPlugin: Partial<VitePWAOptions> = {
     orientation: 'portrait'
   },
   devOptions: {
-    enabled: true,
+    enabled: process.env.VITE_ENABLE_SW === 'true',
     /* other options */
     navigateFallback: '/index.html',
     type: 'module'

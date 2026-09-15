@@ -28,4 +28,6 @@ packages/frontend/**/*.js
 reports/
 .serena/
 .playwright-mcp/
+playwright-report/
+test-results/
 .rtk/

@@ -1,0 +1,112 @@
+name: nodegrade-debug
+
+x-debug-runtime: &debug-runtime
+  image: nodegrade-debug-runtime
+  build:
+    context: .
+    dockerfile: Dockerfile.debug
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: nodegrade
+      POSTGRES_PASSWORD: nodegrade
+      POSTGRES_DB: nodegrade
+    ports:
+      - '${NODEGRADE_DEBUG_DATABASE_PORT:-15432}:5432'
+    volumes:
+      - debug_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U nodegrade -d nodegrade']
+      interval: 2s
+      timeout: 3s
+      retries: 20
+
+  model:
+    <<: *debug-runtime
+    command: ['node', 'tools/debug/fake-model.mjs']
+    environment:
+      PORT: '8000'
+    ports:
+      - '${NODEGRADE_DEBUG_MODEL_PORT:-18000}:8000'
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:8000/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"
+        ]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+
+  backend:
+    <<: *debug-runtime
+    command:
+      - sh
+      - -c
+      - yarn setup && yarn workspace backend debug:seed && yarn workspace backend start:debug:container
+    environment:
+      NODE_ENV: development
+      PORT: '5000'
+      DATABASE_URL: postgresql://nodegrade:nodegrade@db:5432/nodegrade?schema=public
+      FRONTEND_URL: http://localhost:${NODEGRADE_DEBUG_FRONTEND_PORT:-15173}
+      CORS_ORIGIN: http://localhost:${NODEGRADE_DEBUG_FRONTEND_PORT:-15173},http://127.0.0.1:${NODEGRADE_DEBUG_FRONTEND_PORT:-15173}
+      MODEL_WORKER_URL: http://model:8000
+      OPENAI_API_KEY: ''
+    ports:
+      - '${NODEGRADE_DEBUG_BACKEND_PORT:-15000}:5000'
+      - '${NODEGRADE_DEBUG_INSPECTOR_PORT:-19229}:9229'
+    volumes:
+      - ./packages/backend/src:/app/packages/backend/src
+      - ./packages/backend/prisma:/app/packages/backend/prisma
+    depends_on:
+      db:
+        condition: service_healthy
+      model:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:5000/health').then(r=>r.json()).then(v=>{if(v.status!=='ok')process.exit(1)}).catch(()=>process.exit(1))"
+        ]
+      interval: 2s
+      timeout: 3s
+      retries: 40
+      start_period: 10s
+
+  frontend:
+    <<: *debug-runtime
+    command: ['yarn', 'workspace', '@haski/ta-frontend', 'dev']
+    environment:
+      VITE_API_URL: http://localhost:${NODEGRADE_DEBUG_BACKEND_PORT:-15000}
+      VITE_DEBUG_BRIDGE: 'true'
+      VITE_ENABLE_SW: 'false'
+    ports:
+      - '${NODEGRADE_DEBUG_FRONTEND_PORT:-15173}:5173'
+    volumes:
+      - ./packages/frontend/src:/app/packages/frontend/src
+      - ./packages/frontend/public:/app/packages/frontend/public
+      - ./packages/lib/src:/app/packages/lib/src
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:5173/').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"
+        ]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+volumes:
+  debug_db_data:

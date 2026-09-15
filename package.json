@@ -10,11 +10,20 @@
   ],
   "scripts": {
     "dev": "yarn workspaces foreach -i --parallel --verbose --all run dev",
+    "debug:up": "node tools/debug/stack.mjs up",
+    "debug:serve": "node tools/debug/stack.mjs serve",
+    "debug:down": "node tools/debug/stack.mjs down",
+    "debug:status": "node tools/debug/stack.mjs status",
+    "debug:logs": "node tools/debug/stack.mjs logs",
+    "debug:reset": "node tools/debug/stack.mjs reset",
     "setup": "yarn workspace backend setup",
     "lint": "yarn workspaces foreach --parallel --all run lint",
     "test": "yarn workspace backend test",
     "build": "yarn workspaces foreach --topological --all run build",
-    "test:report": "yarn workspace backend test:report"
+    "test:report": "yarn workspace backend test:report",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:debug": "playwright test --debug --project=chromium"
   },
   "license": "MIT",
   "packageManager": "yarn@4.7.0",
@@ -24,5 +33,8 @@
     "form-data@^4.0.0": "^4.0.4",
     "minimist@^1.2.5": "^1.2.8",
     "@xhmikosr/decompress@^11.1.4": "^10.2.2"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0"
   }
 }

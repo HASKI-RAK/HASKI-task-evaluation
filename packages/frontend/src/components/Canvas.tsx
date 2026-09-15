@@ -2,6 +2,8 @@ import { LGraph } from '@haski/ta-lib'
 import { LGraphCanvas } from 'litegraph.js'
 import { useEffect, useRef } from 'react'
 
+import { installDebugBridge } from '@/utils/debugBridge'
+
 type CanvasProps = {
   width: number
   height: number
@@ -20,6 +22,7 @@ const Canvas = (props: CanvasProps) => {
         // Initialize canvas if it doesn't exist
         lcanvas.current = new LGraphCanvas(canvasRef.current, props.lgraph)
         lcanvas.current.allow_interaction = true
+        installDebugBridge(props.lgraph, lcanvas.current)
       } else {
         // Update the graph reference if canvas already exists
         lcanvas.current.setGraph(props.lgraph)

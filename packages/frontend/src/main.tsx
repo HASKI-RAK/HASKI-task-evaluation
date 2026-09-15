@@ -1,7 +1,6 @@
 // top level import
 import '@/utils/css'
 
-import React from 'react'
 import { createRoot } from 'react-dom/client'
 import { registerSW } from 'virtual:pwa-register'
 
@@ -20,7 +19,8 @@ fetch('/config/env.' + (process.env.NODE_ENV ?? 'development') + '.json')
     return response.json()
   })
   .then((config) => {
-    setConfig(config)
+    const apiUrl = import.meta.env.VITE_API_URL
+    setConfig(apiUrl ? { ...config, API: apiUrl, WS: apiUrl } : config)
 
     root.render(<App />)
   })
