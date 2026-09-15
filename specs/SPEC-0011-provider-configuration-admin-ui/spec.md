@@ -40,14 +40,17 @@ effect without redeployment.
 - Server-side persistence of provider configuration.
 - Configuration changes taking effect for subsequent LLM node executions without
   redeployment.
-- Support for the built-in providers: local model worker, OpenAI, OpenRouter.
+- Support for the built-in provider types: local model worker, OpenAI, OpenRouter,
+  and OPENAI_COMPATIBLE (arbitrary OpenAI-compatible endpoint configured via base
+  URL, credentials, and display name).
 
 ### Out of scope
 
 - Model allowlist editing (SPEC-0012).
 - Per-user or per-workspace provider policies.
-- Adding arbitrary new provider types at runtime (provider set is fixed to
-  OpenAI-compatible providers known to the system).
+- Adding new provider *types* at runtime (the supported set of provider types is
+  fixed to OpenAI-compatible providers known to the system; new instances of the
+  OPENAI_COMPATIBLE type are configuration, not code).
 
 ## Actors
 
@@ -88,8 +91,15 @@ the system SHALL deny access.
 ### FR-002 — Provider list
 
 WHEN a facilitator opens the provider configuration UI,
-the system SHALL show all supported providers with their current enabled state and
-configured settings.
+the system SHALL show all configured providers with their type, current enabled state,
+and configured settings.
+
+### FR-002a — Adding an OpenAI-compatible provider
+
+WHEN a facilitator adds a provider instance of type OPENAI_COMPATIBLE with a base URL,
+credentials, and a display name,
+the system SHALL persist it as a new configurable provider without requiring any code
+change or redeployment.
 
 ### FR-003 — Edit provider settings
 
@@ -277,6 +287,17 @@ When the facilitator activates "Test connection"
 Then success or a specific failure reason is reported
 ```
 
+### AC-012 — OpenAI-compatible provider instance added via UI
+
+Traces to: FR-002a, SPEC-0010/FR-002a
+
+```gherkin
+Given a facilitator is authenticated
+When the facilitator adds an OPENAI_COMPATIBLE provider with a base URL, key, and display name, and enables it
+Then it persists without redeployment
+And its models appear in user model lists per SPEC-0010
+```
+
 ## Edge cases
 
 - Two facilitators editing concurrently → last save wins; no partial merges.
@@ -303,8 +324,9 @@ Then success or a specific failure reason is reported
 
 ## Assumptions
 
-- The set of supported providers is fixed at deploy time (local worker, OpenAI,
-  OpenRouter); new provider types are a code change, not a UI action.
+- The set of supported provider *types* is fixed at deploy time (local worker, OpenAI,
+  OpenRouter, OPENAI_COMPATIBLE); new provider types are a code change. Adding new
+  instances of the OPENAI_COMPATIBLE type is configuration only (see SPEC-0010/FR-002a).
 
 ## Open questions
 
@@ -323,4 +345,4 @@ Then success or a specific failure reason is reported
 | Date | Change |
 |---|---|
 | 2026-09-15 | Initial specification created |
-| 2026-09-15 | Added key encryption at rest (FR-010, AC-008), key preservation on unrelated edits (FR-011, AC-009), explicit replace/remove (FR-012, AC-010), test connection (FR-013, AC-011). Dependency re-pointed to SPEC-0013 (facilitator auth foundation); dependency cycle with SPEC-0010 removed (0011 → 0010 only). |
+| 2026-09-15 | Review revision: OPENAI_COMPATIBLE provider type added (FR-002a, AC-012); out-of-scope wording clarified so new provider instances of that type are configuration, resolving the earlier contradiction with SPEC-0010/NFR-001 |

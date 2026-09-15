@@ -16,3 +16,4 @@
 | SPEC-0012 | Feature | Model allowlist governance | SPEC-0009 | Draft |
 | SPEC-0013 | Feature | Facilitator authentication and administrative access | null | Draft |
 | SPEC-0014 | Feature | Workshop entity and join flow | SPEC-0001 | Draft |
+| SPEC-0015 | Feature | Automated specification linting | SPEC-0008 | Draft |

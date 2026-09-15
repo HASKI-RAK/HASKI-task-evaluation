@@ -43,8 +43,9 @@ workflow as one undoable operation.
   workflow | block) plus graph content (nodes, links).
 - Server-side persistence of templates as first-class entities; bundled templates are
   seed data for that store.
-- Template revisions: a monotonic revision per template; workflows and workshops
-  reference the revision they were created from.
+- Template revisions: a monotonic revision per template, where each modification
+  creates a new immutable revision record; workflows and workshops reference the
+  revision they were created from.
 - Template gallery browsing with preview.
 - "Use template" → duplicate into the user's workspace as a new editable workflow.
 - "Reset to template" recovery action during a workshop (restores the revision the
@@ -119,7 +120,27 @@ Bundled templates SHALL seed this store on first startup.
 ### FR-003 — Template revisions
 
 WHEN a facilitator modifies a template definition,
-the system SHALL increment the template's revision number.
+the system SHALL create a new immutable revision containing the full template content
+(nodes, links, metadata) at the time of modification, and the template's revision
+number SHALL increment.
+
+### FR-003a — Revision immutability
+
+WHILE a template revision exists,
+the system SHALL retain its complete content unchanged and SHALL NOT allow it to be
+modified in place.
+
+### FR-003b — Referenced revisions are non-deletable
+
+WHILE a template revision is referenced by any workflow or workshop,
+the system SHALL reject deletion of that revision.
+
+### FR-003c — Template deletion semantics
+
+WHEN a facilitator deletes a template,
+the system SHALL remove it from the template gallery and administration views, and
+SHALL retain all existing revisions as immutable records; referenced revisions remain
+resolvable for workflows and workshops created from them.
 
 ### FR-004 — Template gallery
 
@@ -201,6 +222,13 @@ the system SHALL offer it in the template gallery to all users.
 
 WHILE a template is not published,
 the system SHALL NOT offer it in the template gallery to non-facilitator users.
+
+### FR-017a — Unpublish does not break referenced revisions
+
+WHEN a facilitator unpublishes a template or a revision referenced by an existing
+published workshop,
+THEN the workshop SHALL remain functional and resolvable to its referenced revision;
+unpublishing SHALL only hide the template from the gallery.
 
 ### FR-018 — Workflow records source revision
 
@@ -373,15 +401,28 @@ Then the bundled templates exist in the persisted template store
 And the facilitator can modify them, producing a new revision
 ```
 
-### AC-014 — Modification increments revision
+### AC-014 — Modification creates a new immutable revision
 
-Traces to: FR-003, FR-018
+Traces to: FR-003, FR-003a, FR-018
 
 ```gherkin
 Given a template at revision R referenced by an existing workflow
 When the facilitator modifies the template
-Then the template's revision becomes R+1
+Then the template's revision becomes R+1 with its full content stored as a new record
+And revision R's content is retained unchanged
 And the existing workflow still references revision R
+```
+
+### AC-014a — Referenced revision survives template modification and unpublish
+
+Traces to: FR-003a, FR-003b, FR-017a
+
+```gherkin
+Given a published workshop bound to template revision R
+When the facilitator modifies the template to revision R+1 and later unpublishes the template
+Then reset on a workflow created from revision R still restores the exact content of revision R
+And the workshop remains joinable and functional
+And the facilitator cannot delete revision R while it is referenced
 ```
 
 ### AC-015 — Block insertion suggests connections
@@ -404,6 +445,17 @@ When a user opens the Blocks tab of the insert palette
 Then rubric scorer, answer classifier, feedback generator, validation/review, and consistency check blocks are available
 ```
 
+### AC-017 — Deleting a template retains referenced revisions
+
+Traces to: FR-003c
+
+```gherkin
+Given a template with revision R referenced by an existing workflow
+When the facilitator deletes the template
+Then the template no longer appears in the gallery or administration views
+And the workflow's reset action still restores the exact content of revision R
+```
+
 ## Edge cases
 
 - Inserting a block into an empty workflow → allowed; behaves like a partial start.
@@ -411,6 +463,8 @@ Then rubric scorer, answer classifier, feedback generator, validation/review, an
   is flagged unavailable rather than partially imported.
 - Duplicate "Use template" clicks → each click creates a distinct workflow copy, no
   silent overwrite.
+- Deleting a template that has never been referenced → all revisions may be purged;
+  referenced revisions are always retained (FR-003b).
 
 ## Business rules
 
@@ -451,7 +505,7 @@ Then rubric scorer, answer classifier, feedback generator, validation/review, an
 
 | Date | Change |
 |---|---|
-| 2026-09-15 | Initial specification created |
+| 2026-09-15 | Review revision: immutable template revisions (FR-003 reworded, FR-003a, AC-014) with referenced revisions non-deletable (FR-003b) and template deletion retaining history (FR-003c, AC-017); unpublish only hides from gallery and never breaks workshops pinned to a revision (FR-017a, AC-014a) |
 | 2026-09-15 | Added facilitator (admin) role: template authoring/publication restricted to facilitator (FR-012..FR-015, AC-008..AC-010) |
 | 2026-09-15 | Facilitator authentication decided: env-based admin username/password, supplyable via docker compose (FR-016..FR-017, AC-011..AC-012, constraint added) |
 | 2026-09-15 | Resolved contradiction: templates are persisted server-side entities; bundled templates are seed data (FR-002, AC-013). Added revisions (FR-003, FR-018, AC-002, AC-014), block external interfaces + connection suggestions (FR-019/020, AC-015), canonical block library (FR-021, AC-016). Facilitator auth re-pointed to SPEC-0013. Renumbered FR-004..FR-021 and AC traces. |

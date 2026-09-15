@@ -9,6 +9,7 @@ created: 2026-09-15
 updated: 2026-09-15
 depends_on:
   - SPEC-0004
+  - SPEC-0014
 related:
   - SPEC-0003
 ---
@@ -95,6 +96,12 @@ WHEN a user opens the application root,
 the system SHALL present entry actions for: Start workshop, Templates, New workflow,
 and Open workflow (My workflows).
 
+### FR-001a — Start workshop behavior
+
+WHEN a user activates Start workshop from the start page,
+the system SHALL present a workshop code entry flow that, upon submission of a code,
+resolves the workshop and continues the join flow defined in SPEC-0014.
+
 ### FR-002 — Workshop deep link
 
 WHEN a user opens the workshop deep link containing a shared workshop code,
@@ -124,24 +131,8 @@ WHEN a user opens an unknown route,
 the system SHALL display a user-facing not-found page offering navigation back to the
 start page.
 
-### FR-007 — Workshop code creation restricted to facilitator
-
-WHEN a user who is not a facilitator attempts to create or publish a workshop code,
-THEN the system SHALL reject the action.
-
-### FR-008 — Facilitator workshop code management
-
-WHEN a facilitator creates a workshop code,
-the system SHALL generate a code that identifies exactly one workshop and SHALL remain
-valid until the facilitator revokes or expires it.
-
-### FR-009 — Code revocation
-
-WHEN a facilitator revokes or expires a workshop code,
-THEN the system SHALL reject that code on subsequent deep-link access.
-
-Note: workshop code lifecycle (create, publish, close, revoke) is normatively defined
-in SPEC-0014; this feature consumes it for the deep-link entry.
+Note: workshop code lifecycle (create, publish, close) is normatively defined in
+SPEC-0014; this feature only consumes it for code entry and deep-link resolution.
 
 ## Non-functional requirements
 
@@ -202,22 +193,23 @@ When the user opens a route that does not exist
 Then a user-facing not-found page is shown with a way back to the start page
 ```
 
-### AC-006 — Only facilitator can create workshop codes
+### AC-006 — Start workshop opens code entry
 
-Traces to: FR-007
+Traces to: FR-001a
 
 ```gherkin
-Given a user who is not a facilitator
-When the user attempts to create or publish a workshop code
-Then the action is rejected
+Given the user is on the start page
+When the user activates Start workshop and enters a valid workshop code
+Then the join flow defined in SPEC-0014 proceeds for that workshop
+And entering an invalid code shows a user-facing error
 ```
 
-### AC-007 — Revoked code rejected
+### AC-007 — Closed code rejected
 
-Traces to: FR-009
+Traces to: FR-002, SPEC-0014/FR-008
 
 ```gherkin
-Given a workshop code that the facilitator has revoked
+Given a workshop that the facilitator has closed
 When a participant opens the deep link containing that code
 Then the workshop is not accessible and a "workshop unavailable" state is shown
 ```
@@ -259,4 +251,4 @@ Then the workshop is not accessible and a "workshop unavailable" state is shown
 |---|---|
 | 2026-09-15 | Initial specification created |
 | 2026-09-15 | Added facilitator (admin) ownership of workshop codes: creation restricted to facilitator, revocation support (FR-007..FR-009, AC-006..AC-007) |
-| 2026-09-15 | Merged duplicate Business rules section; workshop code lifecycle made normative in SPEC-0014 (Workshop entity and join flow); dependency added |
+| 2026-09-15 | Review revision: workshop code lifecycle FRs (FR-007..FR-009) removed — normatively defined by SPEC-0014 (avoids drift); AC-006 replaced with Start-workshop code-entry behavior (FR-001a), AC-007 now traces to SPEC-0014/FR-008; SPEC-0014 added to frontmatter depends_on |

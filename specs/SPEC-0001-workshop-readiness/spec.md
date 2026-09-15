@@ -7,7 +7,8 @@ parent: null
 priority: P0
 created: 2026-09-15
 updated: 2026-09-15
-depends_on: []
+depends_on:
+  - SPEC-0013
 related:
   - SPEC-0002
   - SPEC-0003
@@ -60,7 +61,8 @@ the facilitator having to explain NodeGrade's internals.
 
 - General rewrite of the editor canvas engine
 - LTI platform integration changes beyond workspace typing
-- User account management / authentication
+- General end-user accounts/authentication (facilitator administrative
+  authentication is explicitly in scope through SPEC-0013)
 - Performance optimization beyond workshop-scale usage
 - LLM provider management and model governance (SPEC-0009, separate epic)
 
@@ -83,11 +85,11 @@ the facilitator having to explain NodeGrade's internals.
 | SPEC-0006 | Run and trace observability | Draft |
 | SPEC-0007 | WAIE workshop experience and preview | Draft |
 | SPEC-0008 | Reliability, CI and documentation | Draft |
-| SPEC-0013 | Facilitator authentication and administrative access | Draft |
 | SPEC-0014 | Workshop entity and join flow | Draft |
 
 Note: SPEC-0009 (LLM provider management and model governance) is a separate epic,
-not a child of this one.
+not a child of this one. SPEC-0013 (facilitator authentication) is shared by both
+epics and remains a top-level feature; this epic depends on it rather than owning it.
 
 ## Cross-feature business rules
 
@@ -102,8 +104,11 @@ not a child of this one.
 ## Cross-feature constraints
 
 - Requirements must be deliverable before the conference workshop; items prioritized
-  P0 (SPEC-0013, SPEC-0004, SPEC-0003, SPEC-0014, SPEC-0002, SPEC-0005) form the
-  minimum viable workshop set.
+  P0 (SPEC-0004, SPEC-0003, SPEC-0014, SPEC-0002, SPEC-0005) form the foundational
+  implementation tranche. Conference readiness additionally requires SPEC-0006,
+  SPEC-0007, and SPEC-0008 (run/trace, WAIE workshop experience, CI-gated happy
+  path), which are therefore treated as P0 for the conference milestone; the epic
+  success criteria below are only met once all of them ship.
 
 ## Dependencies
 
@@ -141,3 +146,4 @@ not a child of this one.
 | 2026-09-15 | Initial specification created from workshop-readiness analysis |
 | 2026-09-15 | Noted SPEC-0009 (LLM provider management) as a separate epic outside this epic's scope |
 | 2026-09-15 | Review revision: added SPEC-0013 (facilitator auth foundation) and SPEC-0014 (Workshop entity and join flow) as children; updated business rules (token-based workspace authorization, admin session), P0 set, and assumptions (seeded templates, 60-day inactivity retention, Vercel AI SDK) |
+| 2026-09-15 | Review revision 2: SPEC-0013 removed from Child Features (shared foundation, parent null); epic depends_on SPEC-0013; out-of-scope wording narrowed to general end-user accounts; P0 group renamed to "foundational implementation tranche" with SPEC-0006/0007/0008 promoted to P0 for the conference milestone |

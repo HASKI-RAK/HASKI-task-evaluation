@@ -9,8 +9,8 @@ created: 2026-09-15
 updated: 2026-09-15
 depends_on:
   - SPEC-0011
-related:
   - SPEC-0010
+related: []
 ---
 
 # Model allowlist governance
@@ -307,6 +307,8 @@ Then excess runs are rejected with a rate-limit error instead of saturating the 
 ## Dependencies
 
 - SPEC-0011 (admin UI, persistence, facilitator access).
+- SPEC-0010 (live provider catalog and server-side execution routing that policy
+  enforcement attaches to).
 
 ## Assumptions
 
@@ -334,3 +336,4 @@ Then excess runs are rejected with a rate-limit error instead of saturating the 
 | 2026-09-15 | Initial specification created |
 | 2026-09-15 | Unsafe default-allow replaced with explicit policy modes DENY_ALL | ALLOWLIST | ALLOW_ALL (FR-001), mode selection required on first cloud-provider enablement (FR-002, AC-005), per-mode enforcement (FR-005..FR-007, AC-003/004). Dependency cycle fixed: depends on SPEC-0011 only. |
 | 2026-09-15 | Added minimal concurrency guards protecting the shared key: per-workspace concurrent LLM execution limit (FR-010, AC-009/011) and deployment-wide concurrent provider request limit (FR-011, AC-010), facilitator-configurable (FR-012). Billing/token accounting remain out of scope. |
+| 2026-09-15 | Review revision: SPEC-0010 added to depends_on and Dependencies — policy enforcement needs the live catalog and execution routing from 0010; dependency chain is now 0013 → 0011 → 0010 → 0012 |

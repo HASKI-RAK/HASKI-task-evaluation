@@ -12,6 +12,8 @@ depends_on:
   - SPEC-0004
   - SPEC-0006
   - SPEC-0014
+  - SPEC-0010
+  - SPEC-0012
 related:
   - SPEC-0002
   - SPEC-0005
@@ -46,6 +48,8 @@ experience with English UI and workflow-configurable answer constraints.
   classification, feedback).
 - English UI for the participant-facing preview, with localization support.
 - Answer length minimum configurable by the workflow, not fixed in the UI.
+- Answer length maximum configurable by the workflow (the existing system enforces a
+  maximum input constraint; it becomes workflow configuration).
 
 ### Out of scope
 
@@ -91,6 +95,17 @@ Priority: P2
 
 Independent value: makes the tool usable beyond long free-text answers.
 
+### US-004 — Cap overly long answers
+
+As a facilitator,
+I want the maximum answer length to be part of the workflow,
+so that I can control input size and cost per assessment run.
+
+Priority: P2
+
+Independent value: preserves the existing maximum-input protection while making it
+configurable per workflow instead of hard-coded.
+
 ## Functional requirements
 
 ### FR-001 — Canonical WAIE template
@@ -133,14 +148,26 @@ the test tab SHALL enforce that value instead of any fixed UI-level minimum.
 
 ### FR-008 — No fixed answer-length policy
 
-The preview SHALL NOT impose a fixed hard-coded minimum answer length.
+The preview SHALL NOT impose a fixed hard-coded minimum or maximum answer length.
+
+### FR-008a — Workflow-configurable maximum answer length
+
+WHILE a workflow defines a maximum answer length,
+the test tab SHALL reject submissions exceeding that value with the configured limit
+stated.
+
+### FR-008b — Consistent length bounds
+
+WHEN a workflow defines both a minimum and a maximum answer length,
+the system SHALL enforce the pair consistently (minimum not greater than maximum).
 
 ### FR-009 — Workshop preflight
 
 WHEN the workshop entry is opened,
 the system SHALL perform a preflight check covering: backend connectivity, workshop
-template availability, required node types registered, and at least one allowed LLM
-model available, and SHALL present the results before the participant starts.
+template availability, required node types registered, and provider/model health (at
+least one allowed LLM model available and its provider reachable), and SHALL present
+the results before the participant starts.
 
 ### FR-010 — Facilitator readiness view
 
@@ -218,6 +245,17 @@ Then the run is permitted (no fixed 10-character block applies)
 And when the workflow sets a minimum of 20 characters, a 15-character answer is rejected with the configured limit stated
 ```
 
+### AC-006a — Configurable answer maximum
+
+Traces to: FR-008a, FR-008b
+
+```gherkin
+Given a workflow whose maximum answer length is 500 characters
+When the user submits a 600-character answer
+Then the submission is rejected with the configured limit stated
+And when no maximum is configured, no maximum-length block applies
+```
+
 ### AC-007 — Preflight blocks broken workshop entry
 
 Traces to: FR-009
@@ -257,8 +295,10 @@ Then all preflight checks are displayed with pass/fail state
 ## Dependencies
 
 - SPEC-0003 (template mechanism), SPEC-0004 (workspace-owned copies), SPEC-0006
-  (trace), SPEC-0014 (workshop join flow and preflight context), SPEC-0009 (at least
-  one allowed LLM model must be available for the WAIE template to run).
+  (trace), SPEC-0014 (workshop join flow and preflight context).
+- SPEC-0010 (composite provider+model reference used by the WAIE template and the
+  provider/model health check).
+- SPEC-0012 (allowed-models definition the preflight verifies against).
 
 ## Assumptions
 
@@ -284,4 +324,4 @@ Then all preflight checks are displayed with pass/fail state
 | Date | Change |
 |---|---|
 | 2026-09-15 | Initial specification created |
-| 2026-09-15 | Question is workflow configuration edited via inspector; Test tab takes only the student answer (FR-002/003, AC-002/003). Added workshop preflight (FR-009, AC-007) and facilitator readiness view (FR-010, AC-008). Dependencies extended with SPEC-0014 and SPEC-0009. |
+| 2026-09-15 | Review revision 2: maximum answer length added as workflow configuration (FR-008a/FR-008b, AC-006a, US-004); preflight wording unified — provider/model health check explicit in FR-009; dependencies re-pointed from the SPEC-0009 epic to SPEC-0010 and SPEC-0012 (composite references and allowed models) in prose and frontmatter |

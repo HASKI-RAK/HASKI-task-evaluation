@@ -128,8 +128,9 @@ the system SHALL redact that content in trace output before it reaches the clien
 ### FR-008 — Global fail-fast execution
 
 IF a node fails during execution,
-THEN the system SHALL stop the run entirely and SHALL NOT execute any further nodes in
-that run.
+THEN the system SHALL stop the run entirely, SHALL NOT start any further nodes in that
+run, SHALL cancel in-flight node executions where the execution mechanism permits,
+and SHALL disregard late results from already-running nodes.
 
 ### FR-009 — Run correlation
 
@@ -139,8 +140,15 @@ SHALL carry the run id, the workflow id, the node id, and a timestamp.
 
 ### FR-010 — Run states
 
-The system SHALL support run states: queued, running, completed, failed, skipped, and
+The system SHALL support run states: queued, running, completed, failed, and
 cancelled, and SHALL report the state transitions in the trace view.
+
+### FR-010a — Node execution states
+
+The system SHALL support per-node execution states: queued, running, completed,
+failed, skipped, and cancelled. Nodes that never start because the run stopped early
+SHALL be reported as skipped (run failed) or cancelled (run cancelled); skipped and
+cancelled SHALL NOT be used as run states.
 
 ### FR-011 — Execution timeout
 
@@ -268,7 +276,20 @@ Traces to: FR-012, FR-010
 Given a run in progress
 When the user cancels the run
 Then the run is marked cancelled
-And nodes that had not started are marked skipped or cancelled
+And nodes that had not started are marked cancelled (not the run itself)
+```
+
+### AC-009a — Fail-fast with in-flight parallel nodes
+
+Traces to: FR-008
+
+```gherkin
+Given a run with node A and node B executing in parallel and node A fails
+When fail-fast applies
+Then no new nodes are started
+And node B's in-flight execution is cancelled where the mechanism permits
+And any late result from node B is disregarded
+And the run is marked failed
 ```
 
 ### AC-010 — Trace not visible to other workspaces
@@ -327,3 +348,4 @@ Then no events from workspace A's run are delivered to workspace B
 | 2026-09-15 | Initial specification created |
 | 2026-09-15 | Fail-fast decision: global fail-fast (FR-008, AC-006); edge case updated |
 | 2026-09-15 | Added run correlation ids (FR-009, AC-007), run states incl. skipped/cancelled (FR-010), execution timeout (FR-011, AC-008), cancellation (FR-012, AC-009), trace delivery scoped to run owner (FR-013, AC-010), sanitized provider errors (FR-014); trace visibility made an explicit policy in business rules |
+| 2026-09-15 | Review revision 2: run states and node-execution states separated — RunState = queued|running|completed|failed|cancelled (FR-010), NodeExecutionState adds skipped (FR-010a); cancellation marks not-started nodes cancelled; fail-fast clarified for in-flight parallel nodes: stop starting new nodes, cancel in-flight where possible, disregard late results (FR-008, AC-009a) |

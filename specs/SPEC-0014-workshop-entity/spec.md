@@ -40,8 +40,7 @@ duplicates the workshop's template revision into it.
 
 - Workshop entity: id, title, code, status (DRAFT | PUBLISHED | CLOSED), template
   reference (template id + revision), optional expiry, timestamps.
-- Facilitator management of workshops and their codes (create, publish, close,
-  revoke).
+- Facilitator management of workshops and their codes (create, publish, close).
 - Join flow: resolve code → published workshop → participant workspace associated
   with the workshop → duplicate the workshop's template revision → open workflow.
 - Distinct participant workspace per workshop join (a returning user with an existing
@@ -125,8 +124,7 @@ a copy of the workshop's referenced template revision and SHALL open it in the e
 
 ### FR-006 — Workshop management restricted to facilitator
 
-WHEN a user who is not a facilitator attempts to create, publish, close, or revoke a
-workshop,
+WHEN a user who is not a facilitator attempts to create, publish, or close a workshop,
 THEN the system SHALL reject the action.
 
 ### FR-007 — Code validity lifecycle
@@ -276,3 +274,4 @@ Then a "workshop unavailable" state is shown
 | Date | Change |
 |---|---|
 | 2026-09-15 | Initial specification created; introduces the previously implicit Workshop as a first-class entity |
+| 2026-09-15 | Review revision: "revoke" removed as a separate concept — closing the workshop invalidates its code (FR-006/FR-008 cover all code invalidation); unpublish/deletion of a referenced template revision never breaks a published workshop per SPEC-0003/FR-017a and FR-003b |

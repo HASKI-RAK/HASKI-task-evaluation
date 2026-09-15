@@ -11,7 +11,9 @@ depends_on:
   - SPEC-0002
   - SPEC-0003
   - SPEC-0004
+  - SPEC-0006
   - SPEC-0007
+  - SPEC-0014
 related: []
 ---
 
@@ -256,3 +258,4 @@ Then the platform prevents merging the PR
 |---|---|
 | 2026-09-15 | Initial specification created |
 | 2026-09-15 | Added deterministic test provider for E2E (FR-006, AC-006), workspace isolation E2E (FR-007, AC-007), branch protection requirement (FR-008, AC-008). FR ordering corrected. Dependencies extended with SPEC-0014. |
+| 2026-09-15 | Review revision 2: frontmatter depends_on aligned with prose Dependencies (added SPEC-0006 and SPEC-0014) |

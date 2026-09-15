@@ -34,8 +34,9 @@ providers are added by configuration, not new node logic.
 
 ### In scope
 
-- Provider abstraction for LLM execution covering the local model worker, OpenAI, and
-  OpenRouter, implemented on the Vercel AI SDK.
+- Provider abstraction for LLM execution covering the local model worker, OpenAI,
+  OpenRouter, and OpenAI-compatible providers (arbitrary configured base URL +
+  credentials), implemented on the Vercel AI SDK.
 - Model listing aggregated from all enabled providers, each model tagged with its
   source provider.
 - Composite model identity: workflows serialize provider id + model id, not a bare
@@ -44,6 +45,9 @@ providers are added by configuration, not new node logic.
   behavior for unsupported configured parameters.
 - Execution routing: a selected model is executed against its provider.
 - OpenRouter integration via its OpenAI-compatible interface through the AI SDK.
+- OpenAI-compatible provider type: any endpoint exposing an OpenAI-compatible chat
+  completion interface can be added by configuration (base URL, credentials, display
+  name) without code changes.
 
 ### Out of scope
 
@@ -94,6 +98,13 @@ a model list and a completion endpoint.
 WHEN OpenRouter is configured and enabled,
 the system SHALL list OpenRouter models and execute chat completions against the
 OpenRouter API using the configured server-side key.
+
+### FR-002a — OpenAI-compatible provider type
+
+WHERE a provider of type OPENAI_COMPATIBLE is configured with a base URL, credentials,
+and a display name and is enabled,
+the system SHALL list its models and execute chat completions against the configured
+base URL without any code changes to the execution logic.
 
 ### FR-003 — Existing providers preserved
 
@@ -146,15 +157,22 @@ ignoring recorded in the trace.
 ### FR-011 — Legacy model reference migration
 
 WHEN an existing workflow contains a bare model id without a provider reference,
-the system SHALL resolve it once against the configured providers (by priority) and
-persist the resolved composite reference.
+the system SHALL resolve it exactly once against the configured providers and persist
+the resolved composite reference.
+
+### FR-012 — Ambiguous legacy migration requires explicit selection
+
+IF more than one enabled provider exposes a legacy bare model id,
+THEN the system SHALL NOT guess a provider; the node SHALL be marked as requiring
+model selection and SHALL NOT execute until the user selects a concrete provider+model
+entry.
 
 ## Non-functional requirements
 
 ### NFR-001 — Provider addition without node changes
 
-Adding an additional OpenAI-compatible provider SHALL require only configuration
-changes; no changes to LLM node execution logic.
+Adding an additional provider of type OPENAI_COMPATIBLE SHALL require only
+configuration changes; no changes to LLM node execution logic.
 
 ## Acceptance criteria
 
@@ -228,7 +246,7 @@ Traces to: FR-004, FR-005
 
 ```gherkin
 Given a workflow referencing "m · provider A"
-When provider priority changes or provider B is enabled
+When provider B is enabled or provider configuration changes
 Then the workflow still executes "m" against provider A
 ```
 
@@ -248,9 +266,31 @@ And if configured anyway, the parameter is ignored at execution and the ignoring
 Traces to: FR-011
 
 ```gherkin
-Given an existing workflow with a bare model id "m"
+Given an existing workflow with a bare model id "m" offered by exactly one enabled provider
 When the workflow is loaded after the composite-reference migration
-Then the reference is resolved to a composite provider+model reference and persisted
+Then the reference is resolved to that provider's composite provider+model reference and persisted
+```
+
+### AC-009a — Ambiguous legacy reference not guessed
+
+Traces to: FR-012
+
+```gherkin
+Given an existing workflow with a bare model id "m" offered by two enabled providers
+When the workflow is loaded after the composite-reference migration
+Then the node is marked as requiring model selection and does not execute
+And the user resolves it by selecting one of the offered provider+model entries
+```
+
+### AC-009b — OpenAI-compatible provider added by configuration
+
+Traces to: FR-002a, NFR-001
+
+```gherkin
+Given a facilitator has configured a provider of type OPENAI_COMPATIBLE with a base URL and credentials
+When the provider is enabled
+Then its models appear in user model lists and execute against the configured base URL
+And no LLM node execution logic was changed
 ```
 
 ## Edge cases
@@ -295,11 +335,11 @@ Then the reference is resolved to a composite provider+model reference and persi
   any per-user setup.
 - Existing local-worker and OpenAI workflows continue to run unchanged.
 - Changing provider priority never silently reroutes an existing workflow to a
-  different provider.
+  different provider; ambiguous legacy references are never guessed (FR-012).
 
 ## Change history
 
 | Date | Change |
 |---|---|
 | 2026-09-15 | Initial specification created |
-| 2026-09-15 | Provider model decided: implementation on the Vercel AI SDK (FR-001, constraint). Composite provider+model identity replaces priority-based duplicate resolution (FR-004/005, AC-004/007) with one-time legacy migration (FR-011, AC-009). Added model capability metadata and unsupported-parameter rule (FR-009/010, AC-008). Dependency cycle fixed: depends on SPEC-0011 only; SPEC-0012 consumes the aggregated list. |
+| 2026-09-15 | Review revision: OPENAI_COMPATIBLE provider type defined (FR-002a, AC-009b, NFR-001) — resolves the contradiction with SPEC-0011's fixed provider set; legacy migration no longer uses provider priority: unique match migrates automatically, ambiguous match requires explicit model selection (FR-012, AC-009a) |

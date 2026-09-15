@@ -29,8 +29,8 @@ layout after window resize.
 
 ### Desired outcome
 
-A task-oriented editor shell: a simple toolbar (Add, Templates, Run, Preview, Save,
-advanced menu), a searchable left-side component palette, and a right-side inspector
+A task-oriented editor shell: a simple toolbar (Add, Templates, Run, Preview, save
+status), a searchable left-side component palette, and a right-side inspector
 panel for editing node properties — with advanced settings hidden by default and the
 canvas sized correctly to its container.
 
@@ -39,7 +39,7 @@ canvas sized correctly to its container.
 ### In scope
 
 - Toolbar redesign with task-oriented primary actions and an overflow menu for advanced
-  actions (save as, import, export, publish, connection info, developer tools).
+  actions (save as, import, export, connection info, developer tools).
 - Removal of the WebSocket reconnect button as a primary user action and of the
   reconnect redirect behavior.
 - Left-side searchable component palette with workshop-friendly categories
@@ -50,7 +50,11 @@ canvas sized correctly to its container.
   label, control type, advanced flag, required flag, validation) and its compact
   "key value" — consumed by palette, inspector, and compact nodes.
 - Editor-wide undo/redo for graph mutations.
-- Autosave with visible save state (Saving… / Saved / Save failed — Retry).
+- Autosave with visible save state (Saving… / Saved / Save failed — Retry) occupying
+  the former Save button position; no explicit Save action (Save as… remains in the
+  overflow menu).
+- Conflict indication when a save is rejected by optimistic concurrency (stale
+  version, see SPEC-0004/FR-013).
 - Canvas sizing driven by its container element instead of window dimensions.
 
 ### Out of scope
@@ -101,13 +105,13 @@ Independent value: keeps focus on assessment strategy, not LLM tuning knobs.
 ### FR-001 — Toolbar primary actions
 
 WHEN the editor is open,
-the system SHALL present primary toolbar actions for: Add, Templates, Run, Preview, and
-Save.
+the system SHALL present primary toolbar elements for: Add, Templates, Run, Preview,
+and the save status indicator. The toolbar SHALL NOT present an explicit Save button.
 
 ### FR-002 — Advanced actions menu
 
 WHEN the user opens the toolbar overflow menu,
-the system SHALL offer: Save as, Import workflow, Export workflow, Publish, Connection
+the system SHALL offer: Save as, Import workflow, Export workflow, Connection
 information, and Developer tools.
 
 ### FR-003 — No reconnect as primary action
@@ -175,6 +179,13 @@ WHEN the workflow has unsaved changes,
 the system SHALL automatically persist them after a short debounce period without
 requiring an explicit save action.
 
+### FR-013a — Save conflict indication
+
+IF a save is rejected by the backend with a version conflict (SPEC-0004/FR-013),
+THEN the save status SHALL indicate the conflict and the system SHALL offer the user
+a resolution action (e.g. reload the newer state) instead of silently overwriting
+newer stored state.
+
 ### FR-014 — Save state display
 
 WHILE autosave is in progress, has succeeded, or has failed,
@@ -202,8 +213,9 @@ Traces to: FR-001, FR-002
 ```gherkin
 Given the editor is open
 When the user views the toolbar
-Then Add, Templates, Run, Preview, and Save are visible as primary actions
-And the overflow menu contains Save as, Import, Export, Publish, Connection information, and Developer tools
+Then Add, Templates, Run, Preview, and the save status are visible as primary elements
+And no explicit Save button is present
+And the overflow menu contains Save as, Import, Export, Connection information, and Developer tools
 ```
 
 ### AC-002 — Reconnect removed
@@ -310,6 +322,18 @@ When the user attempts to leave the editor
 Then a warning about unsaved changes is shown with a retry option
 ```
 
+### AC-012 — Stale save shows conflict
+
+Traces to: FR-013a, SPEC-0004/FR-013
+
+```gherkin
+Given the same workflow open in two tabs and one tab has saved a newer version
+When the other tab's autosave attempts to save a stale version
+Then the save status indicates a conflict
+And a resolution action is offered
+And the newer stored state is not silently overwritten
+```
+
 ## Edge cases
 
 - Selection of multiple nodes → inspector shows a multi-selection state or nothing;
@@ -351,3 +375,4 @@ Then a warning about unsaved changes is shown with a retry option
 |---|---|
 | 2026-09-15 | Initial specification created |
 | 2026-09-15 | Added node property metadata model (FR-011, AC-007), editor-wide undo/redo (FR-012, AC-008), autosave with save-state display and failure recovery (FR-013..FR-015, AC-009..AC-011) — closes the persistence gap with SPEC-0008's reload-persistence smoke test |
+| 2026-09-15 | Review revision 2: explicit Save removed from the toolbar — save status (Saving…/Saved/Save failed) occupies that position, Save as… remains in overflow (FR-001/FR-002, AC-001); Publish removed (its old editor → student URL semantics are undefined in the new domain; no current spec requires publishing a normal workflow); save conflict from optimistic concurrency surfaced via status and resolution action (FR-013a, AC-012) |
