@@ -12,7 +12,12 @@ export type ApiErrorBody = {
   statusCode: number;
   code: string;
   message: string;
+  /** Whatever context the thrower attached, e.g. `currentVersion` on a 409. */
+  [key: string]: unknown;
 };
+
+/** Keys the envelope owns; anything else in a payload is caller-supplied context. */
+const RESERVED = new Set(['statusCode', 'code', 'message', 'error']);
 
 const DEFAULT_CODES: Record<number, string> = {
   [HttpStatus.BAD_REQUEST]: 'bad_request',
@@ -88,7 +93,15 @@ export class HttpExceptionFilter implements ExceptionFilter {
         ? record.message
         : exception.message;
 
+    // Extra keys are carried through rather than dropped. A 409 from an optimistic-
+    // concurrency save is only actionable if `currentVersion` survives the envelope —
+    // otherwise the client has to re-fetch just to learn what it collided with.
+    const extra = Object.fromEntries(
+      Object.entries(record).filter(([key]) => !RESERVED.has(key)),
+    );
+
     return {
+      ...extra,
       statusCode: status,
       code: typeof record.code === 'string' ? record.code : fallbackCode,
       message,

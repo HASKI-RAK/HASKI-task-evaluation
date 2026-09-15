@@ -4,7 +4,9 @@ import { AdminAuthModule } from '../auth/admin-auth.module.js';
 import { configuration } from '../config/configuration.js';
 import { GraphModule } from '../graphgateway/graph.module.js';
 import { ContentMigrationModule } from '../migration/content-migration.module.js';
-import { PrismaService } from '../prisma.service.js';
+import { PrismaModule } from '../prisma.module.js';
+import { WorkflowModule } from '../workflow/workflow.module.js';
+import { WorkspaceModule } from '../workspace/workspace.module.js';
 import { GraphController } from '../graph/graph.controller.js';
 import { GraphService } from '../graph/graph.service.js';
 import { BenchmarkController } from '../benchmark/benchmark.controller.js';
@@ -22,9 +24,12 @@ import { HealthService } from '../health/health.service.js';
       load: [configuration],
       cache: true,
     }),
+    PrismaModule,
     GraphModule,
     ContentMigrationModule,
     AdminAuthModule,
+    WorkspaceModule,
+    WorkflowModule,
   ],
   controllers: [
     GraphController,
@@ -34,7 +39,6 @@ import { HealthService } from '../health/health.service.js';
   ],
   providers: [
     GraphService,
-    PrismaService,
     BenchmarkService,
     LtiService,
     XapiService,

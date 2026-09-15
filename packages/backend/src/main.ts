@@ -24,6 +24,12 @@ async function bootstrap() {
   app.set('trust proxy', 1);
 
   app.use(cookieParser());
+
+  // Express defaults to a 100 KB JSON body. Real stored workflows already run to ~33 KB
+  // and grow with prompt text, so the default would start rejecting saves partway
+  // through a workshop. The DTO caps content well below this.
+  app.useBodyParser('json', { limit: '8mb' });
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
