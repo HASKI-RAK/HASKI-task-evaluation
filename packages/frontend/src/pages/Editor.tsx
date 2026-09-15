@@ -1,5 +1,4 @@
 import { LiteGraph } from '@haski/ta-lib'
-import { LGraph } from '@haski/ta-lib'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
@@ -13,7 +12,7 @@ import {
   Typography,
   useTheme
 } from '@mui/material'
-import { memo, useCallback, useEffect, useMemo, useRef } from 'react'
+import { memo, useCallback, useEffect, useMemo } from 'react'
 
 import Snackbar from '@/common/SnackBar'
 import { AppBar } from '@/components/AppBar'

@@ -22,12 +22,15 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "test:report": "mkdir -p ../../reports && jest --json --outputFile=../../reports/jest-results.json --testLocationInResults",
-    "debug:seed": "tsx ./scripts/seed-debug.ts"
+    "debug:seed": "tsx ./scripts/seed-debug.ts",
+    "lint:check": "eslint \"{src,apps,libs,test}/**/*.ts\" --max-warnings=0",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@haski/lti": "workspace:*",
     "@haski/ta-lib": "workspace:*",
     "@nestjs/common": "^12.0.3",
+    "@nestjs/config": "^12.0.0",
     "@nestjs/core": "^12.0.3",
     "@nestjs/platform-express": "^12.0.3",
     "@nestjs/platform-socket.io": "^12.0.3",
@@ -35,6 +38,8 @@
     "@prisma/adapter-pg": "^7.10.0",
     "@prisma/client": "^7.10.0",
     "@xapi/xapi": "^3.0.3",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.15.1",
     "cookie": "^1.1.1",
     "cookie-parser": "^1.4.7",
     "dotenv": "^16.6.1",

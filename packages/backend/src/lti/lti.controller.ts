@@ -9,6 +9,9 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { LtiBasicLaunchRequest } from '@haski/lti';
+import { sessionCookieOptions } from '../config/cookies.js';
+import { LTI_COOKIE_NAME } from './lti-cookie.js';
+import { describeLaunch } from './lti-log.js';
 import { LtiService } from './lti.service.js';
 import { LtiBasicLaunchValidationPipe } from './pipes/lti-validation.pipe.js';
 import { LtiCookie } from '../utils/LtiCookie.js';
@@ -27,7 +30,7 @@ export class LtiController {
   ): void {
     try {
       this.logger.debug(
-        `Processing LTI basic login with payload: ${JSON.stringify(payload)}`,
+        `Processing LTI basic login: ${JSON.stringify(describeLaunch(payload))}`,
       );
 
       // Set cookies for LTI launch request data
@@ -43,19 +46,16 @@ export class LtiController {
         lis_person_contact_email_primary:
           payload.lis_person_contact_email_primary,
       };
-      response.cookie('lti_nodegrade_cookie', JSON.stringify(cookie), {
-        maxAge: 5 * 60 * 60 * 1000, // 5 hours
-        httpOnly: true,
-        secure: true, // Only send cookie over HTTPS
-        sameSite: 'lax', // Protect against CSRF attacks
-      });
-      this.logger.debug(
-        `Set cookie lti_nodegrade_cookie with user_id: ${payload.user_id}`,
+      response.cookie(
+        LTI_COOKIE_NAME,
+        JSON.stringify(cookie),
+        sessionCookieOptions(5 * 60 * 60 * 1000), // 5 hours
       );
+      this.logger.debug(`Set cookie ${LTI_COOKIE_NAME}`);
 
       const { redirectUrl } = this.ltiService.handleBasicLogin(payload);
 
-      this.logger.debug(`Redirecting to: ${redirectUrl}`);
+      this.logger.debug(`Redirecting to: ${redirectUrl.split('?')[0]}`);
       response.redirect(302, redirectUrl);
     } catch (error: unknown) {
       const errorMsg =

@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { LtiBasicLaunchRequest } from '@haski/lti';
+import { describeLaunch } from './lti-log.js';
 
 @Injectable()
 export class LtiService {
@@ -12,7 +13,7 @@ export class LtiService {
   } {
     try {
       this.logger.debug(
-        `Basic LTI Launch Request with payload: ${JSON.stringify(payload)}`,
+        `Basic LTI Launch Request: ${JSON.stringify(describeLaunch(payload))}`,
       );
 
       // Validate required fields for business logic
@@ -90,7 +91,9 @@ export class LtiService {
       )}&context_title=${encodeURIComponent(
         payload.context_title,
       )}&context_type=${encodeURIComponent(payload.context_type)}`;
-      this.logger.debug(`Generated redirect URL: ${redirectUrl}`);
+      // The query string carries user_id and the person's display name, so only the
+      // path is logged.
+      this.logger.debug(`Generated redirect to: ${redirectUrl.split('?')[0]}`);
 
       return {
         redirectUrl,
@@ -101,7 +104,7 @@ export class LtiService {
       const errorMsg = error instanceof Error ? error.message : 'Unknown error';
       this.logger.error(`Error handling LTI basic login: ${errorMsg}`, {
         errorMessage: errorMsg,
-        payloadInfo: JSON.stringify(payload),
+        payloadInfo: JSON.stringify(describeLaunch(payload)),
         stack: error instanceof Error ? error.stack : undefined,
       });
       throw error;

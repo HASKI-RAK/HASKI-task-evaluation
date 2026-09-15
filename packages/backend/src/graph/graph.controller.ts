@@ -8,6 +8,7 @@ import {
   HttpStatus,
   Req,
 } from '@nestjs/common';
+import { resolveCorsOrigins } from '../config/cors.js';
 import { GraphService } from './graph.service.js';
 
 @Controller('graphs')
@@ -17,11 +18,7 @@ export class GraphController {
   constructor(private readonly graphService: GraphService) {}
 
   private setCorsHeaders(req: Request, res: Response) {
-    const allowedOrigins = (
-      process.env.CORS_ORIGIN
-        ? process.env.CORS_ORIGIN.split(',')
-        : ['https://nodegrade.haski.app']
-    ).map((o) => o.trim().replace(/^"|"$/g, ''));
+    const allowedOrigins = resolveCorsOrigins();
     const origin = (req.headers.origin as string) || '';
 
     this.logger.debug(

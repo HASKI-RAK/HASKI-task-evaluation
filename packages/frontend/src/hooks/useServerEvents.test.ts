@@ -45,7 +45,14 @@ describe('useServerEvents', () => {
     act(() => result.current.beginAttempt())
     expect(result.current.attemptState).toBe('running')
 
-    act(() => emit('outputSet', { uniqueId: 'result', type: 'text', label: 'Result', value: 'Old' }))
+    act(() =>
+      emit('outputSet', {
+        uniqueId: 'result',
+        type: 'text',
+        label: 'Result',
+        value: 'Old'
+      })
+    )
     expect(result.current.outputs).toHaveProperty('result')
 
     act(() => result.current.beginAttempt())

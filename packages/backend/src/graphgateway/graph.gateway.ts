@@ -11,14 +11,12 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { resolveCorsOrigins } from '../config/cors.js';
 import { GraphHandlerService } from './graph-handler.service.js';
 
-// Resolve allowed CORS origins for Socket.IO from env, fallback to production frontend
-const allowedSocketOrigins = (
-  process.env.CORS_ORIGIN
-    ? process.env.CORS_ORIGIN.split(',')
-    : ['https://nodegrade.haski.app']
-).map((o) => o.trim().replace(/^"|"$/g, ''));
+// Evaluated while the decorator below is applied, so this reads the environment directly
+// rather than going through dependency injection.
+const allowedSocketOrigins = resolveCorsOrigins();
 
 @WebSocketGateway({
   cors: {

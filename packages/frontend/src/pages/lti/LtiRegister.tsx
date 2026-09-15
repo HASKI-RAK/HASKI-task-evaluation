@@ -15,14 +15,21 @@ export const LtiRegister = () => {
       searchParams.get('registration_token')
     ) {
       console.log('registering tool...', searchParams.toString())
-      // send request to registration endpoint
-      fetch(
-        getConfig().LTI_REGISTER + '?' + searchParams.toString(),
 
-        {
-          method: 'GET'
-        }
-      )
+      // LTI_REGISTER is absent from both runtime config files, which used to produce a
+      // request to the literal string "undefined?...". Fail with something readable.
+      const registrationEndpoint = getConfig().LTI_REGISTER
+      if (!registrationEndpoint) {
+        setError(
+          'LTI_REGISTER is not configured for this deployment, so dynamic registration cannot run.'
+        )
+        return
+      }
+
+      // send request to registration endpoint
+      fetch(registrationEndpoint + '?' + searchParams.toString(), {
+        method: 'GET'
+      })
         // send post message to parent window
         // (window.opener || window.parent).postMessage({subject:'org.imsglobal.lti.close'}, '*');
         .then((response) => {
