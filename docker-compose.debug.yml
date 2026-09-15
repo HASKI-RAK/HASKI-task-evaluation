@@ -61,6 +61,11 @@ services:
       - '${NODEGRADE_DEBUG_INSPECTOR_PORT:-19229}:9229'
     volumes:
       - ./packages/backend/src:/app/packages/backend/src
+      # `yarn setup` runs `prisma generate` as root inside the container. With src bind
+      # mounted, that wrote a root-owned src/generated back onto the host, after which
+      # the host user could no longer run `prisma generate` or lint. This anonymous
+      # volume keeps the container's generated client inside the container.
+      - /app/packages/backend/src/generated
       - ./packages/backend/prisma:/app/packages/backend/prisma
     depends_on:
       db:

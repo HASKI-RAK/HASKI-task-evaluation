@@ -91,6 +91,23 @@ Snapshots and captured event payloads redact credential-shaped property names. T
 is compiled into development builds when `VITE_DEBUG_BRIDGE=true`. Regular development
 sessions leave the flag unset.
 
+## Generated Prisma client ownership
+
+The backend service bind mounts `packages/backend/src`, and its start command runs
+`prisma generate` as root inside the container. An anonymous volume masks
+`packages/backend/src/generated` so that generated client never reaches the host tree.
+
+If you ran the stack before that volume existed, the host copy is owned by root and
+`prisma generate`, `yarn build` and `yarn lint` fail with `EACCES`. Clear it once:
+
+```bash
+yarn debug:down
+sudo rm -rf packages/backend/src/generated
+yarn workspace backend exec prisma generate
+```
+
+`src/generated` is gitignored, so nothing is lost.
+
 ## Service worker behavior
 
 Debug sessions set `VITE_ENABLE_SW=false`, giving each reload the current Vite bundle.
