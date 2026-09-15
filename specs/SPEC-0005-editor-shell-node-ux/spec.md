@@ -1,0 +1,262 @@
+---
+id: SPEC-0005
+type: feature
+title: Editor shell and node UX
+status: draft
+parent: SPEC-0001
+priority: P0
+created: 2026-09-15
+updated: 2026-09-15
+depends_on:
+  - SPEC-0003
+  - SPEC-0004
+related:
+  - SPEC-0006
+---
+
+# Editor shell and node UX
+
+## Intent
+
+### Problem
+
+The editor's AppBar mixes developer actions (reconnect, upload, download, save,
+publish, preview, graph selection) as primary controls, node discovery relies on
+LiteGraph's raw right-click menus, and nodes like the LLM node expose all advanced
+parameters (temperature, top-p, top-k, penalties, token limits) directly on the canvas.
+Additionally, the resize handler sets canvas height to `window.outerWidth`, breaking
+layout after window resize.
+
+### Desired outcome
+
+A task-oriented editor shell: a simple toolbar (Add, Templates, Run, Preview, Save,
+advanced menu), a searchable left-side component palette, and a right-side inspector
+panel for editing node properties — with advanced settings hidden by default and the
+canvas sized correctly to its container.
+
+## Scope
+
+### In scope
+
+- Toolbar redesign with task-oriented primary actions and an overflow menu for advanced
+  actions (save as, import, export, publish, connection info, developer tools).
+- Removal of the WebSocket reconnect button as a primary user action and of the
+  reconnect redirect behavior.
+- Left-side searchable component palette with workshop-friendly categories
+  (Essential, AI, Assessment, Validation, Blocks).
+- Inspector panel for editing the selected node's properties, including large text
+  editing for prompts.
+- Compact canvas nodes with advanced LLM settings hidden behind the inspector.
+- Canvas sizing driven by its container element instead of window dimensions.
+
+### Out of scope
+
+- Canvas rendering engine replacement.
+- Run/trace panel content (SPEC-0006).
+- Template gallery content (SPEC-0003).
+
+## Actors
+
+- Participant (anonymous): needs simple, discoverable editing.
+- Expert user: needs access to advanced settings and developer tools.
+
+## User scenarios
+
+### US-001 — Find and add a component
+
+As a participant,
+I want to search a categorized palette and add a component by clicking it,
+so that I do not need to know LiteGraph's right-click menus or internal node names.
+
+Priority: P1
+
+Independent value: makes the node inventory approachable for non-developers.
+
+### US-002 — Edit a prompt comfortably
+
+As a participant,
+I want to edit a rubric prompt in a large text editor in an inspector panel,
+so that I can write multi-line prompts without fighting canvas widgets.
+
+Priority: P1
+
+Independent value: the core workshop activity is editing prompts and rubrics.
+
+### US-003 — Hide advanced complexity
+
+As a participant,
+I want the canvas node to show only essential information,
+so that the workflow structure is readable at a glance.
+
+Priority: P2
+
+Independent value: keeps focus on assessment strategy, not LLM tuning knobs.
+
+## Functional requirements
+
+### FR-001 — Toolbar primary actions
+
+WHEN the editor is open,
+the system SHALL present primary toolbar actions for: Add, Templates, Run, Preview, and
+Save.
+
+### FR-002 — Advanced actions menu
+
+WHEN the user opens the toolbar overflow menu,
+the system SHALL offer: Save as, Import workflow, Export workflow, Publish, Connection
+information, and Developer tools.
+
+### FR-003 — No reconnect as primary action
+
+The editor toolbar SHALL NOT expose WebSocket reconnection as a primary user action,
+and SHALL NOT navigate the user to a different route as part of a reconnect action.
+
+### FR-004 — Component palette
+
+WHEN the user opens the component palette,
+the system SHALL show a searchable list of available nodes grouped into
+workshop-friendly categories, and adding an entry SHALL place the node on the canvas.
+
+### FR-005 — Palette includes blocks
+
+WHERE block templates exist,
+the component palette SHALL include a Blocks section listing them (see SPEC-0003).
+
+### FR-006 — Inspector panel
+
+WHEN a node is selected,
+the system SHALL show an inspector panel with the node's editable properties.
+
+### FR-007 — Advanced settings hidden by default
+
+WHILE a node has advanced properties,
+the system SHALL hide them behind an explicit "Advanced settings" disclosure in the
+inspector.
+
+### FR-008 — Prompt editing in inspector
+
+WHEN a prompt-type node is selected,
+the inspector SHALL provide a multi-line text editor for its prompt content.
+
+### FR-009 — Compact canvas nodes
+
+WHILE a node has advanced properties,
+the canvas node SHALL display only its essential identity (name, key value, ports) and
+not the advanced properties.
+
+### FR-010 — Container-based canvas sizing
+
+WHEN the editor container is resized,
+the canvas SHALL resize to match the container's dimensions.
+
+## Non-functional requirements
+
+### NFR-001 — Palette search responsiveness
+
+Palette search SHALL filter results within 200 ms of input for the full node inventory.
+
+## Acceptance criteria
+
+### AC-001 — Toolbar shows task actions
+
+Traces to: FR-001, FR-002
+
+```gherkin
+Given the editor is open
+When the user views the toolbar
+Then Add, Templates, Run, Preview, and Save are visible as primary actions
+And the overflow menu contains Save as, Import, Export, Publish, Connection information, and Developer tools
+```
+
+### AC-002 — Reconnect removed
+
+Traces to: FR-003
+
+```gherkin
+Given the editor is open
+When the user inspects the toolbar
+Then no primary reconnect action is present
+And no toolbar action navigates the user away from the editor as a side effect
+```
+
+### AC-003 — Palette search and add
+
+Traces to: FR-004
+
+```gherkin
+Given the component palette is open
+When the user searches for "language model" and activates the result
+Then a language model node is added to the canvas
+```
+
+### AC-004 — Inspector edits node properties
+
+Traces to: FR-006, FR-008
+
+```gherkin
+Given a prompt node is selected
+When the user edits the prompt text in the inspector
+Then the node's prompt content reflects the edit
+```
+
+### AC-005 — Advanced settings collapsed
+
+Traces to: FR-007, FR-009
+
+```gherkin
+Given an LLM node is selected
+When the user views the inspector
+Then advanced properties are hidden until "Advanced settings" is expanded
+And the canvas node does not display advanced properties
+```
+
+### AC-006 — Canvas resizes with container
+
+Traces to: FR-010
+
+```gherkin
+Given the editor is open
+When the browser window is resized
+Then the canvas fills the editor container without layout distortion
+```
+
+## Edge cases
+
+- Selection of multiple nodes → inspector shows a multi-selection state or nothing;
+  must not show one node's properties as if they applied to all.
+- Palette entry for a node type unavailable in the current build → entry hidden or
+  disabled with a reason.
+
+## Business rules
+
+- None beyond the FRs.
+
+## Constraints
+
+- The canvas remains LiteGraph-based; the shell is additive around it.
+
+## Dependencies
+
+- SPEC-0003 (Blocks section of the palette).
+- SPEC-0004 (toolbar Save operates on workspace-scoped workflows).
+
+## Assumptions
+
+- Existing node types can be categorized into the proposed palette groups without
+  functional changes.
+
+## Open questions
+
+- Should the inspector be a fixed right panel or a resizable split view?
+
+## Success criteria
+
+- A participant can add, configure, and connect a component without any knowledge of
+  LiteGraph internals.
+- No layout distortion after window resize.
+
+## Change history
+
+| Date | Change |
+|---|---|
+| 2026-09-15 | Initial specification created |

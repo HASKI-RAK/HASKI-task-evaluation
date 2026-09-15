@@ -1,0 +1,12 @@
+# Specification index
+
+| ID | Type | Title | Parent | Status |
+|---|---|---|---|---|
+| SPEC-0001 | Epic | NodeGrade workshop readiness | null | Draft |
+| SPEC-0002 | Feature | Landing page and workshop entry | SPEC-0001 | Draft |
+| SPEC-0003 | Feature | Template subsystem | SPEC-0001 | Draft |
+| SPEC-0004 | Feature | Workspace isolation and multi-user storage | SPEC-0001 | Draft |
+| SPEC-0005 | Feature | Editor shell and node UX | SPEC-0001 | Draft |
+| SPEC-0006 | Feature | Run and trace observability | SPEC-0001 | Draft |
+| SPEC-0007 | Feature | WAIE workshop experience and preview | SPEC-0001 | Draft |
+| SPEC-0008 | Feature | Reliability, CI and documentation | SPEC-0001 | Draft |
