@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { AdminAuthModule } from '../auth/admin-auth.module.js';
 import { configuration } from '../config/configuration.js';
 import { GraphModule } from '../graphgateway/graph.module.js';
 import { ContentMigrationModule } from '../migration/content-migration.module.js';
@@ -23,6 +24,7 @@ import { HealthService } from '../health/health.service.js';
     }),
     GraphModule,
     ContentMigrationModule,
+    AdminAuthModule,
   ],
   controllers: [
     GraphController,
