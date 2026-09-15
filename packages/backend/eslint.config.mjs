@@ -6,7 +6,14 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: ['eslint.config.mjs', '**/*.test.ts', '**/*.spec.ts'],
+    // src/generated holds the committed Prisma client. Linting it is pointless and,
+    // because the lint script runs with --fix, it also tried to rewrite it.
+    ignores: [
+      'eslint.config.mjs',
+      'src/generated/**',
+      '**/*.test.ts',
+      '**/*.spec.ts',
+    ],
   },
   eslint.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,

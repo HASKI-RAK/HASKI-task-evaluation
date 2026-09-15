@@ -48,7 +48,10 @@ function renderStudentView() {
   return render(
     <MemoryRouter initialEntries={['/ws/student/demo/1/1']}>
       <Routes>
-        <Route path="/ws/student/:domain/:courseId/:elementId" element={<StudentView />} />
+        <Route
+          path="/ws/student/:domain/:courseId/:elementId"
+          element={<StudentView />}
+        />
       </Routes>
     </MemoryRouter>
   )
@@ -90,7 +93,10 @@ describe('StudentView', () => {
     rerender(
       <MemoryRouter initialEntries={['/ws/student/demo/1/1']}>
         <Routes>
-          <Route path="/ws/student/:domain/:courseId/:elementId" element={<StudentView />} />
+          <Route
+            path="/ws/student/:domain/:courseId/:elementId"
+            element={<StudentView />}
+          />
         </Routes>
       </MemoryRouter>
     )

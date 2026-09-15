@@ -50,13 +50,7 @@ const router = createBrowserRouter(
       {/* ... etc. */}
       <Route path="lti/login" element={<LogRouteAccess />} />
       <Route path="lti/deeplink" element={<LogRouteAccess />} />
-      <Route
-        path="*"
-        element={
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          <LogRouteAccess />
-        }
-      />
+      <Route path="*" element={<LogRouteAccess />} />
       {/* <Route path="dashboard" element={<Dashboard />} /> */}
       {/* ... etc. */}
     </Route>

@@ -14,6 +14,7 @@ import {
 } from '@haski/ta-lib';
 import { Socket } from 'socket.io';
 import { emitEvent } from '../../utils/socket-emitter.js';
+import { buildNodeExecutionEnv } from '../config/node-env.js';
 import { GraphService } from '../graph/graph.service.js';
 import { executeLgraph } from '../core/Graph.js';
 import { XapiService } from '../xapi.service.js';
@@ -54,20 +55,11 @@ export class GraphHandlerService {
 
       // Hydrate node environment on load so nodes can initialize themselves
       try {
-        const modelWorkerUrl =
-          (process.env.MODEL_WORKER_URL as unknown as string) ||
-          'http://193.174.195.36:8000';
-
-        node.env = {
-          // Backend nodes talk directly to the model worker via internal network
-          MODEL_WORKER_URL: modelWorkerUrl,
-          // Optionally allow nodes to use OpenAI when key is set
-          OPENAI_API_KEY: process.env.OPENAI_API_KEY as unknown as string,
-          BEARER_TOKEN: process.env.BEARER_TOKEN as unknown as string,
-        };
+        const nodeEnv = buildNodeExecutionEnv();
+        node.env = nodeEnv;
 
         this.logger.debug(
-          `Set env for node ${node.title} with MODEL_WORKER_URL: ${modelWorkerUrl} OPENAI: ${process.env.OPENAI_API_KEY ? 'on' : 'off'}`,
+          `Set env for node ${node.title} with MODEL_WORKER_URL: ${nodeEnv.MODEL_WORKER_URL} OPENAI: ${nodeEnv.OPENAI_API_KEY ? 'on' : 'off'}`,
         );
 
         // Note: We don't call init() here because onNodeAdded is synchronous
@@ -124,9 +116,7 @@ export class GraphHandlerService {
   private readonly hydrateExistingNodes = async (
     lgraph: LGraph,
   ): Promise<void> => {
-    const modelWorkerUrl =
-      (process.env.MODEL_WORKER_URL as unknown as string) ||
-      'http://193.174.195.36:8000';
+    const nodeEnv = buildNodeExecutionEnv();
 
     // Access _nodes via any cast since findNodesByType doesn't support wildcard
     // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
@@ -143,14 +133,10 @@ export class GraphHandlerService {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
         const nodeAny = node as any;
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        nodeAny.env = {
-          MODEL_WORKER_URL: modelWorkerUrl,
-          OPENAI_API_KEY: process.env.OPENAI_API_KEY as unknown as string,
-          BEARER_TOKEN: process.env.BEARER_TOKEN as unknown as string,
-        };
+        nodeAny.env = nodeEnv;
 
         this.logger.debug(
-          `Hydrating existing node: ${node.title} (${node.type}) with MODEL_WORKER_URL: ${modelWorkerUrl} OPENAI: ${process.env.OPENAI_API_KEY ? 'on' : 'off'}`,
+          `Hydrating existing node: ${node.title} (${node.type}) with MODEL_WORKER_URL: ${nodeEnv.MODEL_WORKER_URL} OPENAI: ${nodeEnv.OPENAI_API_KEY ? 'on' : 'off'}`,
         );
 
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access

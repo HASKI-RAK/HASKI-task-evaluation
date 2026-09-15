@@ -3492,6 +3492,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@nestjs/config@npm:^12.0.0":
+  version: 12.0.0
+  resolution: "@nestjs/config@npm:12.0.0"
+  dependencies:
+    "@standard-schema/spec": "npm:1.1.0"
+    dotenv: "npm:17.4.2"
+    dotenv-expand: "npm:13.0.0"
+    es-toolkit: "npm:1.51.0"
+  peerDependencies:
+    "@nestjs/common": ^11.0.0 || ^12.0.0
+    rxjs: ^7.1.0
+  checksum: 10c0/d6241185a7a43a8eda2daae346f06aca497b53a5a5ffeea5449040a1469c3fa56867a722164b1cb290f747fb4c5c40a6650abe15f28a25098963318c01c37381
+  languageName: node
+  linkType: hard
+
 "@nestjs/core@npm:^12.0.3":
   version: 12.0.3
   resolution: "@nestjs/core@npm:12.0.3"
@@ -5467,6 +5482,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/validator@npm:^13.15.3":
+  version: 13.15.10
+  resolution: "@types/validator@npm:13.15.10"
+  checksum: 10c0/3e2e65fcd37dd6961ca3fd0535293d0c42f5911dc3ca44b96f458835e6db2392b678ccbb0c9815d8c0a14e653439e6c62c7b8758a6cd1d6e390551c9e56618ac
+  languageName: node
+  linkType: hard
+
 "@types/ws@npm:^8.18.1":
   version: 8.18.1
   resolution: "@types/ws@npm:8.18.1"
@@ -6643,6 +6665,7 @@ __metadata:
     "@haski/ta-lib": "workspace:*"
     "@nestjs/cli": "npm:^12.0.1"
     "@nestjs/common": "npm:^12.0.3"
+    "@nestjs/config": "npm:^12.0.0"
     "@nestjs/core": "npm:^12.0.3"
     "@nestjs/platform-express": "npm:^12.0.3"
     "@nestjs/platform-socket.io": "npm:^12.0.3"
@@ -6662,6 +6685,8 @@ __metadata:
     "@types/pg": "npm:^8.23.1"
     "@types/supertest": "npm:^6.0.3"
     "@xapi/xapi": "npm:^3.0.3"
+    class-transformer: "npm:^0.5.1"
+    class-validator: "npm:^0.15.1"
     cookie: "npm:^1.1.1"
     cookie-parser: "npm:^1.4.7"
     dotenv: "npm:^16.6.1"
@@ -7165,6 +7190,24 @@ __metadata:
   version: 1.4.1
   resolution: "cjs-module-lexer@npm:1.4.1"
   checksum: 10c0/5a7d8279629c9ba8ccf38078c2fed75b7737973ced22b9b5a54180efa57fb2fe2bb7bec6aec55e3b8f3f5044f5d7b240347ad9bd285e7c3d0ee5b0a1d0504dfc
+  languageName: node
+  linkType: hard
+
+"class-transformer@npm:^0.5.1":
+  version: 0.5.1
+  resolution: "class-transformer@npm:0.5.1"
+  checksum: 10c0/19809914e51c6db42c036166839906420bb60367df14e15f49c45c8c1231bf25ae661ebe94736ee29cc688b77101ef851a8acca299375cc52fc141b64acde18a
+  languageName: node
+  linkType: hard
+
+"class-validator@npm:^0.15.1":
+  version: 0.15.1
+  resolution: "class-validator@npm:0.15.1"
+  dependencies:
+    "@types/validator": "npm:^13.15.3"
+    libphonenumber-js: "npm:^1.11.1"
+    validator: "npm:^13.15.22"
+  checksum: 10c0/bc030e0118d79a5fc2d053dfd4c7475092dd159222eafe946c2b01d7ff22a0a8075c8713a96239a3db536ff2a18e18d791c3a6bfabd66dbac077f7d3fd950402
   languageName: node
   linkType: hard
 
@@ -8032,17 +8075,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dotenv-expand@npm:13.0.0":
+  version: 13.0.0
+  resolution: "dotenv-expand@npm:13.0.0"
+  dependencies:
+    dotenv: "npm:^17.4.2"
+  checksum: 10c0/debebb7807fedebb21078dc661d28d69d373f3a673165afea7f7a8c3b82f0da675e417b2d42c40b1f3d357741c8b24a77d6f4376886092a82456225b3d241b88
+  languageName: node
+  linkType: hard
+
+"dotenv@npm:17.4.2, dotenv@npm:^17.3.1, dotenv@npm:^17.4.2":
+  version: 17.4.2
+  resolution: "dotenv@npm:17.4.2"
+  checksum: 10c0/164f8e77a646c8446867d5b588d26ea6005c8ea7c5eb41cf926f6113d23f2191355f6e0cfd95ea9bab98394a5b0a3f1e51a8399711b666fe55cc7b0bd745f942
+  languageName: node
+  linkType: hard
+
 "dotenv@npm:^16.6.1":
   version: 16.6.1
   resolution: "dotenv@npm:16.6.1"
   checksum: 10c0/15ce56608326ea0d1d9414a5c8ee6dcf0fffc79d2c16422b4ac2268e7e2d76ff5a572d37ffe747c377de12005f14b3cc22361e79fc7f1061cce81f77d2c973dc
-  languageName: node
-  linkType: hard
-
-"dotenv@npm:^17.3.1":
-  version: 17.4.2
-  resolution: "dotenv@npm:17.4.2"
-  checksum: 10c0/164f8e77a646c8446867d5b588d26ea6005c8ea7c5eb41cf926f6113d23f2191355f6e0cfd95ea9bab98394a5b0a3f1e51a8399711b666fe55cc7b0bd745f942
   languageName: node
   linkType: hard
 
@@ -8503,6 +8555,20 @@ __metadata:
     is-date-object: "npm:^1.1.0"
     is-symbol: "npm:^1.1.1"
   checksum: 10c0/b10029f8b0b13841bade224ff39005a13d76d9cb803cd1efb18cc96a24414e83e2e7ed15d7ad9d0d0bda66884afd211b7b579b8fa31940e05b060934aa7077d8
+  languageName: node
+  linkType: hard
+
+"es-toolkit@npm:1.51.0":
+  version: 1.51.0
+  resolution: "es-toolkit@npm:1.51.0"
+  dependenciesMeta:
+    "@trivago/prettier-plugin-sort-imports@4.3.0":
+      unplugged: true
+    prettier-plugin-sort-re-exports@0.0.1:
+      unplugged: true
+    vitepress-plugin-sandpack@1.1.4:
+      unplugged: true
+  checksum: 10c0/ad519228a317a27b11144b582c1168c552143dd58ce4e62be50c185de48c69dea996f6ad6ebc518129ebd58c34da150c1a2134d4a3d7cdc75120c626e57ce7c4
   languageName: node
   linkType: hard
 
@@ -11583,6 +11649,13 @@ __metadata:
     prelude-ls: "npm:^1.2.1"
     type-check: "npm:~0.4.0"
   checksum: 10c0/effb03cad7c89dfa5bd4f6989364bfc79994c2042ec5966cb9b95990e2edee5cd8969ddf42616a0373ac49fac1403437deaf6e9050fbbaa3546093a59b9ac94e
+  languageName: node
+  linkType: hard
+
+"libphonenumber-js@npm:^1.11.1":
+  version: 1.13.13
+  resolution: "libphonenumber-js@npm:1.13.13"
+  checksum: 10c0/3baa69c125ccf8c1224c29e1514f3ed7d3a31de6b1821f0d1462fea499a8b7b6abdc6ee7818ae8aeae2b32ba7b0a09c7c6294be1e512ac86aa601f5ca42bc0de
   languageName: node
   linkType: hard
 
@@ -15954,6 +16027,13 @@ __metadata:
     typescript:
       optional: true
   checksum: 10c0/71b861de928fd5533b03fc4d84c619c07602f176d2bc6b12c5c80b2a6e889574c4126c843dd0771ce450bbb29566ca6df13d5b538ce5e4c39c2fccfb7623cf4e
+  languageName: node
+  linkType: hard
+
+"validator@npm:^13.15.22":
+  version: 13.15.35
+  resolution: "validator@npm:13.15.35"
+  checksum: 10c0/1958ebcad578128d154853a2b9bf5b95e7738dcc7d1d065e50a969812272312ec379dcaf375b9d7545e04a71de6755f60f5a4b49c1405737a9c80e11da297eef
   languageName: node
   linkType: hard
 

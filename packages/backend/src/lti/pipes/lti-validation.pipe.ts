@@ -7,9 +7,10 @@ import {
 import { LtiBasicLaunchRequest } from '@haski/lti';
 
 @Injectable()
-export class LtiBasicLaunchValidationPipe
-  implements PipeTransform<unknown, LtiBasicLaunchRequest>
-{
+export class LtiBasicLaunchValidationPipe implements PipeTransform<
+  unknown,
+  LtiBasicLaunchRequest
+> {
   private readonly logger = new Logger(LtiBasicLaunchValidationPipe.name);
 
   transform(value: unknown): LtiBasicLaunchRequest {

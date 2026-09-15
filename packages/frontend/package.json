@@ -16,7 +16,8 @@
     "lint:fix": "eslint . --fix",
     "lint:format": "prettier  --log-level warn --write \"./**/*.{js,jsx,ts,tsx,css,md,json}\" ",
     "lint": "yarn lint:format && yarn lint:fix ",
-    "type-check": "tsc"
+    "type-check": "tsc",
+    "lint:check": "eslint . --max-warnings=0"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

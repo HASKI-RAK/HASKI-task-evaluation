@@ -1,4 +1,6 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { configuration } from '../config/configuration.js';
 import { GraphModule } from '../graphgateway/graph.module.js';
 import { PrismaService } from '../prisma.service.js';
 import { GraphController } from '../graph/graph.controller.js';
@@ -12,7 +14,14 @@ import { HealthController } from '../health/health.controller.js';
 import { HealthService } from '../health/health.service.js';
 
 @Module({
-  imports: [GraphModule],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [configuration],
+      cache: true,
+    }),
+    GraphModule,
+  ],
   controllers: [
     GraphController,
     BenchmarkController,
