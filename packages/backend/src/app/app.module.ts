@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { configuration } from '../config/configuration.js';
 import { GraphModule } from '../graphgateway/graph.module.js';
+import { ContentMigrationModule } from '../migration/content-migration.module.js';
 import { PrismaService } from '../prisma.service.js';
 import { GraphController } from '../graph/graph.controller.js';
 import { GraphService } from '../graph/graph.service.js';
@@ -21,6 +22,7 @@ import { HealthService } from '../health/health.service.js';
       cache: true,
     }),
     GraphModule,
+    ContentMigrationModule,
   ],
   controllers: [
     GraphController,

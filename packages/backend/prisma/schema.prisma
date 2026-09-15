@@ -12,6 +12,10 @@ datasource db {
 }
 
 // graph contains blob of graph data
+//
+// Superseded by Workspace/Workflow (SPEC-0004). Kept until the rows have been backfilled
+// and the new model has proven itself on real data; renamed to LegacyGraph and dropped in
+// a later migration.
 model Graph {
   id    Int    @id @default(autoincrement())
   path  String @unique
@@ -22,6 +26,271 @@ model Settings {
   id       Int    @id @default(autoincrement())
   path     String @unique
   modelUrl String // openAI conform model url
+}
+
+// ---------------------------------------------------------------------------
+// Workspaces and workflows (SPEC-0004)
+// ---------------------------------------------------------------------------
+
+enum WorkspaceType {
+  BROWSER
+  WORKSHOP
+  LTI
+}
+
+/// A workspace owns workflows and is the unit every operation is scoped to.
+///
+/// Authorization derives from the access token, never from the id: the id appears in
+/// URLs and is not a credential (FR-004). Only the token's SHA-256 hash is stored, so a
+/// database dump cannot be replayed as a participant.
+model Workspace {
+  id        String        @id @default(cuid(2))
+  type      WorkspaceType
+  label     String?
+  /// sha256 hex of the opaque access token. Null means the workspace cannot be reached
+  /// by token at all, which is how the legacy migration target stays admin-only.
+  tokenHash String?       @unique
+  /// "<issuer>|<context_id>|<resource_link_id>" for LTI workspaces (FR-008).
+  ltiKey    String?       @unique
+
+  workshopId String?
+  workshop   Workshop? @relation(fields: [workshopId], references: [id], onDelete: Cascade)
+
+  createdAt    DateTime @default(now())
+  /// Drives retention (FR-009..FR-011). Written at most once per workspace per 5
+  /// minutes rather than on every request.
+  lastActiveAt DateTime @default(now())
+
+  workflows Workflow[]
+
+  @@index([type, lastActiveAt])
+  @@index([workshopId])
+}
+
+/// A user-owned workflow. Identity is (workspace, slug); the editor URL is not part of
+/// it (SPEC-0001 cross-feature rule).
+model Workflow {
+  id          String    @id @default(cuid(2))
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  slug String
+  name String
+  /// Serialized LiteGraph JSON. Stored as text rather than jsonb so the backfill from
+  /// Graph.graph is a literal column copy and no key reordering can occur.
+  content String
+  /// Optimistic concurrency counter (FR-012, FR-013). Carried as an ETag.
+  version Int    @default(1)
+  /// Stamp used by the in-process content migration to find unconverted rows.
+  contentSchema Int @default(2)
+
+  /// The instructor edits `content`; students read `publishedContent`. Replaces the old
+  /// editor/student path pair, which was the only draft/publish gate LTI had.
+  publishedContent String?
+  publishedVersion Int?
+  publishedAt      DateTime?
+
+  sourceTemplateId         String?
+  sourceTemplate           Template?         @relation(fields: [sourceTemplateId], references: [id], onDelete: SetNull)
+  sourceTemplateRevisionId String?
+  /// Restrict, not SetNull: a revision a workflow can still be reset to must not be
+  /// deletable (SPEC-0003/FR-003b).
+  sourceTemplateRevision   TemplateRevision? @relation(fields: [sourceTemplateRevisionId], references: [id], onDelete: Restrict)
+
+  /// The pre-migration Graph.path. Provenance, and the key LTI first-launch adoption
+  /// looks the workflow up by. Dropped once the legacy table goes.
+  legacyPath String? @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([workspaceId, slug])
+  @@index([workspaceId, updatedAt(sort: Desc)])
+  @@index([sourceTemplateRevisionId])
+  @@index([contentSchema])
+}
+
+// ---------------------------------------------------------------------------
+// Templates (SPEC-0003)
+// ---------------------------------------------------------------------------
+
+enum TemplateKind {
+  WORKFLOW
+  BLOCK
+}
+
+enum RevisionOrigin {
+  BUNDLED
+  FACILITATOR
+}
+
+model Template {
+  id   String       @id @default(cuid(2))
+  slug String       @unique
+  kind TemplateKind
+
+  name        String
+  description String?
+  category    String?
+  tags        String[] @default([])
+
+  published Boolean @default(false)
+  /// The latest revision NUMBER, not a foreign key. Incrementing it inside the same
+  /// transaction that inserts the revision keeps "create revision N+1" race-free
+  /// without a circular relation or a locking read.
+  currentRevision Int @default(0)
+
+  /// Soft delete. FR-003c requires revisions to stay resolvable after the template is
+  /// removed from the gallery.
+  deletedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  revisions TemplateRevision[]
+  workflows Workflow[]
+  workshops Workshop[]
+
+  @@index([kind, published, deletedAt])
+}
+
+/// Immutable snapshot of a template (FR-003, FR-003a). Never updated in place.
+model TemplateRevision {
+  id         String   @id @default(cuid(2))
+  templateId String
+  template   Template @relation(fields: [templateId], references: [id], onDelete: Restrict)
+
+  revision Int
+  origin   RevisionOrigin @default(FACILITATOR)
+
+  name        String
+  description String?
+  category    String?
+  tags        String[] @default([])
+
+  content String
+  /// sha256 hex of content. Lets the bundled-template seeder recognise unchanged
+  /// content and stay idempotent across restarts.
+  contentHash   String
+  contentSchema Int    @default(2)
+
+  /// Declared external input/output ports for block templates (FR-019).
+  interfaces Json?
+
+  createdAt DateTime @default(now())
+
+  workflows Workflow[]
+  workshops Workshop[]
+
+  @@unique([templateId, revision])
+  @@index([templateId, revision(sort: Desc)])
+}
+
+// ---------------------------------------------------------------------------
+// Workshops (SPEC-0014)
+// ---------------------------------------------------------------------------
+
+enum WorkshopStatus {
+  DRAFT
+  PUBLISHED
+  CLOSED
+}
+
+model Workshop {
+  id String @id @default(cuid(2))
+  /// Stored normalized (uppercase, separators stripped) so lookup cannot disagree with
+  /// what was written.
+  code  String @unique
+  title String
+
+  status WorkshopStatus @default(DRAFT)
+
+  templateId         String
+  template           Template         @relation(fields: [templateId], references: [id], onDelete: Restrict)
+  templateRevisionId String
+  templateRevision   TemplateRevision @relation(fields: [templateRevisionId], references: [id], onDelete: Restrict)
+
+  expiresAt   DateTime?
+  publishedAt DateTime?
+  closedAt    DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  workspaces Workspace[]
+
+  @@index([status, expiresAt])
+}
+
+// ---------------------------------------------------------------------------
+// Facilitator sessions (SPEC-0013)
+// ---------------------------------------------------------------------------
+
+/// Persisted rather than in-process: `nest start --watch` restarts on every file save,
+/// which would log the facilitator out mid-task while preparing a workshop.
+model AdminSession {
+  id String @id @default(cuid(2))
+  /// sha256 hex of the session cookie value.
+  tokenHash String @unique
+  /// sha256 hex of the CSRF token, binding it to this session rather than relying on
+  /// cookie/header equality alone.
+  csrfHash String
+
+  createdAt  DateTime @default(now())
+  expiresAt  DateTime
+  lastSeenAt DateTime @default(now())
+
+  @@index([expiresAt])
+}
+
+// ---------------------------------------------------------------------------
+// LLM providers (SPEC-0010..0012) — data model only in this wave
+// ---------------------------------------------------------------------------
+
+enum ProviderType {
+  MODEL_WORKER
+  OPENAI
+  OPENROUTER
+  OPENAI_COMPATIBLE
+}
+
+enum ModelPolicyMode {
+  DENY_ALL
+  ALLOWLIST
+  ALLOW_ALL
+}
+
+model Provider {
+  id String @id @default(cuid(2))
+  /// Stable reference serialized into workflow content as ModelRef.providerKey. Must be
+  /// identical across deployments or migrated workflows will not resolve.
+  key         String       @unique
+  type        ProviderType
+  displayName String
+
+  baseUrl String?
+  /// "v1.<b64 iv>.<b64 tag>.<b64 ciphertext>", AES-256-GCM. Never returned by the API.
+  apiKeyEnc String?
+  /// Masked hint proving a key is configured without revealing it (SPEC-0011/FR-004).
+  apiKeyHint String?
+
+  enabled Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  modelPolicy ModelPolicy?
+}
+
+model ModelPolicy {
+  id         String   @id @default(cuid(2))
+  providerId String   @unique
+  provider   Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+
+  mode          ModelPolicyMode @default(DENY_ALL)
+  allowedModels String[]        @default([])
+
+  updatedAt DateTime @updatedAt
 }
 
 // LTI Platform Registration
