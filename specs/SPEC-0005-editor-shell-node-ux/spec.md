@@ -46,7 +46,11 @@ canvas sized correctly to its container.
   (Essential, AI, Assessment, Validation, Blocks).
 - Inspector panel for editing the selected node's properties, including large text
   editing for prompts.
-- Compact canvas nodes with advanced LLM settings hidden behind the inspector.
+- Node property metadata model: each node definition declares its properties (key,
+  label, control type, advanced flag, required flag, validation) and its compact
+  "key value" — consumed by palette, inspector, and compact nodes.
+- Editor-wide undo/redo for graph mutations.
+- Autosave with visible save state (Saving… / Saved / Save failed — Retry).
 - Canvas sizing driven by its container element instead of window dimensions.
 
 ### Out of scope
@@ -149,6 +153,40 @@ not the advanced properties.
 WHEN the editor container is resized,
 the canvas SHALL resize to match the container's dimensions.
 
+### FR-011 — Node property metadata model
+
+The system SHALL provide a node property metadata model in which each node definition
+declares: category, description, its properties (key, label, control type, advanced
+flag, required flag, validation), and which property serves as the compact node's key
+value. The palette, inspector, and compact canvas nodes SHALL be driven by this
+metadata rather than per-node-type UI code.
+
+### FR-012 — Undo/redo for graph mutations
+
+WHEN a graph mutation is performed (node add/remove/link, property change, block
+insertion),
+the system SHALL record it in an editor command history, and the user SHALL be able
+to undo and redo mutations via standard keyboard shortcuts (Ctrl/Cmd+Z,
+Ctrl/Cmd+Shift+Z).
+
+### FR-013 — Autosave
+
+WHEN the workflow has unsaved changes,
+the system SHALL automatically persist them after a short debounce period without
+requiring an explicit save action.
+
+### FR-014 — Save state display
+
+WHILE autosave is in progress, has succeeded, or has failed,
+the toolbar SHALL display the corresponding state: Saving…, Saved, or Save failed —
+Retry.
+
+### FR-015 — Failed autosave recovery
+
+IF autosave fails,
+THEN the system SHALL offer a retry action and SHALL warn the user before leaving the
+editor with unsaved changes.
+
 ## Non-functional requirements
 
 ### NFR-001 — Palette search responsiveness
@@ -220,6 +258,58 @@ When the browser window is resized
 Then the canvas fills the editor container without layout distortion
 ```
 
+### AC-007 — Inspector driven by property metadata
+
+Traces to: FR-011, FR-006
+
+```gherkin
+Given a node definition declares properties with labels, control types, and an advanced flag
+When the node is selected
+Then the inspector renders each property with its declared control and label
+And advanced properties are grouped behind the Advanced settings disclosure
+```
+
+### AC-008 — Undo/redo across mutation types
+
+Traces to: FR-012
+
+```gherkin
+Given the user has added a node, linked it, and changed a property
+When the user performs undo three times
+Then each mutation is reverted in reverse order
+And performing redo restores them in the original order
+```
+
+### AC-009 — Changes persist without explicit save
+
+Traces to: FR-013
+
+```gherkin
+Given the user has modified the rubric prompt
+When the user waits for the autosave debounce period and reloads the page
+Then the modification is present without having pressed Save
+```
+
+### AC-010 — Save state visible
+
+Traces to: FR-014
+
+```gherkin
+Given the user has made a change
+When autosave runs
+Then the toolbar shows Saving… followed by Saved
+```
+
+### AC-011 — Failed autosave warns before navigation
+
+Traces to: FR-015
+
+```gherkin
+Given autosave has failed
+When the user attempts to leave the editor
+Then a warning about unsaved changes is shown with a retry option
+```
+
 ## Edge cases
 
 - Selection of multiple nodes → inspector shows a multi-selection state or nothing;
@@ -260,3 +350,4 @@ Then the canvas fills the editor container without layout distortion
 | Date | Change |
 |---|---|
 | 2026-09-15 | Initial specification created |
+| 2026-09-15 | Added node property metadata model (FR-011, AC-007), editor-wide undo/redo (FR-012, AC-008), autosave with save-state display and failure recovery (FR-013..FR-015, AC-009..AC-011) — closes the persistence gap with SPEC-0008's reload-persistence smoke test |

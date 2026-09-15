@@ -99,7 +99,7 @@ and Open workflow (My workflows).
 
 WHEN a user opens the workshop deep link containing a shared workshop code,
 the system SHALL render the workshop landing page for the workshop identified by that
-code without requiring navigation through other pages.
+code, following the join flow defined in SPEC-0014.
 
 ### FR-003 — New workflow creation
 
@@ -139,6 +139,9 @@ valid until the facilitator revokes or expires it.
 
 WHEN a facilitator revokes or expires a workshop code,
 THEN the system SHALL reject that code on subsequent deep-link access.
+
+Note: workshop code lifecycle (create, publish, close, revoke) is normatively defined
+in SPEC-0014; this feature consumes it for the deep-link entry.
 
 ## Non-functional requirements
 
@@ -221,26 +224,24 @@ Then the workshop is not accessible and a "workshop unavailable" state is shown
 
 ## Edge cases
 
-- Deep link with an invalid, expired, or unpublished workshop code → not-found or
-  "workshop unavailable" state, not a blank page.
+- Deep link with an invalid, expired, unpublished, or closed workshop code → not-found
+  or "workshop unavailable" state, not a blank page.
 - Workspace cannot be established (storage failure) → user-facing error with retry.
 
 ## Business rules
 
+- A workshop code SHALL identify exactly one workshop and SHALL be shareable with
+  participants (e.g. printed in the tutorial handout).
 - The workshop deep link is only published for workshops the facilitator has prepared.
 
 ## Constraints
 
 - Frontend routing must remain client-side; no server-side rendering requirement.
 
-## Business rules
-
-- A workshop code SHALL identify exactly one workshop and SHALL be shareable with
-  participants (e.g. printed in the tutorial handout).
-
 ## Dependencies
 
 - SPEC-0004 (workspace identity needed for meaningful "My workflows" listing).
+- SPEC-0014 (Workshop entity, codes, and join flow that the deep link resolves).
 
 ## Assumptions
 
@@ -258,3 +259,4 @@ Then the workshop is not accessible and a "workshop unavailable" state is shown
 |---|---|
 | 2026-09-15 | Initial specification created |
 | 2026-09-15 | Added facilitator (admin) ownership of workshop codes: creation restricted to facilitator, revocation support (FR-007..FR-009, AC-006..AC-007) |
+| 2026-09-15 | Merged duplicate Business rules section; workshop code lifecycle made normative in SPEC-0014 (Workshop entity and join flow); dependency added |

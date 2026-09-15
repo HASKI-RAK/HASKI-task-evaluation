@@ -95,14 +95,32 @@ example, observing a result, reloading, and finding the workflow still present.
 
 The root test command SHALL execute both backend and frontend unit tests.
 
-### FR-005 — Browser coverage
-
-The browser smoke test SHALL run in both Chrome and Firefox.
-
 ### FR-004 — Documentation completeness
 
 The README SHALL document: application usage, deployment, workshop setup, template
 authoring, and participant instructions, replacing the current TODO sections.
+
+### FR-005 — Browser coverage
+
+The browser smoke test SHALL run in both Chrome and Firefox.
+
+### FR-006 — Deterministic LLM execution in tests
+
+The browser smoke test SHALL use a deterministic test provider (fake model returning
+known score, classification, and feedback) and SHALL NOT call external LLM providers
+such as OpenAI or OpenRouter.
+
+### FR-007 — Workspace isolation E2E test
+
+The E2E suite SHALL include a test verifying that two independent browser sessions
+can each maintain a workflow with the same slug, modify their graphs independently,
+and reload to see only their own changes.
+
+### FR-008 — Branch protection enforcement
+
+The integration branch SHALL have a branch protection rule or ruleset requiring the
+CI workflow as a required status check, so that the "PRs SHALL NOT merge while CI
+fails" business rule is enforced by the platform.
 
 ## Non-functional requirements
 
@@ -163,6 +181,37 @@ When the browser smoke test executes
 Then it passes in Chrome and in Firefox
 ```
 
+### AC-006 — Smoke test uses deterministic provider
+
+Traces to: FR-006
+
+```gherkin
+Given the CI environment has no external LLM credentials
+When the browser smoke test executes the assessment run
+Then the run completes with the deterministic test provider's known result
+And no external LLM provider is called
+```
+
+### AC-007 — Isolation verified end to end
+
+Traces to: FR-007, SPEC-0004/FR-005
+
+```gherkin
+Given two independent browser sessions
+When each creates a workflow with slug "rubric-assessment" and modifies its graph differently
+Then each session reloads and sees only its own modifications
+```
+
+### AC-008 — Failing CI blocks merge
+
+Traces to: FR-008
+
+```gherkin
+Given the integration branch has the CI workflow as a required status check
+When a PR's CI check fails
+Then the platform prevents merging the PR
+```
+
 ## Edge cases
 
 - Smoke test flakiness → retry policy defined in CI configuration, failures block
@@ -170,7 +219,10 @@ Then it passes in Chrome and in Firefox
 
 ## Business rules
 
-- PRs SHALL NOT merge while the CI check fails.
+- PRs SHALL NOT merge while the CI check fails (enforced via branch protection,
+  FR-008).
+- The browser smoke test SHALL NOT depend on external LLM providers, network
+  availability, or provider secrets.
 
 ## Constraints
 
@@ -178,12 +230,14 @@ Then it passes in Chrome and in Firefox
 
 ## Dependencies
 
-- SPEC-0002, SPEC-0003, SPEC-0004, SPEC-0007 (the smoke test walks flows those
-  features define).
+- SPEC-0002, SPEC-0003, SPEC-0004, SPEC-0007, SPEC-0014 (the smoke test walks flows
+  those features define).
 
 ## Assumptions
 
 - A headless browser environment is available in CI.
+- The deterministic test provider is configurable per deployment (e.g. enabled in
+  test/CI environments only).
 
 ## Open questions
 
@@ -191,11 +245,14 @@ Then it passes in Chrome and in Firefox
 
 ## Success criteria
 
-- The conference happy path is exercised automatically on every PR and the README
-  enables a newcomer to set up and run a workshop without oral handover.
+- The conference happy path is exercised automatically on every PR in both Chrome and
+  Firefox without external dependencies, workspace isolation is verified end to end,
+  and the README enables a newcomer to set up and run a workshop without oral
+  handover.
 
 ## Change history
 
 | Date | Change |
 |---|---|
 | 2026-09-15 | Initial specification created |
+| 2026-09-15 | Added deterministic test provider for E2E (FR-006, AC-006), workspace isolation E2E (FR-007, AC-007), branch protection requirement (FR-008, AC-008). FR ordering corrected. Dependencies extended with SPEC-0014. |

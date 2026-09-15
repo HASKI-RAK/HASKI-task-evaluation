@@ -4,7 +4,7 @@ type: epic
 title: NodeGrade workshop readiness
 status: draft
 parent: null
-priority: P1
+priority: P0
 created: 2026-09-15
 updated: 2026-09-15
 depends_on: []
@@ -17,6 +17,8 @@ related:
   - SPEC-0007
   - SPEC-0008
   - SPEC-0009
+  - SPEC-0013
+  - SPEC-0014
 ---
 
 # NodeGrade workshop readiness
@@ -81,6 +83,8 @@ the facilitator having to explain NodeGrade's internals.
 | SPEC-0006 | Run and trace observability | Draft |
 | SPEC-0007 | WAIE workshop experience and preview | Draft |
 | SPEC-0008 | Reliability, CI and documentation | Draft |
+| SPEC-0013 | Facilitator authentication and administrative access | Draft |
+| SPEC-0014 | Workshop entity and join flow | Draft |
 
 Note: SPEC-0009 (LLM provider management and model governance) is a separate epic,
 not a child of this one.
@@ -89,14 +93,17 @@ not a child of this one.
 
 - A template SHALL never be edited in place; using a template always creates a
   user-owned copy (SPEC-0003).
-- Every workflow SHALL belong to exactly one workspace; graph listing and saving SHALL
-  be scoped to the actor's workspace (SPEC-0004).
+- Every workflow SHALL belong to exactly one workspace; every workflow operation SHALL
+  be scoped to the actor's workspace, authorized via workspace access tokens
+  (SPEC-0004).
 - Workflow identity SHALL NOT depend on the URL path of the editor route.
+- Administrative actions SHALL require the facilitator session from SPEC-0013.
 
 ## Cross-feature constraints
 
 - Requirements must be deliverable before the conference workshop; items prioritized
-  P0 (SPEC-0002, SPEC-0003, SPEC-0004, SPEC-0005) form the minimum viable workshop set.
+  P0 (SPEC-0013, SPEC-0004, SPEC-0003, SPEC-0014, SPEC-0002, SPEC-0005) form the
+  minimum viable workshop set.
 
 ## Dependencies
 
@@ -107,12 +114,13 @@ not a child of this one.
 - The workshop scenario involves 20–50 concurrent anonymous participants.
 - LTI-launched usage remains a supported workflow identity source during migration.
 - Existing stored graphs can be migrated into a default/personal workspace.
-- Anonymous (WORKSHOP-type) workspaces auto-delete 60 days after creation (decided in
-  SPEC-0004/FR-008).
-- Templates ship bundled with the product initially; a server-side template store is a
-  later evolution (assumption in SPEC-0003).
-- Facilitator role is established via env-configured admin username/password (docker
-  compose supplyable), no account/registration system (decided in SPEC-0003).
+- Anonymous (BROWSER-type) workspaces auto-delete after 60 days of inactivity
+  (decided in SPEC-0004/FR-009).
+- Templates are persisted server-side entities; bundled templates are seed data
+  (decided in SPEC-0003/FR-002).
+- Facilitator role is established via env-configured admin username/password with a
+  server-issued admin session (decided in SPEC-0013).
+- Provider integration is built on the Vercel AI SDK (decided in SPEC-0010).
 
 ## Open questions
 
@@ -120,9 +128,10 @@ not a child of this one.
 
 ## Epic success criteria
 
-- A facilitator can run the full tutorial flow (open workshop page → duplicate WAIE
-  template → participants edit independently → run → inspect trace) with 20–50
-  concurrent participants without graph collisions or verbal setup instructions.
+- A facilitator can run the full tutorial flow (publish workshop → participants join
+  by code → duplicate WAIE template revision → participants edit independently → run
+  → inspect trace) with 20–50 concurrent participants without graph collisions or
+  verbal setup instructions.
 - The conference happy path is covered by an automated smoke test that gates PRs.
 
 ## Change history
@@ -131,3 +140,4 @@ not a child of this one.
 |---|---|
 | 2026-09-15 | Initial specification created from workshop-readiness analysis |
 | 2026-09-15 | Noted SPEC-0009 (LLM provider management) as a separate epic outside this epic's scope |
+| 2026-09-15 | Review revision: added SPEC-0013 (facilitator auth foundation) and SPEC-0014 (Workshop entity and join flow) as children; updated business rules (token-based workspace authorization, admin session), P0 set, and assumptions (seeded templates, 60-day inactivity retention, Vercel AI SDK) |

@@ -4,11 +4,11 @@ type: feature
 title: Provider configuration admin UI
 status: draft
 parent: SPEC-0009
-priority: unset
+priority: P1
 created: 2026-09-15
 updated: 2026-09-15
 depends_on:
-  - SPEC-0003
+  - SPEC-0013
 related:
   - SPEC-0010
   - SPEC-0012
@@ -51,8 +51,8 @@ effect without redeployment.
 
 ## Actors
 
-- Facilitator (admin): authenticated via env-configured admin credentials
-  (SPEC-0003/FR-016); the only actor who may view or change provider configuration.
+- Facilitator (admin): authenticated via the admin session from SPEC-0013; the only
+  actor who may view or change provider configuration.
 - End user: must never see provider configuration or credentials.
 
 ## User scenarios
@@ -130,6 +130,28 @@ the system SHALL retain the persisted provider configuration.
 WHERE provider settings exist as environment variables at first startup and no
 persisted configuration exists yet,
 the system SHALL seed the persisted configuration from those environment variables.
+
+### FR-010 — Key encryption at rest
+
+WHEN a provider API key is persisted,
+the system SHALL store it encrypted at rest using a server-held master secret, and
+SHALL decrypt it only for outgoing provider requests.
+
+### FR-011 — Key preservation on unrelated edits
+
+WHEN a facilitator edits a provider's settings without entering a new API key,
+the system SHALL preserve the existing stored key and SHALL NOT clear it.
+
+### FR-012 — Explicit key replacement and removal
+
+WHEN a facilitator activates "Replace" or "Remove" for a configured API key,
+the system SHALL replace or clear the stored key only through that explicit action.
+
+### FR-013 — Test connection
+
+WHEN a facilitator activates "Test connection" for a provider,
+the system SHALL attempt a minimal request to the provider and report success or a
+specific failure reason.
 
 ## Non-functional requirements
 
@@ -214,31 +236,70 @@ When the facilitator opens the provider UI
 Then the providers reflect the environment-derived settings
 ```
 
+### AC-008 — Key encrypted at rest
+
+Traces to: FR-010
+
+```gherkin
+Given a provider API key has been saved
+When the storage record is inspected directly
+Then the key is stored encrypted, not in plaintext
+```
+
+### AC-009 — Editing other settings preserves the key
+
+Traces to: FR-011
+
+```gherkin
+Given a provider with a stored API key
+When the facilitator changes only the display name and saves
+Then the stored key is unchanged and the provider remains functional
+```
+
+### AC-010 — Key removed only via explicit action
+
+Traces to: FR-012
+
+```gherkin
+Given a provider with a stored API key
+When the facilitator activates "Remove" for the key
+Then the key is cleared
+And clearing the key input field without activating Remove does not clear the stored key
+```
+
+### AC-011 — Test connection reports result
+
+Traces to: FR-013
+
+```gherkin
+Given a provider is configured
+When the facilitator activates "Test connection"
+Then success or a specific failure reason is reported
+```
+
 ## Edge cases
 
 - Two facilitators editing concurrently → last save wins; no partial merges.
 - Provider base URL unreachable at save time → save allowed (configuration is
   declarative); provider failure surfaces per SPEC-0010/FR-007.
-- Facilitator clears a key while provider enabled → treated as missing required
-  setting (FR-006).
+- Facilitator clears a key input field while provider enabled → the stored key is
+  preserved (FR-011); removal requires the explicit Remove action (FR-012).
 
 ## Business rules
 
 - Provider configuration SHALL be deployment-global (single configuration for the
   whole instance).
-- Provider API keys SHALL be stored server-side only and SHALL NOT be returned in
-  readable form by any API response.
+- Provider API keys SHALL be stored server-side only, encrypted at rest, and SHALL
+  NOT be returned in readable form by any API response.
 
 ## Constraints
 
-- Access control reuses the facilitator role from SPEC-0003 (FR-016); no new
-  account system.
+- Access control reuses the facilitator role from SPEC-0013; no new account system.
 - Persistence uses the backend's existing storage mechanism.
 
 ## Dependencies
 
-- SPEC-0003 (facilitator authentication).
-- SPEC-0010 (consumes the configuration for execution).
+- SPEC-0013 (facilitator authentication and admin session).
 
 ## Assumptions
 
@@ -254,10 +315,12 @@ Then the providers reflect the environment-derived settings
 
 - A facilitator can enable OpenRouter with a key and have it usable by all users
   within seconds, without redeployment.
-- No API response ever contains a provider key in readable form.
+- No API response ever contains a provider key in readable form, and keys are
+  encrypted at rest.
 
 ## Change history
 
 | Date | Change |
 |---|---|
 | 2026-09-15 | Initial specification created |
+| 2026-09-15 | Added key encryption at rest (FR-010, AC-008), key preservation on unrelated edits (FR-011, AC-009), explicit replace/remove (FR-012, AC-010), test connection (FR-013, AC-011). Dependency re-pointed to SPEC-0013 (facilitator auth foundation); dependency cycle with SPEC-0010 removed (0011 → 0010 only). |

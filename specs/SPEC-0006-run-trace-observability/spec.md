@@ -120,16 +120,49 @@ the system SHALL highlight the corresponding node on the canvas.
 IF a node fails during execution,
 THEN the trace view SHALL mark the step as failed and display the error information.
 
-### FR-008 — Fail-fast execution
-
-IF a node fails during execution,
-THEN the system SHALL stop the run and SHALL NOT execute nodes downstream of the
-failed node.
-
 ### FR-007 — Output redaction
 
 WHERE node outputs contain sensitive prompt or model configuration content,
 the system SHALL redact that content in trace output before it reaches the client.
+
+### FR-008 — Global fail-fast execution
+
+IF a node fails during execution,
+THEN the system SHALL stop the run entirely and SHALL NOT execute any further nodes in
+that run.
+
+### FR-009 — Run correlation
+
+WHEN a run is started,
+the system SHALL assign it a unique run id, and every execution event of that run
+SHALL carry the run id, the workflow id, the node id, and a timestamp.
+
+### FR-010 — Run states
+
+The system SHALL support run states: queued, running, completed, failed, skipped, and
+cancelled, and SHALL report the state transitions in the trace view.
+
+### FR-011 — Execution timeout
+
+IF a node execution exceeds a configured timeout,
+THEN the system SHALL mark the node and the run as failed.
+
+### FR-012 — Run cancellation
+
+WHEN a user cancels a run,
+the system SHALL stop the run and mark remaining nodes as cancelled.
+
+### FR-013 — Trace delivery scoped to the run owner
+
+WHEN trace events are delivered,
+the system SHALL deliver them only to the workspace that owns the run and SHALL NOT
+broadcast them globally.
+
+### FR-014 — Sanitized provider errors
+
+IF a provider error is included in trace output,
+THEN the system SHALL sanitize it so that no headers, credentials, or provider
+account identifiers are exposed.
 
 ## Non-functional requirements
 
@@ -184,39 +217,85 @@ When the run ends
 Then the trace view marks that step as failed and shows error information
 ```
 
-### AC-006 — Fail-fast stop
+### AC-005 — Credentials never in trace
+
+Traces to: FR-007, FR-014, NFR-002
+
+```gherkin
+Given a workflow containing nodes with model credentials
+When a run completes
+Then the trace output contains no API keys, model credentials, headers, or provider account identifiers
+```
+
+### AC-006 — Fail-fast stops the entire run
 
 Traces to: FR-008
 
 ```gherkin
 Given a workflow where node B depends on node A and node A fails
 When the user runs the workflow
-Then node B and all downstream nodes are not executed
+Then no further nodes are executed after node A
 And the trace view shows the run stopped at node A
 ```
 
-### AC-005 — Credentials never in trace
+### AC-007 — Events carry run id
 
-Traces to: FR-007, NFR-002
+Traces to: FR-009
 
 ```gherkin
-Given a workflow containing nodes with model credentials
-When a run completes
-Then the trace output contains no API keys or model credentials
+Given two runs of the same workflow started in quick succession
+When execution events arrive interleaved
+Then each event is attributable to its run via the run id
+And each trace view shows only its own run's events
+```
+
+### AC-008 — Timeout marks run failed
+
+Traces to: FR-011
+
+```gherkin
+Given a node whose execution exceeds the configured timeout
+When the timeout elapses
+Then the node and the run are marked failed
+And the trace view shows the timeout as the failure reason
+```
+
+### AC-009 — Cancellation marks remaining nodes cancelled
+
+Traces to: FR-012, FR-010
+
+```gherkin
+Given a run in progress
+When the user cancels the run
+Then the run is marked cancelled
+And nodes that had not started are marked skipped or cancelled
+```
+
+### AC-010 — Trace not visible to other workspaces
+
+Traces to: FR-013
+
+```gherkin
+Given a run in workspace A
+When a client in workspace B listens for trace events
+Then no events from workspace A's run are delivered to workspace B
 ```
 
 ## Edge cases
 
-- Concurrent runs of the same workflow → trace shows the most recent run; older runs
-  are not interleaved.
+- Concurrent runs of the same workflow → each run has its own run id; trace views
+  never interleave events across runs.
 - Very large node outputs → trace truncates with an expand action rather than breaking
   layout.
-- Independent branches not downstream of the failed node → their execution is out of
-  scope for fail-fast; only direct downstream nodes are guaranteed skipped.
+- Node fails while an independent branch is still queued → the entire run stops
+  (global fail-fast); no branch continues.
 
 ## Business rules
 
 - Trace data is per-run and ephemeral; it is not stored with the workflow.
+- Trace visibility is a deliberate policy: prompts and intermediate outputs are
+  visible to the run owner (pedagogically useful for the workshop); credentials,
+  headers, and provider account identifiers are never visible to anyone.
 
 ## Constraints
 
@@ -238,10 +317,13 @@ Then the trace output contains no API keys or model credentials
 ## Success criteria
 
 - During the guided demo, participants can observe each step's intermediate output as
-  the facilitator builds the workflow.
+  the facilitator builds the workflow, and a hanging LLM request can never leave the
+  UI indefinitely in a running state.
 
 ## Change history
 
 | Date | Change |
 |---|---|
 | 2026-09-15 | Initial specification created |
+| 2026-09-15 | Fail-fast decision: global fail-fast (FR-008, AC-006); edge case updated |
+| 2026-09-15 | Added run correlation ids (FR-009, AC-007), run states incl. skipped/cancelled (FR-010), execution timeout (FR-011, AC-008), cancellation (FR-012, AC-009), trace delivery scoped to run owner (FR-013, AC-010), sanitized provider errors (FR-014); trace visibility made an explicit policy in business rules |

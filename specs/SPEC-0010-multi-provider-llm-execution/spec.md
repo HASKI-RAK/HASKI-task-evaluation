@@ -4,13 +4,13 @@ type: feature
 title: Multi-provider LLM execution
 status: draft
 parent: SPEC-0009
-priority: unset
+priority: P1
 created: 2026-09-15
 updated: 2026-09-15
 depends_on:
   - SPEC-0011
+related:
   - SPEC-0012
-related: []
 ---
 
 # Multi-provider LLM execution
@@ -26,20 +26,24 @@ requires new node code paths, and provider selection is invisible to administrat
 ### Desired outcome
 
 The LLM node executes against any configured provider — local model worker, OpenAI,
-OpenRouter — selected by model-to-provider mapping from persisted configuration.
-Adding a further OpenAI-compatible provider requires configuration, not new node
-logic.
+OpenRouter — selected by a composite provider+model reference from persisted
+configuration. Provider integration is built on the Vercel AI SDK, so OpenAI-compatible
+providers are added by configuration, not new node logic.
 
 ## Scope
 
 ### In scope
 
 - Provider abstraction for LLM execution covering the local model worker, OpenAI, and
-  OpenRouter.
+  OpenRouter, implemented on the Vercel AI SDK.
 - Model listing aggregated from all enabled providers, each model tagged with its
   source provider.
+- Composite model identity: workflows serialize provider id + model id, not a bare
+  model id.
+- Model capability metadata (supported parameters, context limits) with defined
+  behavior for unsupported configured parameters.
 - Execution routing: a selected model is executed against its provider.
-- OpenRouter integration via its OpenAI-compatible chat completions interface.
+- OpenRouter integration via its OpenAI-compatible interface through the AI SDK.
 
 ### Out of scope
 
@@ -79,11 +83,11 @@ Independent value: removes artificial separation between local and cloud models.
 
 ## Functional requirements
 
-### FR-001 — Provider abstraction
+### FR-001 — Provider abstraction on the Vercel AI SDK
 
-The LLM node SHALL execute chat completions through a provider abstraction in which
-each provider is identified by a provider id and supplies a model list and a
-completion endpoint.
+The LLM node SHALL execute chat completions through a provider abstraction built on
+the Vercel AI SDK, in which each provider is identified by a provider id and supplies
+a model list and a completion endpoint.
 
 ### FR-002 — OpenRouter provider
 
@@ -97,16 +101,17 @@ WHEN the local model worker or OpenAI is configured,
 the system SHALL continue to list and execute their models with behavior equivalent
 to the current implementation.
 
-### FR-004 — Model-to-provider mapping
+### FR-004 — Composite model identity
 
 WHEN a user selects a model,
-the system SHALL route execution to the provider that supplied that model id.
+the system SHALL serialize the selection as a composite reference (provider id +
+model id) in the workflow, and SHALL route execution to exactly that provider.
 
-### FR-005 — Ambiguous model ids
+### FR-005 — Duplicate model ids remain distinct
 
 IF the same model id is offered by more than one enabled provider,
-THEN the system SHALL resolve the conflict deterministically by configured provider
-priority and SHALL expose the resolved provider to the user in the model list.
+THEN the system SHALL present them as distinct selectable entries (e.g. "model-x ·
+OpenAI" and "model-x · OpenRouter"), each executing against its own provider.
 
 ### FR-006 — Model list aggregation
 
@@ -125,6 +130,24 @@ NOT prevent listing or execution of models from other providers.
 The LLM node SHALL send provider credentials only in requests to the corresponding
 provider and SHALL NOT expose them in serialized graph data, client-visible model
 lists, or error messages.
+
+### FR-009 — Model capability metadata
+
+The system SHALL associate each model with capability metadata (supported parameters,
+context limit where known) and SHALL make it available to the editor UI.
+
+### FR-010 — Unsupported parameter handling
+
+IF a node's configured parameter is not supported by the selected model,
+THEN the system SHALL apply the documented rule: the parameter SHALL be disabled in
+the UI where capability is known, and SHALL be ignored at execution with the
+ignoring recorded in the trace.
+
+### FR-011 — Legacy model reference migration
+
+WHEN an existing workflow contains a bare model id without a provider reference,
+the system SHALL resolve it once against the configured providers (by priority) and
+persist the resolved composite reference.
 
 ## Non-functional requirements
 
@@ -167,14 +190,15 @@ When the user selects a model from provider A and executes the node
 Then the completion request is sent only to provider A
 ```
 
-### AC-004 — Duplicate model id resolved
+### AC-004 — Duplicate model ids stay selectable
 
 Traces to: FR-005
 
 ```gherkin
 Given two enabled providers both offer model id "m"
 When the LLM node lists models
-Then exactly one entry for "m" is shown, attributed to the higher-priority provider
+Then both "m · provider A" and "m · provider B" are selectable
+And selecting each executes against the corresponding provider
 ```
 
 ### AC-005 — One provider down does not break others
@@ -198,6 +222,37 @@ When a user selects a local model and executes the node
 Then behavior matches the current local-worker execution path
 ```
 
+### AC-007 — Provider change does not silently reroute
+
+Traces to: FR-004, FR-005
+
+```gherkin
+Given a workflow referencing "m · provider A"
+When provider priority changes or provider B is enabled
+Then the workflow still executes "m" against provider A
+```
+
+### AC-008 — Unsupported parameter disabled or ignored
+
+Traces to: FR-009, FR-010
+
+```gherkin
+Given a model that does not support top-k
+When the user selects that model in the LLM node
+Then the top-k control is disabled in the UI where capability is known
+And if configured anyway, the parameter is ignored at execution and the ignoring is recorded in the trace
+```
+
+### AC-009 — Legacy bare model id migrated
+
+Traces to: FR-011
+
+```gherkin
+Given an existing workflow with a bare model id "m"
+When the workflow is loaded after the composite-reference migration
+Then the reference is resolved to a composite provider+model reference and persisted
+```
+
 ## Edge cases
 
 - Provider key invalid or expired → provider marked failed; its models hidden or
@@ -213,34 +268,38 @@ Then behavior matches the current local-worker execution path
 
 ## Constraints
 
-- OpenRouter SHALL be accessed through its OpenAI-compatible chat completions
-  interface.
+- Provider integration SHALL be built on the Vercel AI SDK.
+- OpenRouter SHALL be accessed through its OpenAI-compatible interface via the AI SDK.
 - Provider credentials SHALL be supplied from server-side persisted configuration
   (SPEC-0011), replacing direct env-var reads in the LLM node.
 
 ## Dependencies
 
 - SPEC-0011 (provider configuration source).
-- SPEC-0012 (allowlist filtering applied to the aggregated list).
 
 ## Assumptions
 
 - OpenRouter's model catalog is large; no pagination requirement beyond what the
   catalog API provides.
+- The Vercel AI SDK covers the local model worker via an OpenAI-compatible custom
+  provider; if the local worker requires a protocol the AI SDK cannot express, it
+  remains a special-cased provider behind the same abstraction.
 
 ## Open questions
 
-- Should provider priority be a global setting or per-provider ordering in the admin
-  UI?
+- None currently.
 
 ## Success criteria
 
 - An OpenRouter model can be selected and executed in a workshop workflow without
   any per-user setup.
 - Existing local-worker and OpenAI workflows continue to run unchanged.
+- Changing provider priority never silently reroutes an existing workflow to a
+  different provider.
 
 ## Change history
 
 | Date | Change |
 |---|---|
 | 2026-09-15 | Initial specification created |
+| 2026-09-15 | Provider model decided: implementation on the Vercel AI SDK (FR-001, constraint). Composite provider+model identity replaces priority-based duplicate resolution (FR-004/005, AC-004/007) with one-time legacy migration (FR-011, AC-009). Added model capability metadata and unsupported-parameter rule (FR-009/010, AC-008). Dependency cycle fixed: depends on SPEC-0011 only; SPEC-0012 consumes the aggregated list. |

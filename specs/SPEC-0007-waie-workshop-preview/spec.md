@@ -11,9 +11,11 @@ depends_on:
   - SPEC-0003
   - SPEC-0004
   - SPEC-0006
+  - SPEC-0014
 related:
   - SPEC-0002
   - SPEC-0005
+  - SPEC-0009
 ---
 
 # WAIE workshop experience and preview
@@ -100,32 +102,50 @@ Classification → Feedback (feedback prompt, LLM, feedback output).
 ### FR-002 — Test tab
 
 WHEN the user opens the preview's Test tab,
-the system SHALL display the question, a student answer input, a run action, and a
-results area.
+the system SHALL display the question (read-only, sourced from the workflow's question
+node), a student answer input, a run action, and a results area.
 
-### FR-003 — Results display
+### FR-003 — Question editing via inspector
+
+WHEN the user wants to change the question,
+the system SHALL provide editing through the question node in the inspector, not as a
+runtime input in the Test tab.
+
+### FR-004 — Results display
 
 WHEN a test run completes,
 the system SHALL display the resulting score, classification, and feedback in the
 results area.
 
-### FR-004 — Trace tab
+### FR-005 — Trace tab
 
 WHEN the user opens the preview's Trace tab,
 the system SHALL display the run trace as defined in SPEC-0006.
 
-### FR-005 — English participant UI
+### FR-006 — English participant UI
 
 The participant-facing preview interface SHALL be presented in English by default.
 
-### FR-006 — Workflow-configurable minimum answer length
+### FR-007 — Workflow-configurable minimum answer length
 
 WHILE a workflow defines a minimum answer length,
 the test tab SHALL enforce that value instead of any fixed UI-level minimum.
 
-### FR-007 — No fixed answer-length policy
+### FR-008 — No fixed answer-length policy
 
 The preview SHALL NOT impose a fixed hard-coded minimum answer length.
+
+### FR-009 — Workshop preflight
+
+WHEN the workshop entry is opened,
+the system SHALL perform a preflight check covering: backend connectivity, workshop
+template availability, required node types registered, and at least one allowed LLM
+model available, and SHALL present the results before the participant starts.
+
+### FR-010 — Facilitator readiness view
+
+WHEN the facilitator opens the workshop readiness view,
+the system SHALL display the preflight check results for the workshop.
 
 ## Non-functional requirements
 
@@ -148,17 +168,28 @@ Then the canonical WAIE free-text assessment template is available and matches t
 
 ### AC-002 — End-to-end test run
 
-Traces to: FR-002, FR-003
+Traces to: FR-002, FR-004
 
 ```gherkin
 Given the WAIE workflow is open in the editor
-When the user enters a question and a student answer and runs the assessment
+When the user enters a student answer and runs the assessment
 Then the results area shows a score, a classification, and feedback
 ```
 
-### AC-003 — Trace tab available
+### AC-003 — Question edited in inspector only
 
-Traces to: FR-004
+Traces to: FR-003
+
+```gherkin
+Given the WAIE workflow is open
+When the user edits the question through the question node in the inspector
+Then the Test tab displays the updated question
+And the Test tab provides no question input field
+```
+
+### AC-004 — Trace tab available
+
+Traces to: FR-005
 
 ```gherkin
 Given a run has been executed
@@ -166,9 +197,9 @@ When the user opens the Trace tab
 Then the run trace is displayed as defined in SPEC-0006
 ```
 
-### AC-004 — English UI
+### AC-005 — English UI
 
-Traces to: FR-005
+Traces to: FR-006
 
 ```gherkin
 Given the preview is open
@@ -176,15 +207,36 @@ When the user views the test tab
 Then all participant-facing labels and messages are in English
 ```
 
-### AC-005 — Configurable answer minimum
+### AC-006 — Configurable answer minimum
 
-Traces to: FR-006, FR-007
+Traces to: FR-007, FR-008
 
 ```gherkin
 Given a workflow whose minimum answer length is 0
 When the user submits an empty answer attempt shorter than 10 characters
 Then the run is permitted (no fixed 10-character block applies)
 And when the workflow sets a minimum of 20 characters, a 15-character answer is rejected with the configured limit stated
+```
+
+### AC-007 — Preflight blocks broken workshop entry
+
+Traces to: FR-009
+
+```gherkin
+Given no LLM model is allowed or no provider is reachable
+When the participant opens the workshop entry
+Then the preflight reports the failing check
+And the participant is not started into a broken workshop
+```
+
+### AC-008 — Facilitator readiness view
+
+Traces to: FR-010
+
+```gherkin
+Given a facilitator prepares the workshop
+When the facilitator opens the workshop readiness view
+Then all preflight checks are displayed with pass/fail state
 ```
 
 ## Edge cases
@@ -205,25 +257,31 @@ And when the workflow sets a minimum of 20 characters, a 15-character answer is 
 ## Dependencies
 
 - SPEC-0003 (template mechanism), SPEC-0004 (workspace-owned copies), SPEC-0006
-  (trace).
+  (trace), SPEC-0014 (workshop join flow and preflight context), SPEC-0009 (at least
+  one allowed LLM model must be available for the WAIE template to run).
 
 ## Assumptions
 
 - The existing TaskView result rendering (text outputs, scores, classifications) can
   be reused for the results area.
+- The WAIE template references a model by provider id + model id (composite
+  reference, SPEC-0010); the workshop preflight verifies that model is allowed and
+  its provider reachable before participants start.
 
 ## Open questions
 
-- Should the WAIE template's rubric be editable inline in the inspector only, or also
-  shown in the Test tab?
+- None currently.
 
 ## Success criteria
 
 - A participant can complete the assignment (modify rubric / feedback / add
   validation) and verify the effect with a test run in under 10 minutes.
+- A facilitator can verify workshop readiness (backend, template, node types, model,
+  provider) before the session starts.
 
 ## Change history
 
 | Date | Change |
 |---|---|
 | 2026-09-15 | Initial specification created |
+| 2026-09-15 | Question is workflow configuration edited via inspector; Test tab takes only the student answer (FR-002/003, AC-002/003). Added workshop preflight (FR-009, AC-007) and facilitator readiness view (FR-010, AC-008). Dependencies extended with SPEC-0014 and SPEC-0009. |
