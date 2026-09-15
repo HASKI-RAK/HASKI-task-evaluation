@@ -16,6 +16,7 @@ related:
   - SPEC-0006
   - SPEC-0007
   - SPEC-0008
+  - SPEC-0009
 ---
 
 # NodeGrade workshop readiness
@@ -59,6 +60,7 @@ the facilitator having to explain NodeGrade's internals.
 - LTI platform integration changes beyond workspace typing
 - User account management / authentication
 - Performance optimization beyond workshop-scale usage
+- LLM provider management and model governance (SPEC-0009, separate epic)
 
 ## Actors
 
@@ -79,6 +81,9 @@ the facilitator having to explain NodeGrade's internals.
 | SPEC-0006 | Run and trace observability | Draft |
 | SPEC-0007 | WAIE workshop experience and preview | Draft |
 | SPEC-0008 | Reliability, CI and documentation | Draft |
+
+Note: SPEC-0009 (LLM provider management and model governance) is a separate epic,
+not a child of this one.
 
 ## Cross-feature business rules
 
@@ -106,6 +111,8 @@ the facilitator having to explain NodeGrade's internals.
   SPEC-0004/FR-008).
 - Templates ship bundled with the product initially; a server-side template store is a
   later evolution (assumption in SPEC-0003).
+- Facilitator role is established via env-configured admin username/password (docker
+  compose supplyable), no account/registration system (decided in SPEC-0003).
 
 ## Open questions
 
@@ -123,3 +130,4 @@ the facilitator having to explain NodeGrade's internals.
 | Date | Change |
 |---|---|
 | 2026-09-15 | Initial specification created from workshop-readiness analysis |
+| 2026-09-15 | Noted SPEC-0009 (LLM provider management) as a separate epic outside this epic's scope |

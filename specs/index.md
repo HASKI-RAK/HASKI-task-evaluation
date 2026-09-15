@@ -10,3 +10,7 @@
 | SPEC-0006 | Feature | Run and trace observability | SPEC-0001 | Draft |
 | SPEC-0007 | Feature | WAIE workshop experience and preview | SPEC-0001 | Draft |
 | SPEC-0008 | Feature | Reliability, CI and documentation | SPEC-0001 | Draft |
+| SPEC-0009 | Epic | LLM provider management and model governance | null | Draft |
+| SPEC-0010 | Feature | Multi-provider LLM execution | SPEC-0009 | Draft |
+| SPEC-0011 | Feature | Provider configuration admin UI | SPEC-0009 | Draft |
+| SPEC-0012 | Feature | Model allowlist governance | SPEC-0009 | Draft |

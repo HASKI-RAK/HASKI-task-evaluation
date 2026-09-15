@@ -51,7 +51,8 @@ opens the workshop experience directly.
 ## Actors
 
 - Participant (anonymous): needs a frictionless path into the workshop workflow.
-- Facilitator: needs a stable, shareable conference URL.
+- Facilitator (admin): owns the workshop and its code; the only role that can create or
+  publish a workshop code.
 - Expert user: needs direct access to create/open workflows.
 
 ## User scenarios
@@ -123,6 +124,22 @@ WHEN a user opens an unknown route,
 the system SHALL display a user-facing not-found page offering navigation back to the
 start page.
 
+### FR-007 — Workshop code creation restricted to facilitator
+
+WHEN a user who is not a facilitator attempts to create or publish a workshop code,
+THEN the system SHALL reject the action.
+
+### FR-008 — Facilitator workshop code management
+
+WHEN a facilitator creates a workshop code,
+the system SHALL generate a code that identifies exactly one workshop and SHALL remain
+valid until the facilitator revokes or expires it.
+
+### FR-009 — Code revocation
+
+WHEN a facilitator revokes or expires a workshop code,
+THEN the system SHALL reject that code on subsequent deep-link access.
+
 ## Non-functional requirements
 
 ### NFR-001 — Start page load
@@ -182,6 +199,26 @@ When the user opens a route that does not exist
 Then a user-facing not-found page is shown with a way back to the start page
 ```
 
+### AC-006 — Only facilitator can create workshop codes
+
+Traces to: FR-007
+
+```gherkin
+Given a user who is not a facilitator
+When the user attempts to create or publish a workshop code
+Then the action is rejected
+```
+
+### AC-007 — Revoked code rejected
+
+Traces to: FR-009
+
+```gherkin
+Given a workshop code that the facilitator has revoked
+When a participant opens the deep link containing that code
+Then the workshop is not accessible and a "workshop unavailable" state is shown
+```
+
 ## Edge cases
 
 - Deep link with an invalid, expired, or unpublished workshop code → not-found or
@@ -220,3 +257,4 @@ Then a user-facing not-found page is shown with a way back to the start page
 | Date | Change |
 |---|---|
 | 2026-09-15 | Initial specification created |
+| 2026-09-15 | Added facilitator (admin) ownership of workshop codes: creation restricted to facilitator, revocation support (FR-007..FR-009, AC-006..AC-007) |

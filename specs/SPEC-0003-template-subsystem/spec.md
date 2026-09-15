@@ -56,9 +56,12 @@ workflow as one undoable operation.
 
 ## Actors
 
-- Participant (anonymous): duplicates the workshop template, inserts blocks.
-- Facilitator: authors/prepares templates before the session.
-- Expert user: browses templates and blocks for general use.
+- Facilitator (admin): authors, modifies, publishes, and unpublishes templates; the
+  only role allowed to change template definitions.
+- Participant (anonymous): duplicates the workshop template, inserts blocks; cannot
+  modify template definitions.
+- Expert user: browses templates and blocks for general use; cannot modify template
+  definitions.
 
 ## User scenarios
 
@@ -161,6 +164,37 @@ WHEN a user opens the insert palette in the editor,
 the system SHALL offer tabs for Nodes, Blocks, and Templates, and searchable entries
 with workshop-friendly categories and descriptions.
 
+### FR-012 — Template administration restricted to facilitator
+
+WHEN a user who is not a facilitator attempts to create, modify, publish, or unpublish
+a template definition,
+THEN the system SHALL reject the action.
+
+### FR-013 — Facilitator template management
+
+WHEN a facilitator creates, modifies, publishes, or unpublishes a template definition,
+the system SHALL apply the change to the canonical template set.
+
+### FR-014 — Published templates visible to all
+
+WHILE a template is published,
+the system SHALL offer it in the template gallery to all users.
+
+### FR-015 — Unpublished templates hidden
+
+WHILE a template is not published,
+the system SHALL NOT offer it in the template gallery to non-facilitator users.
+
+### FR-016 — Facilitator authentication
+
+WHEN a user presents the admin credentials configured on the server,
+the system SHALL treat that user as a facilitator.
+
+### FR-017 — Invalid credentials rejected
+
+IF template administration is attempted without valid facilitator credentials,
+THEN the system SHALL reject the action without granting facilitator privileges.
+
 ## Non-functional requirements
 
 ### NFR-001 — Insert latency
@@ -242,6 +276,59 @@ Then each template shows name, description, and category, and can be filtered by
 And selecting a template shows a structural preview
 ```
 
+### AC-008 — Non-facilitator cannot modify templates
+
+Traces to: FR-005, FR-012
+
+```gherkin
+Given a user who is not a facilitator
+When the user attempts to modify or delete a template definition
+Then the action is rejected
+And the template definition is unchanged
+```
+
+### AC-009 — Facilitator publishes a template
+
+Traces to: FR-013, FR-014
+
+```gherkin
+Given a facilitator has created a template in unpublished state
+When the facilitator publishes the template
+Then the template appears in the gallery for all users
+```
+
+### AC-010 — Unpublished template hidden from participants
+
+Traces to: FR-015
+
+```gherkin
+Given a template is unpublished
+When a non-facilitator user opens the template gallery
+Then the template is not listed
+And when the facilitator opens the gallery, the template is listed with its unpublished state
+```
+
+### AC-011 — Facilitator authenticates with env-configured credentials
+
+Traces to: FR-016
+
+```gherkin
+Given the server has admin credentials configured via environment variables
+When a user authenticates with those credentials
+Then the user acts as facilitator and can manage template definitions
+```
+
+### AC-012 — Wrong credentials rejected
+
+Traces to: FR-017
+
+```gherkin
+Given the server has admin credentials configured
+When a user authenticates with incorrect credentials
+Then no facilitator privileges are granted
+And template administration actions are rejected
+```
+
 ## Edge cases
 
 - Inserting a block into an empty workflow → allowed; behaves like a partial start.
@@ -252,13 +339,20 @@ And selecting a template shows a structural preview
 
 ## Business rules
 
-- A template SHALL never be edited in place.
+- A template SHALL never be edited in place; user actions always operate on
+  workspace-owned copies.
 - A workflow created from a template SHALL retain a reference to its source template id
   (required for reset).
+- Template authoring, modification, and publication SHALL be restricted to the
+  facilitator (admin) role.
 
 ## Constraints
 
 - Template graph content uses the same node/link model as stored workflows.
+- The facilitator role SHALL be established through an admin username and password
+  configured as server environment variables (supplyable via docker compose); no
+  additional user-account or registration system is introduced for the facilitator
+  role.
 
 ## Dependencies
 
@@ -284,3 +378,5 @@ And selecting a template shows a structural preview
 | Date | Change |
 |---|---|
 | 2026-09-15 | Initial specification created |
+| 2026-09-15 | Added facilitator (admin) role: template authoring/publication restricted to facilitator (FR-012..FR-015, AC-008..AC-010) |
+| 2026-09-15 | Facilitator authentication decided: env-based admin username/password, supplyable via docker compose (FR-016..FR-017, AC-011..AC-012, constraint added) |
